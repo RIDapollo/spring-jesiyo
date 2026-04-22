@@ -16,7 +16,7 @@
         <property name="driverClassName"
             value="oracle.jdbc.OracleDriver"></property>
         <property name="jdbcUrl"
-            value="jdbc:oracle:thin:@xhvnup5lje1tl88s_high?TNS_ADMIN=src/main/resources/Wallet"></property>
+            value="jdbc:oracle:thin:@xhvnup5lje1tl88s_high?TNS_ADMIN=/Users/parkjimyeong/Desktop/dev/Wallet"></property>
         <property name="username" value="spring"></property>
         <property name="password" value="Oraclejava1234"></property>
     </bean>

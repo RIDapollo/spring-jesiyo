@@ -289,3 +289,6 @@ $RECYCLE.BIN/
 
 # Oracle Wallet
 src/main/resources/Wallet/
+
+
+src/main/webapp/WEB-INF/spring/root-context.xml
