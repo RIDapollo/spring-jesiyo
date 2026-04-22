@@ -285,3 +285,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse,intellij,macos,windows,maven,java
+
+
+# Oracle Wallet
+src/main/resources/Wallet/
+
+
+src/main/webapp/WEB-INF/spring/root-context.xml
