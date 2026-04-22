@@ -2,53 +2,51 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<!-- header.jsp -->
-<header>
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-6xl w-full mx-auto px-4 h-16 flex items-center justify-between">
+        
+        <div class="flex items-center gap-8">
+            <a href="/jesiyo/index.do" class="text-2xl font-black text-brand-500 tracking-tight">
+                Jesiyo
+            </a>
+            
+            <nav>
+                <ul class="flex items-center gap-6 text-base font-bold text-slate-700">
+                    <li><a href="/jesiyo/trade.do" class="hover:text-brand-500 transition-colors">중고거래</a></li>
+                    <li><a href="/jesiyo/auction.do" class="hover:text-brand-500 transition-colors">경매</a></li>
+                    <li><a href="/jesiyo/chat.do" class="hover:text-brand-500 transition-colors">채팅</a></li>
+                </ul>
+            </nav>
+        </div>
 
-    <sec:authorize access="isAnonymous()">
-    <h1>Spring Security <small>Anonymous</small></h1>
-    </sec:authorize>
-    
-    <sec:authorize access="isAuthenticated()">
-    <h1>Spring Security <small><sec:authentication property="principal.username" /></small></h1>    
-    </sec:authorize>
-    
-    
-    <ul>
-        <li><a href="/jesiyo/index.do">Index</a></li>
-        
-        <sec:authorize access="hasRole('ROLE_MEMBER')">
-        <li><a href="/jesiyo/member.do">Member</a></li>
-        </sec:authorize>
-        
-        <sec:authorize access="hasRole('ROLE_ADMIN')">
-        <li><a href="/jesiyo/admin.do">Admin</a></li>
-        </sec:authorize>
-        
-        <li class="divider"></li>
-        
-        <li><a href="/jesiyo/trade.do">Trade</a>
-        <li><a href="/jesiyo/auction.do">Auction</a>
-        <li><a href="/jesiyo/chat.do">Chat</a>
-        
-        <sec:authorize access="isAnonymous()">
-        <li><a href="/jesiyo/customlogin.do">Login</a>
-        </sec:authorize>
-        
-        <sec:authorize access="isAuthenticated()">
-        <li><a href="/jesiyo/customlogout.do">Logout</a>
-        </sec:authorize>
+        <div class="flex items-center gap-4 text-sm font-semibold text-slate-600">
+            
+            <sec:authorize access="isAuthenticated()">
+                <div class="flex items-center gap-4">
+                    <span class="text-slate-800">
+                        <b class="text-brand-500 text-base"><sec:authentication property="principal.username" /></b>님
+                    </span>
+                    
+                    <sec:authorize access="hasRole('ROLE_MEMBER')">
+                        <a href="/jesiyo/member.do" class="hover:text-brand-500 transition-colors">마이페이지</a>
+                    </sec:authorize>
+                    
+                    <sec:authorize access="hasRole('ROLE_ADMIN')">
+                        <a href="/jesiyo/admin.do" class="text-rose-500 hover:text-rose-600 transition-colors">관리자</a>
+                    </sec:authorize>
+                    
+                    <a href="/jesiyo/customlogout.do" class="btn-soft-brand px-3 py-1.5 text-xs rounded-md ml-2">
+                        로그아웃
+                    </a>
+                </div>
+            </sec:authorize>
 
-        <li class="divider"></li>
-        
-        <sec:authorize access="isAnonymous()">
-        <li><a href="/jesiyo/register.do">Register</a>
-        </sec:authorize>
-        
-    </ul>
+            <sec:authorize access="isAnonymous()">
+                <a href="/jesiyo/customlogin.do" class="hover:text-brand-500 transition-colors">로그인</a>
+                <span class="w-px h-3 bg-slate-300 mx-1"></span>
+                <a href="/jesiyo/register.do" class="hover:text-brand-500 transition-colors">회원가입</a>
+            </sec:authorize>
+            
+        </div>
+    </div>
 </header>
-
-
-
-
-
