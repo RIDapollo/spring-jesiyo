@@ -16,8 +16,8 @@
             value="oracle.jdbc.OracleDriver"></property>
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@xhvnup5lje1tl88s_high?TNS_ADMIN=${wallet.path}"></property>
-        <property name="username" value="spring"></property>
-        <property name="password" value="Oraclejava1234"></property>
+        <property name="username" value="${db.username}"></property>
+        <property name="password" value="${db.password}"></property>
     </bean>
 
     <!-- 커넥션 풀 > DataSource -->
