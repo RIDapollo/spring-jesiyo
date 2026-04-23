@@ -1,8 +1,11 @@
 package com.test.jesiyo.chat.repository;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,10 @@ public class ChatDao {
 	
 	public MemberDto findBySeq(String seq) {
 		return template.selectOne("chat-member.temp",seq);
+	}
+
+	public List<ChatRoomDto> getChatRoomList(String seq) {
+		return template.selectList("chat.getChatRoomList", seq);
 	}
 
 }

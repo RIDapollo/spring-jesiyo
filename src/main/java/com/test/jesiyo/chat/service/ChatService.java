@@ -1,7 +1,10 @@
 package com.test.jesiyo.chat.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 import com.test.jesiyo.chat.repository.ChatDao;
 
@@ -16,6 +19,11 @@ public class ChatService {
 	public MemberDto findBySeq(String seq) {
 		
 		return chatDao.findBySeq(seq);
+	}
+
+	public List<ChatRoomDto> getChatRoomList(String seq) {
+	
+		return chatDao.getChatRoomList(seq);
 	}
 
 }

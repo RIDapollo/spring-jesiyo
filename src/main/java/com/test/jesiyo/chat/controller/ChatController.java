@@ -39,9 +39,9 @@ public class ChatController {
 		
 		// 로그인 된 사용자의 seq를 가지고 채팅방의 내역을 가져와야함
 		MemberDto auth = (MemberDto) session.getAttribute("auth");
-		System.out.println(auth.getEmailAddress());
-		//List<ChatRoomDto> list = chatService.getChatRoomList(auth.getSeq()); 
+		List<ChatRoomDto> list = chatService.getChatRoomList(auth.getSeq()); 
 		
+		model.addAttribute("list", list);
 		
 		return "chats/chat";
 	}
