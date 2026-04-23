@@ -22,7 +22,8 @@
             <button class="btn flex-1 md:flex-none bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold" onclick="location.href='/jesiyo/auction/myBidList.do'">내 입찰 목록</button>
         </div>
     </div>
-
+    
+    <!-- 검색창 -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
         <form action="/jesiyo/auction/list.do" method="GET" class="flex gap-2 w-full">
             <input type="text" name="keyword" placeholder="경매 물품이나 카테고리를 검색해보세요" class="input input-bordered flex-1 focus:border-brand-500 focus:outline-none bg-slate-50" />
@@ -30,6 +31,7 @@
         </form>
     </div>
     
+    <!-- 경매목록 -->
     <c:forEach items="${list }" var="dto">
     <div class="flex flex-col gap-4 mb-10">
         
@@ -43,10 +45,10 @@
             <div class="flex-1 flex flex-col justify-between py-1">
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">카테고리이름으로 변경예정: ${dto.category_seq}</span>
+                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">카테고리이름으로 변경예정: ${dto.categorySeq}</span>
                     </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-1 line-clamp-2">${dto.name }</h3>
-                    <p class="text-sm text-slate-500">판매자번호(판매자이름으로 변경예정): ${dto.create_member_seq }</p>
+                    <p class="text-sm text-slate-500">판매자번호(판매자이름으로 변경예정): ${dto.createMemberSeq }</p>
                 </div>
                 <div class="mt-4 md:mt-0 flex flex-col gap-1">
                     <span class="text-xs font-semibold text-slate-400">현재 최고 입찰가</span>
@@ -109,30 +111,62 @@
         </article> -->
 
     </div>
-
-    <div class="flex flex-col md:flex-row items-center justify-between relative">
+    
+    
+    <div class="flex flex-col md:flex-row items-center justify-between mt-12 mb-10 relative">
         
-        <div class="hidden md:block w-32"></div>
-
-        <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm mb-6 md:mb-0">
-            <a href="#" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border-r border-slate-200">이전</a>
-            <span class="px-4 py-2 text-sm font-bold bg-brand-500 text-white border-r border-slate-200">1</span>
-            <a href="#" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border-r border-slate-200">2</a>
-            <a href="#" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border-r border-slate-200">3</a>
-            <a href="#" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">다음</a>
+        <!-- 페이징 -->
+        <div class="hidden md:block flex-1"></div>
+        
+        <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-md">
+            <c:set var="query" value="&word=${word}&status=${status}" />
+        
+            <c:choose>
+                <c:when test="${paging.n == 1}">
+                    <span class="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-50 border-r border-slate-200 cursor-not-allowed">이전</span>
+                </c:when>
+                <c:otherwise>
+                    <a href="/jesiyo/auction.do?page=${paging.n - 1}${query}" 
+                       class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border-r border-slate-200 transition-colors">이전</a>
+                </c:otherwise>
+            </c:choose>
+        
+            <c:forEach var="i" begin="${paging.n}" end="${paging.n + paging.blockSize - 1}">
+                <c:if test="${i <= paging.totalPage}">
+                    <c:choose>
+                        <c:when test="${i == paging.nowPage}">
+                            <span class="px-4 py-2 text-sm font-bold bg-slate-800 text-white border-r border-slate-200 z-10 shadow-inner">${i}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="/jesiyo/auction.do?page=${i}${query}" 
+                               class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-brand-500 hover:text-white border-r border-slate-200 transition-all">${i}</a>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
+            </c:forEach>
+        
+            <c:choose>
+                <c:when test="${paging.n + paging.blockSize > paging.totalPage}">
+                    <span class="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-50 cursor-not-allowed">다음</span>
+                </c:when>
+                <c:otherwise>
+                    <a href="/jesiyo/auction.do?page=${paging.n + paging.blockSize}${query}" 
+                       class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">다음</a>
+                </c:otherwise>
+            </c:choose>
         </div>
-
-        <div class="w-full md:w-auto flex justify-end">
-            <button onclick="location.href='/jesiyo/auction/add.do'" class="btn bg-slate-800 hover:bg-slate-900 text-white border-0 px-6 py-2 rounded-lg shadow-md flex items-center gap-2 font-bold cursor-pointer transition-colors">
+        
+        <!-- 경매등록 -->
+        <div class="flex-1 flex justify-end mt-6 md:mt-0 w-full md:w-auto">
+            <button onclick="location.href='/jesiyo/auction/add'" 
+                    class="btn bg-brand-500 hover:bg-brand-600 text-white border-0 px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-2 font-bold transition-all transform hover:-translate-y-0.5 active:scale-95">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
                 경매 등록
             </button>
         </div>
-
     </div>
-</div>
  
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script>
