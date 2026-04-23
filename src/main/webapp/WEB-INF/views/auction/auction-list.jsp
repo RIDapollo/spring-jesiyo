@@ -158,7 +158,7 @@
         
         <!-- 경매등록 -->
         <div class="flex-1 flex justify-end mt-6 md:mt-0 w-full md:w-auto">
-            <button onclick="location.href='/jesiyo/auction/add.do'" 
+            <button onclick="location.href='/jesiyo/auction/add'" 
                     class="btn bg-brand-500 hover:bg-brand-600 text-white border-0 px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-2 font-bold transition-all transform hover:-translate-y-0.5 active:scale-95">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />

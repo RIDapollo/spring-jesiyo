@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
@@ -20,8 +22,8 @@ public class AuctionController {
 	
 	private final AuctionService service;
 	
-	@GetMapping(value = "/auction.do")
-	public String action(Model model, 
+	@GetMapping(value = "/auction")
+	public String auction(Model model, 
 			@RequestParam(required = false, defaultValue = "") String word, 
 			@RequestParam(required = false, defaultValue = "") String status, 
 			@RequestParam(required = false, defaultValue = "1") int page) {
@@ -49,6 +51,18 @@ public class AuctionController {
 	    model.addAttribute("status", status);
 	    
 	    return "auction/auction-list";
+	}
+	
+	@GetMapping(value = "/auction/add")
+	public String add() {
+		
+		return "auction/auction-add";		
+	}
+		
+	@PostMapping(value = "/auction")
+	public String add(@RequestBody AuctionDto dto) {
+		
+		return "auction/auction-list";		
 	}
 	
 }
