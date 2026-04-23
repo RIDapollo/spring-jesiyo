@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="auction">
+
+    <select id="list" parameterType="map" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+        SELECT * FROM (
+            SELECT 
+                s.*, 
+                ROWNUM as rnum 
+            FROM (
+                SELECT * FROM auction
+                
+                <where>
+                    <if test="search == 'y'.toString()">
+                        <if test="status != ''">
+                            AND status = #{status}
+                        </if>
+                        <if test="word != ''">
+                            AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
+                        </if>
+                    </if>
+                </where>
+                
+                ORDER BY seq DESC
+            ) s
+        ) 
+        WHERE rnum BETWEEN #{begin} AND #{end}
+    </select>
+    
+    <select id="getTotalCount" parameterType="map" resultType="int">
+        SELECT count(*) 
+        FROM auction
+        <where>
+            <if test="search == 'y'.toString()">
+                <if test="status != ''">
+                    AND status = #{status}
+                </if>
+                <if test="word != ''">
+                    AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>
