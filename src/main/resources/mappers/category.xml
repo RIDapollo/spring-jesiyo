@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- XML Mapper -->
+<mapper namespace="category">
+
+	<select id="findBySeq" parameterType="int" resultType="cDto">
+		select *
+		from category
+		where seq = #{seq}
+	</select>
+	
+	<select id="findByName" parameterType="String" resultType="cDto">
+		select *
+		from category
+		where name = #{name}
+	</select>
+	
+	<insert id="add" parameterType="cDto">
+		insert into category (seq, name, parent_seq)
+		values (category_seq.nextval, #{name}, #{parentSeq})
+	</insert>
+
+	<delete id="del" parameterType="int">
+		delete from category
+		where seq = #{seq}
+	</delete>
+
+	<select id="findChildren" parameterType="int" resultType="cDto">
+	    select *
+	    from category
+	    where parent_seq = #{parentSeq}
+	</select>
+	
+	<select id="findRoots" resultType="cDto">
+	    select *
+	    from category
+	    where parent_seq is null
+	</select>
+</mapper>
