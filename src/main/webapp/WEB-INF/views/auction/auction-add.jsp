@@ -14,7 +14,7 @@
     <h1 class="main-title text-2xl font-bold mb-2 text-slate-900">경매 등록</h1>
     <p class="section-desc text-sm text-slate-500 mb-6">새로운 경매 상품의 정보를 입력해주세요.</p>
     
-    <form action="/auction/register" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6 bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6">
+    <form action="/jesiyo/auction" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6 bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6">
         
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리 <span class="text-rose-500">*</span></label>
@@ -68,23 +68,31 @@
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 상품 이름 <span class="text-rose-500">*</span></label>
-            <input type="text" name="itemName" placeholder="경매에 올릴 상품의 이름을 입력해주세요" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
+            <input type="text" name="name" placeholder="경매에 올릴 s품의 이름을 입력해주세요" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
         </div>
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 시작가 설정 (원) <span class="text-rose-500">*</span></label>
-            <input type="number" name="startPrice" placeholder="시작 가격을 입력해주세요" min="0" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
+            <input type="number" name="bidOpenPrice" placeholder="시작 가격을 입력해주세요" min="0" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
         </div>
 
         <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">상품 이미지 선택</label>
-            <input type="file" name="itemImages" multiple accept="image/*" class="file-input file-input-bordered file-input-md w-full focus:border-brand-500" />
-            <p class="text-xs text-slate-400 mt-1">* 상품의 상태를 잘 보여주는 사진을 등록해주세요.</p>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">상품 이미지 <span class="text-rose-500">*</span></label>
+            <input type="file" name="imageFile" id="itemImageInput" accept="image/*" class="file-input file-input-bordered file-input-md w-full focus:border-brand-500" required />
+            <p class="text-xs text-slate-400 mt-1">* 상품의 상태를 잘 보여주는 사진 1장을 등록해주세요.</p>
+
+            <div id="previewContainer" class="mt-4 hidden">
+                <p class="text-sm font-semibold text-slate-700 mb-2">미리보기</p>
+                <div class="relative w-48 h-48 border border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+                    <img id="imagePreview" src="" alt="상품 이미지 미리보기" class="w-full h-full object-cover hidden">
+                    <span id="previewPlaceholder" class="text-sm text-slate-400">이미지 로딩 중...</span>
+                </div>
+            </div>
         </div>
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 종료 시간 선택 <span class="text-rose-500">*</span></label>
-            <input type="datetime-local" name="endTime" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
+            <input type="datetime-local" name="endDate" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
             <p class="text-xs text-slate-400 mt-1">* 설정된 시간이 되면 판매자에 의해 경매가 종료되거나 낙찰 처리됩니다.</p>
         </div>
 
@@ -100,11 +108,52 @@
         
     </form>
 </div>
- 
-    <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
-    <script>
-    
-    </script>
+
+<script src="https://code.jquery.com/jquery-4.0.0.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('itemImageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+
+        imageInput.addEventListener('change', function(event) {
+            // 선택된 파일 가져오기 (단일 파일)
+            const file = event.target.files[0];
+
+            if (file) {
+                // 파일이 이미지인지 확인
+                if (!file.type.startsWith('image/')) {
+                    alert('이미지 파일만 등록 가능합니다.');
+                    imageInput.value = ''; // 입력 초기화
+                    return;
+                }
+
+                // FileReader를 사용하여 브라우저 메모리에 이미지 올리기
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // 읽어온 데이터 URL을 img 태그의 src로 설정
+                    imagePreview.src = e.target.result;
+                    
+                    // UI 업데이트 (미리보기 컨테이너 보이기, 플레이스홀더 숨기기)
+                    imagePreview.classList.remove('hidden');
+                    previewPlaceholder.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                };
+
+                // 파일 읽기 실행
+                reader.readAsDataURL(file);
+            } else {
+                // 사용자가 파일 선택 창을 열었다가 취소한 경우 (파일 없음)
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+                previewPlaceholder.classList.remove('hidden');
+                previewContainer.classList.add('hidden');
+            }
+        });
+    });
+</script>
 </body>
 </html>
 

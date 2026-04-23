@@ -44,5 +44,14 @@
             </if>
         </where>
     </select>
+    
+    <select id="getMdto" parameterType="int" resultType="com.test.jesiyo.auction.dto.MemberDto">
+        select * from member where seq = #{_parameter}
+    </select>
+    
+    <insert id="add" parameterType="map">
+        insert into auction (seq, name, bid_open_price, image, end_date, description, created_at, status, winner_seq, create_member_seq, category_seq)            values (마스터옥션번호, #{dto.name}, #{dto.bidOpenPrice}, #{dto.image}, #{dto.endDate}, #{dto.description}, default, '0', null, #{mdto.seq}, 
+        #{dto.category}) 
+    </insert>
 
 </mapper>
