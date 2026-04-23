@@ -107,15 +107,15 @@
         function sendLocation() {
             console.log(currentRegion);
 
-//             $.ajax({
-//                 url: '/location/member',
-//                 method: 'POST',
-//                 contentType: 'application/json',
-//                 data: JSON.stringify(currentRegion),
-//                 success: function(res) {
-//                     alert("저장 완료");
-//                 }
-//             });
+            $.ajax({
+                url: '/jesiyo/api/location/member',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(currentRegion),
+                success: function(res) {
+                    alert("동네 설정 완료!");
+                }
+            });
         }
   	
   	</script>   
