@@ -549,6 +549,22 @@
 
 .room-modal-confirm:hover { background: #e67026; }
 
+.room-modal-select {
+    width: 100%;
+    border-radius: 0.375rem;
+    padding: 0.625rem 0.625rem;
+    font-size: 0.875rem;
+    outline: none;
+    border: 1px solid #3f4147;
+    margin-bottom: 0.75rem;
+    background: #1e1f22;
+    color: #f2f3f5;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.room-modal-select:focus { border-color: #ff8a3d; }
+
+
 .room-modal-label {
     display: block;
     font-size: 0.75rem;

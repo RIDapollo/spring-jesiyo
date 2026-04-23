@@ -196,8 +196,9 @@
         <label class="room-modal-label">채팅방 이름</label>
         <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" />
         
-        <label class="room-modal-label">카테고리</label>
-        <input type="text" class="room-modal-input" id="newRoomDesc" value="1"/>
+        <label class="room-modal-label">카테고리(대분류)</label>
+            <select class="room-modal-select" id="roomCategoryL1">
+            </select>
         
         <label class="room-modal-label">최대 인원</label>
         <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
@@ -246,6 +247,22 @@
         document.getElementById('newRoomDescNum').addEventListener('blur', function() {
             if (this.value < 20) this.value = 20;
             if (this.value > 50) this.value = 50;
+        });
+        
+        // 모달 카테고리 불러오기
+        const ctx = '${pageContext.request.contextPath}';
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch(ctx + '/api/roots')
+                .then(response => response.json())
+                .then(function(data) {
+                    const select = document.getElementById('roomCategoryL1');
+                    data.forEach(function(category) {
+                        const option = document.createElement('option');
+                        option.value = category.seq;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                });
         });
     
     </script>
