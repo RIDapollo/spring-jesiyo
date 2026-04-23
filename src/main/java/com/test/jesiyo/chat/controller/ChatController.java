@@ -26,9 +26,11 @@ public class ChatController {
 			
 			member = chatService.findBySeq("4");
 			
-			System.out.println(member.toString());
+			session.setAttribute("auth", member);
 		}
 		
+		model.addAttribute("auth", session.getAttribute("auth"));
+		// 여기까지 세션 임시저장
 		
 		return "chats/chat";
 	}
