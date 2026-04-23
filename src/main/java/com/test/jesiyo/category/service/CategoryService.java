@@ -60,4 +60,8 @@ public class CategoryService {
 	public List<CategoryDto> findRoots() {
 	    return dao.findRoots();
 	}
+	
+	public List<CategoryDto> findAll() {
+	    return dao.findAll();
+	}
 }

@@ -39,4 +39,8 @@ public class CategoryDao {
 	public List<CategoryDto> findRoots() {
 	    return template.selectList("category.findRoots");
 	}
+	
+	public List<CategoryDto> findAll() {
+		return template.selectList("category.findAll");
+	}
 }
