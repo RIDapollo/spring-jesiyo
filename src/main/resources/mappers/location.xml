@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- XML Mapper -->
+<mapper namespace="location">
+
+	<insert id="add">
+		insert into location (seq, sido, sigungu, dong, lat, lng) values
+			(location_seq.nextval, #{sido}, #{sigungu}, #{dong}, #{lat}, #{lng})
+	</insert>
+	
+	<select id="findBySeq" parameterType="string" resultType="com.test.jesiyo.location.dto.LocationDto">
+		select *
+		from location
+		where seq = #{seq}
+	</select>
+	
+	<select id="findByDong" parameterType="string" resultType="com.test.jesiyo.location.dto.LocationDto">
+		select *
+		from location
+		where dong = #{dong}
+	</select>
+
+</mapper>

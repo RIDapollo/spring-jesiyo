@@ -6,15 +6,15 @@
     <div class="max-w-6xl w-full mx-auto px-4 h-16 flex items-center justify-between">
         
         <div class="flex items-center gap-8">
-            <a href="/jesiyo/index.do" class="text-2xl font-black text-brand-500 tracking-tight">
+            <a href="/jesiyo/index" class="text-2xl font-black text-brand-500 tracking-tight">
                 Jesiyo
             </a>
             
             <nav>
                 <ul class="flex items-center gap-6 text-base font-bold text-slate-700">
-                    <li><a href="/jesiyo/trade.do" class="hover:text-brand-500 transition-colors">중고거래</a></li>
-                    <li><a href="/jesiyo/auction.do" class="hover:text-brand-500 transition-colors">경매</a></li>
-                    <li><a href="/jesiyo/chat.do" class="hover:text-brand-500 transition-colors">채팅</a></li>
+                    <li><a href="/jesiyo/trade" class="hover:text-brand-500 transition-colors">중고거래</a></li>
+                    <li><a href="/jesiyo/auction" class="hover:text-brand-500 transition-colors">경매</a></li>
+                    <li><a href="/jesiyo/chat" class="hover:text-brand-500 transition-colors">채팅</a></li>
                 </ul>
             </nav>
         </div>
@@ -28,23 +28,23 @@
                     </span>
                     
                     <sec:authorize access="hasRole('ROLE_MEMBER')">
-                        <a href="/jesiyo/member.do" class="hover:text-brand-500 transition-colors">마이페이지</a>
+                        <a href="/jesiyo/member class="hover:text-brand-500 transition-colors">마이페이지</a>
                     </sec:authorize>
                     
                     <sec:authorize access="hasRole('ROLE_ADMIN')">
-                        <a href="/jesiyo/admin.do" class="text-rose-500 hover:text-rose-600 transition-colors">관리자</a>
+                        <a href="/jesiyo/admin" class="text-rose-500 hover:text-rose-600 transition-colors">관리자</a>
                     </sec:authorize>
                     
-                    <a href="/jesiyo/customlogout.do" class="btn-soft-brand px-3 py-1.5 text-xs rounded-md ml-2">
+                    <a href="/jesiyo/customlogout" class="btn-soft-brand px-3 py-1.5 text-xs rounded-md ml-2">
                         로그아웃
                     </a>
                 </div>
             </sec:authorize>
 
             <sec:authorize access="isAnonymous()">
-                <a href="/jesiyo/customlogin.do" class="hover:text-brand-500 transition-colors">로그인</a>
+                <a href="/jesiyo/customlogin" class="hover:text-brand-500 transition-colors">로그인</a>
                 <span class="w-px h-3 bg-slate-300 mx-1"></span>
-                <a href="/jesiyo/register.do" class="hover:text-brand-500 transition-colors">회원가입</a>
+                <a href="/jesiyo/register" class="hover:text-brand-500 transition-colors">회원가입</a>
             </sec:authorize>
             
         </div>

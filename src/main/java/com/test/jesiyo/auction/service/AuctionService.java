@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
+import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.repository.AuctionDao;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,16 @@ public class AuctionService {
 	public int getTotalCount(HashMap<String, String> map) {
 		
 		return dao.getTotalCount(map);
+	}
+
+	public MemberDto getMdto(int i) {
+		
+		return dao.getMdto(1);
+	}
+
+	public Object add(HashMap<String, Object> map) {
+		
+		return dao.add(map);
 	}
 	
 	
