@@ -14,9 +14,9 @@
 <%-- 에셋 include --%>
 <%@include file="/WEB-INF/views/inc/asset.jsp"%>
 
-<style type="text/tailwindcss">
-        <%@include file="/WEB-INF/views/inc/chat.css"%>        
-    </style>
+<style>
+<%@include file="/WEB-INF/views/inc/chat.css"%>
+</style>
 </head>
 <body>
 
@@ -62,17 +62,16 @@
                 </c:choose>
             </div>
 
-
-
-            <%-- 4 채팅방 생성/입장 버튼 --%>
-            <button class="btn-add-room">
+            <%-- ④ 채팅방 생성/입장 버튼 --%>
+            <!-- ✅ FIX 3: roomModal() → openRoomModal() 으로 변경 (ID 충돌 방지) -->
+            <button class="btn-add-room" onclick="openRoomModal()">
                 <span style="font-size: 1.1rem; line-height: 1;">+</span>
                 <span>채팅방 만들기 / 입장</span>
             </button>
 
         </aside>
 
-        <%-- 2 3 오른쪽: 채팅 메인 영역 --%>
+        <%-- ② ③ 오른쪽: 채팅 메인 영역 --%>
         <main class="chat-main">
 
             <%-- 채팅 헤더 (채팅방 선택 후 노출) --%>
@@ -88,10 +87,7 @@
                 </div>
             </div>
 
-
-
             <%-- ② 채팅방 미참여 상태 (환영 메시지) --%>
-            <!-- 기능구현을 위해 반대로 디스플레이 설정해놓음 -->
             <div class="empty-state" id="emptyState"
                 style="display: none;">
                 <div class="empty-icon">💬</div>
@@ -112,8 +108,6 @@
 
                     <%-- 메시지 목록 --%>
                     <div class="messages-area" id="messagesArea">
-
-
                         <c:forEach var="msg" items="${messages}">
                             <div class="msg-group">
                                 <div class="msg-avatar"
@@ -154,7 +148,7 @@
 
                 </div>
 
-                <%-- 채팅 입력창 (채팅방 선택 후 노출) --%>
+                <%-- 채팅 입력창 --%>
                 <div class="chat-input-wrap" id="chatInputWrap">
                     <div class="chat-input-box">
                         <button class="chat-input-btn" title="파일 첨부">
@@ -184,63 +178,77 @@
                         <button class="btn-send">전송</button>
                     </div>
                 </div>
+            </div>
         </main>
     </div>
 
     <%-- 채팅방 생성/입장 모달 --%>
-    <div class="modal-overlay" id="roomModal">
-        <div class="modal-box">
-            <h2>채팅방</h2>
-            <p>새 채팅방을 만들거나 코드로 기존 방에 입장하세요.</p>
+    <dialog id="roomModal">
+    <h2>채팅방</h2>
+    <p>새 채팅방을 만들거나 코드로 기존 방에 입장하세요.</p>
 
-            <div class="modal-tabs">
-                <div class="modal-tab active" id="tab-create">채팅방
-                    만들기</div>
-                <div class="modal-tab" id="tab-join">코드로 입장</div>
-            </div>
-
-            <%-- 만들기 폼 --%>
-            <div id="form-create">
-                <label
-                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #b5bac1; margin-bottom: 0.4rem; letter-spacing: 0.05em;">
-                    채팅방 이름 </label> <input type="text" class="modal-input"
-                    id="newRoomName" placeholder="예: 아이폰 거래 채팅"
-                    maxlength="30" /> <label
-                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #b5bac1; margin-bottom: 0.4rem; letter-spacing: 0.05em;">
-                    설명 (선택) </label> <input type="text" class="modal-input"
-                    id="newRoomDesc" placeholder="채팅방 설명을 입력하세요"
-                    maxlength="60" />
-            </div>
-
-            <%-- 입장 폼 --%>
-            <div id="form-join" style="display: none;">
-                <label
-                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #b5bac1; margin-bottom: 0.4rem; letter-spacing: 0.05em;">
-                    초대 코드 </label> <input type="text" class="modal-input"
-                    id="joinCode" placeholder="초대 코드 8자리 입력"
-                    maxlength="8" />
-            </div>
-
-            <div class="modal-footer">
-                <button class="modal-cancel" id="btnModalCancel">취소</button>
-                <button class="modal-confirm" id="btnModalConfirm">확인</button>
-            </div>
-        </div>
+    <div class="room-modal-tabs">
+        <div class="room-modal-tab active" id="tab-create">채팅방 만들기</div>
+        <div class="room-modal-tab" id="tab-join">코드로 입장</div>
     </div>
 
+    <div id="form-create">
+        <label class="room-modal-label">채팅방 이름</label>
+        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" />
+        
+        <label class="room-modal-label">카테고리</label>
+        <input type="text" class="room-modal-input" id="newRoomDesc" value="1"/>
+        
+        <label class="room-modal-label">최대 인원</label>
+        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
+        
+    </div>
+    
+    <div id="form-join" style="display: none;">
+        <label class="room-modal-label">초대 코드</label>
+        <input type="text" class="room-modal-input" id="joinCode" placeholder="초대 코드 8자리 입력" maxlength="8" />
+    </div>
+
+    <div class="room-modal-footer">
+        <button class="room-modal-cancel" onclick="closeModal()">취소</button>
+        <button class="room-modal-confirm" id="btnModalConfirm">생성</button>
+    </div>
+    </dialog>
+
     <script>
-        <!-- 채팅방 클릭시 -->   
-        document.querySelectorAll('.room-item').forEach(function(item) {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.room-item').forEach(function(el) {
-                    el.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
+    
+        // 채팅방 생성/입장 모달창
+        function openRoomModal() {
+            document.getElementById('roomModal').showModal();
+        }
+        function closeModal() {
+            document.getElementById('roomModal').close();
+        }
+        document.getElementById('roomModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        // 탭 전환
+        document.getElementById('tab-create').addEventListener('click', function() {
+            document.getElementById('tab-create').classList.add('active');
+            document.getElementById('tab-join').classList.remove('active');
+            document.getElementById('form-create').style.display = 'block';
+            document.getElementById('form-join').style.display = 'none';
+            document.getElementById('btnModalConfirm').textContent = '생성';
+        });
+        document.getElementById('tab-join').addEventListener('click', function() {
+            document.getElementById('tab-join').classList.add('active');
+            document.getElementById('tab-create').classList.remove('active');
+            document.getElementById('form-join').style.display = 'block';
+            document.getElementById('form-create').style.display = 'none';
+            document.getElementById('btnModalConfirm').textContent = '입장';
+        });
+        // number 
+        document.getElementById('newRoomDescNum').addEventListener('blur', function() {
+            if (this.value < 20) this.value = 20;
+            if (this.value > 50) this.value = 50;
         });
     
-    
-    </script> 
+    </script>
 
 </body>
 </html>
