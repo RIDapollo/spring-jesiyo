@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="directsale">
+
+    <select id="findAll" resultType="DirectSaleDto">
+        SELECT *
+        FROM direct_sale
+        ORDER BY seq DESC
+    </select>
+
+    <select id="findBySeq" parameterType="long" resultType="DirectSaleDto">
+        SELECT *
+        FROM direct_sale
+        WHERE seq = #{seq}
+    </select>
+
+    <insert id="add" parameterType="DirectSaleDto">
+        INSERT INTO direct_sale (
+            seq,
+            title,
+            price,
+            description,
+            member_seq,
+            regdate
+        )
+        VALUES (
+            direct_sale_seq.nextval,
+            #{title},
+            #{price},
+            #{description},
+            #{memberSeq},
+            SYSDATE
+        )
+    </insert>
+
+    <update id="update" parameterType="DirectSaleDto">
+        UPDATE direct_sale
+        SET
+            title = #{title},
+            price = #{price},
+            description = #{description}
+        WHERE seq = #{seq}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM direct_sale
+        WHERE seq = #{seq}
+    </delete>
+
+</mapper>
