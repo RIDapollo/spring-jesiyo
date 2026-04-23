@@ -1,11 +1,14 @@
 package com.test.jesiyo.chat.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 import com.test.jesiyo.chat.service.ChatService;
 
@@ -30,11 +33,14 @@ public class ChatController {
 		}
 		
 		model.addAttribute("auth", session.getAttribute("auth"));
+		
 		// 여기까지 세션 임시저장
 		
 		
 		// 로그인 된 사용자의 seq를 가지고 채팅방의 내역을 가져와야함
-		// 채팅방 - 채팅 내역/채팅방의 유저들
+		MemberDto auth = (MemberDto) session.getAttribute("auth");
+		System.out.println(auth.getEmailAddress());
+		//List<ChatRoomDto> list = chatService.getChatRoomList(auth.getSeq()); 
 		
 		
 		return "chats/chat";
