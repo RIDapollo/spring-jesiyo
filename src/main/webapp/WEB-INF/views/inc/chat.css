@@ -1,0 +1,308 @@
+@charset "UTF-8";
+
+/* ─── 디스코드풍 채팅 레이아웃 ─── */
+.chat-root { @apply flex h-[calc(100vh-4rem)] overflow-hidden;
+    background: #313338;
+}
+
+/* 왼쪽 채팅방 목록 패널 */
+.room-panel { @apply flex flex-col w-60 shrink-0 overflow-hidden;
+    background: #2b2d31;
+}
+
+.room-panel-header { @apply flex items-center justify-between px-4 py-3
+    border-b font-bold text-sm;
+    border-color: #1e1f22;
+    color: #f2f3f5;
+}
+
+.room-list { @apply flex-1 overflow-y-auto px-2 py-2 flex flex-col
+    gap-0.5;
+    
+}
+
+.room-item { @apply flex items-center gap-2 px-2 py-2 rounded-md
+    cursor-pointer text-sm font-medium transition-all;
+    color: #949ba4;
+}
+
+.room-item:hover { @apply text-white;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.room-item.active { @apply text-white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.room-item .room-hash { @apply text-base leading-none shrink-0;
+    color: #72767d;
+}
+
+.room-item.active .room-hash, .room-item:hover .room-hash {
+    color: #b5bac1;
+}
+
+.room-item .unread-badge { @apply ml-auto text-xs font-bold px-1.5
+    py-0.5 rounded-full text-white;
+    background: #ff8a3d;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* + 버튼 */
+.btn-add-room { @apply mx-3 mb-3 mt-1 flex items-center justify-center
+    gap-2 py-2 rounded-md text-sm font-bold border-2 border-dashed
+    cursor-pointer transition-all;
+    border-color: #3f4147;
+    color: #72767d;
+}
+
+.btn-add-room:hover {
+    border-color: #ff8a3d;
+    color: #ff8a3d;
+}
+
+/* 오른쪽 메인 영역 */
+.chat-main { @apply flex flex-col flex-1 overflow-hidden;
+    background: #313338;
+}
+
+/* 채팅 헤더 */
+.chat-header { @apply flex items-center gap-3 px-4 h-12 shrink-0
+    border-b font-semibold text-sm;
+    border-color: #1e1f22;
+    color: #f2f3f5;
+    background: #313338;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.chat-header .hash-icon {
+    color: #80848e;
+    font-size: 1.2rem;
+}
+
+/* 빈 상태 (미참여) */
+.empty-state { @apply flex-1 flex flex-col items-center justify-center
+    text-center px-8;
+    color: #80848e;
+}
+
+.empty-state .empty-icon { @apply text-6xl mb-4;
+    
+}
+
+.empty-state h3 { @apply text-lg font-bold mb-2;
+    color: #f2f3f5;
+}
+
+.empty-state p { @apply text-sm mb-6 max-w-xs;
+    
+}
+
+.empty-actions { @apply flex gap-3;
+    
+}
+
+.btn-primary-discord { @apply px-4 py-2 rounded-md text-sm font-bold
+    text-white transition-all;
+    background: #ff8a3d;
+}
+
+.btn-primary-discord:hover {
+    background: #e67026;
+}
+
+.btn-secondary-discord { @apply px-4 py-2 rounded-md text-sm font-bold
+    transition-all;
+    background: #4e5058;
+    color: #f2f3f5;
+}
+
+.btn-secondary-discord:hover {
+    background: #6d6f78;
+}
+
+/* 메시지 목록 */
+.messages-area { @apply flex-1 overflow-y-auto px-4 py-4 flex flex-col
+    gap-0;
+    
+}
+
+.msg-group { @apply flex gap-3 px-2 py-0.5 rounded-md transition-all;
+    
+}
+
+.msg-group:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.msg-avatar { @apply w-10 h-10 rounded-full shrink-0 mt-0.5 flex
+    items-center justify-center text-sm font-bold text-white;
+    background: #5865f2;
+}
+
+.msg-content { @apply flex flex-col gap-0.5 flex-1;
+    
+}
+
+.msg-meta { @apply flex items-baseline gap-2;
+    
+}
+
+.msg-author { @apply text-sm font-bold;
+    color: #f2f3f5;
+}
+
+.msg-author.me {
+    color: #ff8a3d;
+}
+
+.msg-time { @apply text-xs;
+    color: #72767d;
+}
+
+.msg-text { @apply text-sm leading-relaxed;
+    color: #dcddde;
+}
+
+.msg-date-divider { @apply flex items-center gap-3 my-4 px-2;
+    
+}
+
+.msg-date-divider span { @apply text-xs font-semibold whitespace-nowrap;
+    color: #72767d;
+}
+
+.msg-date-divider::before, .msg-date-divider::after {
+    content: ''; @ apply flex-1 h-px;
+    background: #3f4147;
+}
+
+/* 입력창 */
+.chat-input-wrap { @apply px-4 pb-4 pt-2 shrink-0;
+    
+}
+
+.chat-input-box { @apply flex items-center gap-2 rounded-lg px-3
+    overflow-hidden;
+    background: #383a40;
+}
+
+.chat-input { @apply flex-1 py-3 text-sm outline-none bg-transparent;
+    color: #dcddde;
+}
+
+.chat-input::placeholder {
+    color: #72767d;
+}
+
+.chat-input-btn { @apply p-2 rounded-md transition-all cursor-pointer;
+    color: #72767d;
+}
+
+.chat-input-btn:hover {
+    color: #ff8a3d;
+    background: rgba(255, 138, 61, 0.1);
+}
+
+.btn-send { @apply px-3 py-1.5 rounded-md text-xs font-bold text-white
+    transition-all;
+    background: #ff8a3d;
+}
+
+.btn-send:hover {
+    background: #e67026;
+}
+
+/* 모달 오버레이 */
+.modal-overlay { @apply fixed inset-0 z-50 flex items-center
+    justify-center;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-box { @apply rounded-xl p-6 w-full max-w-md shadow-2xl;
+    background: #2b2d31;
+    color: #f2f3f5;
+}
+
+.modal-box h2 { @apply text-lg font-bold mb-1;
+    
+}
+
+.modal-box p { @apply text-sm mb-5;
+    color: #80848e;
+}
+
+.modal-tabs { @apply flex gap-1 mb-5 p-1 rounded-lg;
+    background: #1e1f22;
+}
+
+.modal-tab { @apply flex-1 py-2 rounded-md text-sm font-semibold
+    text-center cursor-pointer transition-all;
+    color: #80848e;
+}
+
+.modal-tab.active {
+    background: #383a40;
+    color: #f2f3f5;
+}
+
+.modal-input { @apply w-full rounded-md px-3 py-2.5 text-sm outline-none
+    border mb-3;
+    background: #1e1f22;
+    border-color: #3f4147;
+    color: #f2f3f5;
+}
+
+.modal-input:focus {
+    border-color: #ff8a3d;
+}
+
+.modal-input::placeholder {
+    color: #4e5058;
+}
+
+.modal-footer { @apply flex justify-end gap-2 mt-2;
+    
+}
+
+.modal-cancel { @apply px-4 py-2 rounded-md text-sm font-semibold
+    cursor-pointer transition-all;
+    background: #4e5058;
+    color: #f2f3f5;
+}
+
+.modal-cancel:hover {
+    background: #6d6f78;
+}
+
+.modal-confirm { @apply px-4 py-2 rounded-md text-sm font-bold
+    text-white cursor-pointer transition-all;
+    background: #ff8a3d;
+}
+
+.modal-confirm:hover {
+    background: #e67026;
+}
+
+/* 스크롤바 스타일 */
+.room-list::-webkit-scrollbar, .messages-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.room-list::-webkit-scrollbar-track, .messages-area::-webkit-scrollbar-track
+    {
+    background: transparent;
+}
+
+.room-list::-webkit-scrollbar-thumb, .messages-area::-webkit-scrollbar-thumb
+    {
+    background: #1e1f22;
+    border-radius: 2px;
+}

@@ -9,7 +9,7 @@ public class MainController {
 
 	@GetMapping(value = "/index.do")
 	public String index(Model model) {
-
+		
 		return "index";
 	}
 	

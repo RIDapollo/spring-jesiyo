@@ -381,3 +381,9 @@ CREATE TABLE trade_review (
     CONSTRAINT FK_member_TO_trade_review_1 FOREIGN KEY (seller_seq) REFERENCES member (seq),
     CONSTRAINT FK_member_TO_trade_review_2 FOREIGN KEY (buyer_seq) REFERENCES member (seq)
 );
+
+ALTER TABLE chat_room
+ADD (code VARCHAR2(8));
+
+ALTER TABLE chat_room
+ADD CONSTRAINT uk_chatroom_code UNIQUE (code);
