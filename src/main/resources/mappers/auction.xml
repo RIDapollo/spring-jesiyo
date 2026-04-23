@@ -5,8 +5,44 @@
 
 <mapper namespace="auction">
 
-    <select id="list" resultType="com.test.jesiyo.auction.dto.AuctionDto">
-        select * from auction order by seq
-    </select> 
+    <select id="list" parameterType="map" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+        SELECT * FROM (
+            SELECT 
+                s.*, 
+                ROWNUM as rnum 
+            FROM (
+                SELECT * FROM auction
+                
+                <where>
+                    <if test="search == 'y'.toString()">
+                        <if test="status != ''">
+                            AND status = #{status}
+                        </if>
+                        <if test="word != ''">
+                            AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
+                        </if>
+                    </if>
+                </where>
+                
+                ORDER BY seq DESC
+            ) s
+        ) 
+        WHERE rnum BETWEEN #{begin} AND #{end}
+    </select>
+    
+    <select id="getTotalCount" parameterType="map" resultType="int">
+        SELECT count(*) 
+        FROM auction
+        <where>
+            <if test="search == 'y'.toString()">
+                <if test="status != ''">
+                    AND status = #{status}
+                </if>
+                <if test="word != ''">
+                    AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
+                </if>
+            </if>
+        </where>
+    </select>
 
 </mapper>

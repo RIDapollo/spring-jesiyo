@@ -1,5 +1,6 @@
 package com.test.jesiyo.auction.repository;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -15,9 +16,14 @@ public class AuctionDao {
 
 	private final SqlSessionTemplate template;
 
-	public List<AuctionDto> list() {
+	public List<AuctionDto> list(HashMap<String, String> map) {
+		
+		return template.selectList("auction.list", map);
+	}
 
-		return template.selectList("auction.list");
+	public int getTotalCount(HashMap<String, String> map) {
+		
+		return template.selectOne("auction.getTotalCount", map);
 	}
 	
 	

@@ -29,27 +29,28 @@
             <button type="submit" class="btn-brand w-24">검색</button>
         </form>
     </div>
-
+    
+    <c:forEach items="${list }" var="dto">
     <div class="flex flex-col gap-4 mb-10">
         
         <article class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row p-4 gap-6" onclick="location.href='/jesiyo/auction/detail.do?id=101'">
             
             <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
-                <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중</span>
-                <img src="https://images.unsplash.com/photo-1544244015-0cd4b3ff569d?q=80&w=400" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중(구현예정)</span>
+                <img src="${dto.image }" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
             </div>
 
             <div class="flex-1 flex flex-col justify-between py-1">
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">디지털기기</span>
+                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">카테고리이름으로 변경예정: ${dto.category_seq}</span>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-1 line-clamp-2">애플워치 SE2 미개봉 경매합니다</h3>
-                    <p class="text-sm text-slate-500">판매자: 믿음직한셀러</p>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 line-clamp-2">${dto.name }</h3>
+                    <p class="text-sm text-slate-500">판매자번호(판매자이름으로 변경예정): ${dto.create_member_seq }</p>
                 </div>
                 <div class="mt-4 md:mt-0 flex flex-col gap-1">
                     <span class="text-xs font-semibold text-slate-400">현재 최고 입찰가</span>
-                    <div class="text-2xl font-black text-slate-900">250,000<span class="text-lg font-bold ml-1">원</span></div>
+                    <div class="text-2xl font-black text-slate-900">250,000(구현예정)<span class="text-lg font-bold ml-1">원</span></div>
                 </div>
             </div>
 
@@ -57,53 +58,20 @@
                 <div class="flex flex-col items-start md:items-end">
                     <span class="text-xs font-bold text-rose-500 mb-1">남은 시간</span>
                     <div class="font-mono text-2xl font-bold text-slate-800 tracking-tight">
-                        ⏳ 04:20:55
+                        ⏳ 04:20:55(구현예정)
                     </div>
                 </div>
                 <div class="mt-0 md:mt-4">
                     <span class="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-sm font-bold text-brand-600">
-                        입찰중 (25만)
+                        상태코드: ${dto.status} / 변경예정
                     </span>
                 </div>
             </div>
         </article>
-
-        <article class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row p-4 gap-6" onclick="location.href='/jesiyo/auction/detail.do?id=102'">
-            <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
-                <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중</span>
-                <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=400" alt="라이카 카메라" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
-            </div>
-
-            <div class="flex-1 flex flex-col justify-between py-1">
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">취미/카메라</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-1 line-clamp-2">라이카 필름 카메라 희귀매물 A급</h3>
-                    <p class="text-sm text-slate-500">판매자: 빈티지수집가</p>
-                </div>
-                <div class="mt-4 md:mt-0 flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-slate-400">현재 최고 입찰가</span>
-                    <div class="text-2xl font-black text-slate-900">1,450,000<span class="text-lg font-bold ml-1">원</span></div>
-                </div>
-            </div>
-
-            <div class="flex flex-row md:flex-col items-center md:items-end justify-between shrink-0 py-2 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-2 md:pl-6 mt-2 md:mt-0 min-w-[160px]">
-                <div class="flex flex-col items-start md:items-end">
-                    <span class="text-xs font-bold text-rose-500 mb-1">남은 시간</span>
-                    <div class="font-mono text-2xl font-bold text-rose-600 tracking-tight animate-pulse">
-                        ⏳ 00:14:30
-                    </div>
-                </div>
-                <div class="mt-0 md:mt-4">
-                    <span class="inline-flex items-center rounded-full bg-point-50 border border-point-200 px-3 py-1 text-sm font-bold text-point-600">
-                        자동입찰중
-                    </span>
-                </div>
-            </div>
-        </article>
-
-        <article class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden cursor-pointer flex flex-col md:flex-row p-4 gap-6 opacity-70" onclick="location.href='/jesiyo/auction/detail.do?id=103'">
+        </c:forEach>
+    
+        <!-- 참고자료 -->
+        <!-- <article class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden cursor-pointer flex flex-col md:flex-row p-4 gap-6 opacity-70" onclick="location.href='/jesiyo/auction/detail.do?id=103'">
             <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
                 <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
                     <span class="text-white font-bold text-lg border-2 border-white px-4 py-1 rounded-md rotate-[-10deg]">낙찰 완료</span>
@@ -138,7 +106,7 @@
                     </span>
                 </div>
             </div>
-        </article>
+        </article> -->
 
     </div>
 

@@ -11,15 +11,15 @@ public class AuctionDto {
 
 	private int seq;
 	private String name;
-	private int bid_open_price;
+	private int bidOpenPrice; 
 	private String image;
-	private String end_date;
+	private String endDate;
 	private String description;
-	private String created_at;
+	private String createdAt;
 	private int status;
 	
-	private int winner_seq;
-	private int create_member_seq;
-	private int category_seq;
+	private int winnerSeq;
+	private int createMemberSeq;
+	private int categorySeq;
 	
 }
