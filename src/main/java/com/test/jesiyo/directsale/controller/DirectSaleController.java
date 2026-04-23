@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.test.jesiyo.category.dto.CategoryDto;
+import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
 import com.test.jesiyo.directsale.service.DirectSaleService;
 
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class DirectSaleController {
 
 	private final DirectSaleService directSaleService;
+	private final CategoryService categoryService;
 	
 	@GetMapping("/directsales")
     public String list(Model model) {
@@ -44,8 +47,12 @@ public class DirectSaleController {
 	@GetMapping("/directsales/new")
 	public String getAddPage(Model model, HttpSession session) {
 
-		Long memberSeq = (Long) session.getAttribute("memberSeq");
-		model.addAttribute("memberSeq", memberSeq);
+		// TODO 로그인 구현 후 주석 풀어야 함
+//		Long memberSeq = (Long) session.getAttribute("memberSeq");
+//		model.addAttribute("memberSeq", memberSeq);
+		
+		List<CategoryDto> roots = categoryService.findRoots();
+		model.addAttribute("roots", roots);
 		
 		return "/directsales/add";
 	}
