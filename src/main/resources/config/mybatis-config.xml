@@ -5,12 +5,12 @@
 
 <!-- src/main/resources > config > mybatis-config.xml -->
 
-<configuration>
-	
-	
-	
-</configuration>
 
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+</configuration>
 
 
 
