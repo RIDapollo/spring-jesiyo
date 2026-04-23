@@ -5,6 +5,8 @@
 
 <mapper namespace="auction">
 
-    
+    <select id="list" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+        select * from auction order by seq
+    </select> 
 
 </mapper>
