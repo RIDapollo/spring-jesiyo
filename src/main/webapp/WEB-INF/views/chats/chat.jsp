@@ -14,7 +14,7 @@
 <%-- 에셋 include --%>
 <%@include file="/WEB-INF/views/inc/asset.jsp"%>
 
-    <style type="text/tailwindcss">
+<style type="text/tailwindcss">
         <%@include file="/WEB-INF/views/inc/chat.css"%>        
     </style>
 </head>
@@ -29,11 +29,10 @@
         <%-- ① 왼쪽: 채팅방 목록 패널 --%>
         <aside class="room-panel">
             <!-- 개인 채팅 -->
-            <button class="btn-add-room">
-                <span style="font-size: 1.1rem; line-height: 1;">+</span>
+            <button class="btn-dm-room">
                 <span>개인 채팅</span>
             </button>
-        
+
             <div class="room-panel-header">
                 <span>채팅방 목록</span>
             </div>
@@ -66,34 +65,41 @@
                 </c:choose>
             </div>
 
-            
+
 
             <%-- 4 채팅방 생성/입장 버튼 --%>
             <button class="btn-add-room">
                 <span style="font-size: 1.1rem; line-height: 1;">+</span>
                 <span>채팅방 만들기 / 입장</span>
             </button>
-            
+
         </aside>
 
         <%-- 2 3 오른쪽: 채팅 메인 영역 --%>
         <main class="chat-main">
 
             <%-- 채팅 헤더 (채팅방 선택 후 노출) --%>
-            <div class="chat-header" id="chatHeader"
-                style="display: none;">
+            <div class="chat-header" id="chatHeader">
                 <span class="hash-icon">#</span> <span
                     id="currentRoomName">채팅방</span> <span
                     style="color: #72767d; font-size: 0.75rem; font-weight: 400; margin-left: 0.5rem;"
                     id="currentRoomDesc"></span>
+
+                <%-- 경매 탭 버튼 --%>
+                <div class="header-actions">
+                    <button class="header-tab-btn">🏬경매</button>
+                </div>
             </div>
 
+
+
             <%-- ② 채팅방 미참여 상태 (환영 메시지) --%>
-            <div class="empty-state" id="emptyState">
+            <!-- 기능구현을 위해 반대로 디스플레이 설정해놓음 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
                 <div class="empty-icon">💬</div>
                 <h3>Jesiyo 채팅에 오신 걸 환영해요!</h3>
-                <p>채팅방을 만들거나, 초대 코드로 기존 채팅방에 입장해보세요. 거래 상대방과 실시간으로
-                    대화할 수 있어요.</p>
+                <p>채팅방을 만들거나, 초대 코드로 기존 채팅방에 입장하세요. 상대방과 실시간으로 대화할 수
+                    있어요.</p>
                 <div class="empty-actions">
                     <button class="btn-primary-discord">채팅방 만들기</button>
                     <button class="btn-secondary-discord">코드로
@@ -101,61 +107,86 @@
                 </div>
             </div>
 
-            <%-- ③ 메시지 목록 영역 (채팅방 선택 후 노출) --%>
-            <div class="messages-area" id="messagesArea"
-                style="display: none;">
-                <div class="msg-date-divider">
-                    <span id="chatDateLabel">오늘</span>
+            <%-- ③ 채팅방 내부 영역 (채팅방 선택 후 노출) --%>
+            <div class="chat-body" id="chatBody" >
+
+                <div class="chat-content-row">
+
+                    <%-- 메시지 목록 --%>
+                    <div class="messages-area" id="messagesArea">
+                        
+
+                        <c:forEach var="msg" items="${messages}">
+                            <div class="msg-group">
+                                <div class="msg-avatar"
+                                    style="background: ${msg.avatarColor};">
+                                    ${msg.authorInitial}</div>
+                                <div class="msg-content">
+                                    <div class="msg-meta">
+                                        <span
+                                            class="msg-author ${msg.isMe ? 'me' : ''}">${msg.authorName}</span>
+                                        <span class="msg-time">${msg.sentTime}</span>
+                                    </div>
+                                    <p class="msg-text">${msg.content}</p>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+
+                    <%-- 우측 유저 리스트 패널 --%>
+                    <aside class="user-panel">
+                        <div class="user-panel-section-label">
+                            참여자 — <span id="userCount">${fn:length(roomUsers)}</span>명
+                        </div>
+                        <div class="user-list">
+                            <c:forEach var="user" items="${roomUsers}">
+                                <div class="user-item">
+                                    <div
+                                        class="user-avatar ${user.isOnline ? 'online' : 'offline'}">
+                                        ${user.initial}</div>
+                                    <div class="user-info">
+                                        <span
+                                            class="user-name ${user.isMe ? 'me' : ''}">${user.nickname}</span>
+                                        <span class="user-status">${user.isOnline ? '온라인' : '오프라인'}</span>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </aside>
+
                 </div>
 
-                <c:forEach var="msg" items="${messages}">
-                    <div class="msg-group">
-                        <div class="msg-avatar"
-                            style="background: ${msg.avatarColor};">
-                            ${msg.authorInitial}</div>
-                        <div class="msg-content">
-                            <div class="msg-meta">
-                                <span
-                                    class="msg-author ${msg.isMe ? 'me' : ''}">${msg.authorName}</span>
-                                <span class="msg-time">${msg.sentTime}</span>
-                            </div>
-                            <p class="msg-text">${msg.content}</p>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
-
-            <%-- 채팅 입력창 (채팅방 선택 후 노출) --%>
-            <div class="chat-input-wrap" id="chatInputWrap"
-                style="display: none;">
-                <div class="chat-input-box">
-                    <button class="chat-input-btn" title="파일 첨부">
-                        <svg width="20" height="20" fill="none"
-                            stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
+                <%-- 채팅 입력창 (채팅방 선택 후 노출) --%>
+                <div class="chat-input-wrap" id="chatInputWrap"
+                    >
+                    <div class="chat-input-box">
+                        <button class="chat-input-btn" title="파일 첨부">
+                            <svg width="20" height="20" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
                         <path
-                                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                                    d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                     </svg>
-                    </button>
+                        </button>
 
-                    <input type="text" class="chat-input"
-                        id="messageInput" placeholder="메시지를 입력하세요..."
-                        maxlength="500" autocomplete="off" />
+                        <input type="text" class="chat-input"
+                            id="messageInput"
+                            placeholder=" 메시지를 입력하세요..." maxlength="500"
+                            autocomplete="off" />
 
-                    <button class="chat-input-btn" title="이모지">
-                        <svg width="20" height="20" fill="none"
-                            stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
+                        <button class="chat-input-btn" title="이모지">
+                            <svg width="20" height="20" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" />
                         <path
-                                d="M8 13s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+                                    d="M8 13s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
                     </svg>
-                    </button>
+                        </button>
 
-                    <button class="btn-send">전송</button>
+                        <button class="btn-send">전송</button>
+                    </div>
                 </div>
-            </div>
-
         </main>
     </div>
 

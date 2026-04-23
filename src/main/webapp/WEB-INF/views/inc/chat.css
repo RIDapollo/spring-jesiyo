@@ -63,6 +63,13 @@
     color: #ff8a3d;
 }
 
+.btn-dm-room { @apply mx-3 mb-1 mt-3 flex items-center justify-center
+    gap-2 py-2 rounded-md text-sm font-bold border-2 border
+    cursor-pointer transition-all;
+    border-color: #3f4147;
+    color: #72767d;
+}
+
 /* 오른쪽 메인 영역 */
 .chat-main { @apply flex flex-col flex-1 overflow-hidden;
     background: #313338;
@@ -75,6 +82,21 @@
     color: #f2f3f5;
     background: #313338;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 헤더 경매 버튼 */
+.chat-header { justify-content: space-between; }
+.header-actions { @apply flex items-center gap-2 ml-auto; }
+.header-tab-btn {
+    @apply flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold cursor-pointer transition-all border;
+    border-color: #3f4147;
+    background: transparent;
+    color: #b5bac1;
+}
+.header-tab-btn:hover {
+    background: rgba(255,138,61,0.15);
+    border-color: #ff8a3d;
+    color: #ff8a3d;
 }
 
 .chat-header .hash-icon {
@@ -122,6 +144,55 @@
 .btn-secondary-discord:hover {
     background: #6d6f78;
 }
+
+/* 채팅 바디 래퍼 */
+.chat-body {
+    @apply flex flex-col flex-1 overflow-hidden;
+}
+.chat-content-row {
+    @apply flex flex-1 overflow-hidden;
+}
+
+/* 우측 유저 패널 */
+.user-panel {
+    @apply flex flex-col gap-1 py-4 overflow-y-auto shrink-0;
+    width: 14rem;
+    background: #2b2d31;
+    border-left: 1px solid #1e1f22;
+    padding-inline: 0.5rem;
+}
+.user-panel-section-label {
+    @apply px-2 mb-2 text-xs font-bold uppercase tracking-widest;
+    color: #80848e;
+}
+.user-list { @apply flex flex-col gap-0.5; }
+.user-item {
+    @apply flex items-center gap-2.5 px-2 py-1.5 rounded-md cursor-pointer transition-all;
+}
+.user-item:hover { background: rgba(255,255,255,0.06); }
+.user-avatar {
+    @apply w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white relative;
+    background: #5865f2;
+}
+.user-avatar::after {
+    content: '';
+    @apply absolute -bottom-px -right-px w-2.5 h-2.5 rounded-full;
+    border: 2px solid #2b2d31;
+}
+.user-avatar.online::after  { background: #23a55a; }
+.user-avatar.offline::after { background: #80848e; }
+.user-info { @apply flex flex-col overflow-hidden; }
+.user-name {
+    @apply text-xs font-semibold truncate;
+    color: #b5bac1;
+}
+.user-name.me { color: #ff8a3d; }
+.user-status { font-size: 0.65rem; color: #72767d; }
+
+/* 유저 패널 스크롤바 */
+.user-panel::-webkit-scrollbar { width: 4px; }
+.user-panel::-webkit-scrollbar-track { background: transparent; }
+.user-panel::-webkit-scrollbar-thumb { background: #1e1f22; border-radius: 2px; }
 
 /* 메시지 목록 */
 .messages-area { @apply flex-1 overflow-y-auto px-4 py-4 flex flex-col
