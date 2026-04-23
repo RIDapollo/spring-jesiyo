@@ -14,7 +14,7 @@
     <h1 class="main-title text-2xl font-bold mb-2 text-slate-900">경매 등록</h1>
     <p class="section-desc text-sm text-slate-500 mb-6">새로운 경매 상품의 정보를 입력해주세요.</p>
     
-    <form action="/jesiyo/auction" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6 bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6">
+    <form action="/jesiyo/auction" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-10 bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6">
         
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리 <span class="text-rose-500">*</span></label>
@@ -34,17 +34,17 @@
                 </div>
             </div>
 
-        <div>
+        <div class="form-group pt-6 border-t border-slate-50">
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 상품 이름 <span class="text-rose-500">*</span></label>
-            <input type="text" name="name" placeholder="경매에 올릴 s품의 이름을 입력해주세요" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
+            <input type="text" name="name" placeholder="경매에 올릴 상품의 이름을 입력해주세요" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
         </div>
 
-        <div>
+        <div class="form-group pt-6 border-t border-slate-50">
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 시작가 설정 (원) <span class="text-rose-500">*</span></label>
             <input type="number" name="bidOpenPrice" placeholder="시작 가격을 입력해주세요" min="0" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
         </div>
 
-        <div>
+        <div class="form-group pt-6 border-t border-slate-50">
             <label class="block text-sm font-semibold text-slate-700 mb-2">상품 이미지 <span class="text-rose-500">*</span></label>
             <input type="file" name="imageFile" id="itemImageInput" accept="image/*" class="file-input file-input-bordered file-input-md w-full focus:border-brand-500" required />
             <p class="text-xs text-slate-400 mt-1">* 상품의 상태를 잘 보여주는 사진 1장을 등록해주세요.</p>
@@ -58,13 +58,13 @@
             </div>
         </div>
 
-        <div>
+        <div class="form-group pt-6 border-t border-slate-50">
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 종료 시간 선택 <span class="text-rose-500">*</span></label>
             <input type="datetime-local" name="endDate" class="input input-bordered w-full focus:border-brand-500 focus:outline-none" required />
             <p class="text-xs text-slate-400 mt-1">* 설정된 시간이 되면 판매자에 의해 경매가 종료되거나 낙찰 처리됩니다.</p>
         </div>
 
-        <div>
+        <div class="form-group pt-6 border-t border-slate-50">
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 상품 설명 <span class="text-rose-500">*</span></label>
             <textarea name="description" rows="6" placeholder="상품의 상태, 구매 시기, 하자가 있는 부분 등 상세한 설명을 작성해주세요." class="textarea textarea-bordered w-full text-base focus:border-brand-500 focus:outline-none" required></textarea>
         </div>
@@ -124,13 +124,12 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         
-        // ----- [기존에 작성된 이미지 미리보기 코드 생략] -----
+        
 
         // ----- [카테고리 동적 연동 로직 시작] -----
         const mainCategory = document.getElementById('mainCategory');
         const subCategory = document.getElementById('subCategory');
 
-        // Context Path 설정 (프로젝트 설정에 따라 변경 필요할 수 있음)
         const contextPath = '/jesiyo'; 
 
         // 1. 페이지 로드 시 대분류(Roots) 가져오기
@@ -159,9 +158,15 @@
             subCategory.disabled = true;
 
             if (parentSeq) {
-                fetch(contextPath + `/api/categories/${parentSeq}/children`)
+            	const url = contextPath + "/api/categories/" + parentSeq + "/children";
+                //console.log("요청 URL:", url); // 2. URL이 올바른지 확인
+
+                fetch(url)
                     .then(response => {
-                        if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
+                        if (!response.ok) {
+                            console.error("서버 응답 에러 코드:", response.status); 
+                            throw new Error('네트워크 응답이 정상이 아닙니다.');
+                        }
                         return response.json();
                     })
                     .then(data => {
