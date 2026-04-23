@@ -40,15 +40,12 @@
             <%-- ① 내가 참여한 채팅방 목록 --%>
             <div class="room-list" id="roomList">
                 <c:choose>
-                    <c:when test="${not empty chatRooms}">
-                        <c:forEach var="room" items="${chatRooms}">
-                            <div
-                                class="room-item ${room.roomId == currentRoomId ? 'active' : ''}">
+                    <c:when test="${not empty list}">
+                        <c:forEach var="room" items="${list}">
+                            <div class="room-item"
+                                data-room-id="${room.seq}">
                                 <span class="room-hash">#</span> <span
-                                    class="truncate">${room.roomName}</span>
-                                <c:if test="${room.unreadCount > 0}">
-                                    <span class="unread-badge">${room.unreadCount}</span>
-                                </c:if>
+                                    class="room-name">${room.title}</span>
                             </div>
                         </c:forEach>
                     </c:when>
@@ -95,7 +92,8 @@
 
             <%-- ② 채팅방 미참여 상태 (환영 메시지) --%>
             <!-- 기능구현을 위해 반대로 디스플레이 설정해놓음 -->
-            <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state" id="emptyState"
+                style="display: none;">
                 <div class="empty-icon">💬</div>
                 <h3>Jesiyo 채팅에 오신 걸 환영해요!</h3>
                 <p>채팅방을 만들거나, 초대 코드로 기존 채팅방에 입장하세요. 상대방과 실시간으로 대화할 수
@@ -108,13 +106,13 @@
             </div>
 
             <%-- ③ 채팅방 내부 영역 (채팅방 선택 후 노출) --%>
-            <div class="chat-body" id="chatBody" >
+            <div class="chat-body" id="chatBody">
 
                 <div class="chat-content-row">
 
                     <%-- 메시지 목록 --%>
                     <div class="messages-area" id="messagesArea">
-                        
+
 
                         <c:forEach var="msg" items="${messages}">
                             <div class="msg-group">
@@ -157,8 +155,7 @@
                 </div>
 
                 <%-- 채팅 입력창 (채팅방 선택 후 노출) --%>
-                <div class="chat-input-wrap" id="chatInputWrap"
-                    >
+                <div class="chat-input-wrap" id="chatInputWrap">
                     <div class="chat-input-box">
                         <button class="chat-input-btn" title="파일 첨부">
                             <svg width="20" height="20" fill="none"
@@ -231,9 +228,19 @@
         </div>
     </div>
 
-    <!-- <script>
-   
-    </script> -->
+    <script>
+        <!-- 채팅방 클릭시 -->   
+        document.querySelectorAll('.room-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.room-item').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    
+    
+    </script> 
 
 </body>
 </html>
