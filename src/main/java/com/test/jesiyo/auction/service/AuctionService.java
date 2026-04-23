@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
 import com.test.jesiyo.auction.dto.MemberDto;
@@ -31,10 +32,14 @@ public class AuctionService {
 		
 		return dao.getMdto(1);
 	}
-
-	public Object add(HashMap<String, Object> map) {
+	
+	@Transactional
+	public void add(HashMap<String, Object> map) {
 		
-		return dao.add(map);
+		//경매마스터 seq먼저 생성
+		dao.addMaster(map);
+		
+		dao.addAuction(map);
 	}
 	
 	

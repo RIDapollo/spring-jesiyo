@@ -33,9 +33,14 @@ public class AuctionDao {
 		return template.selectOne("auction.getMdto", 1);
 	}
 
-	public Object add(HashMap<String, Object> map) {
+	public void addAuction(HashMap<String, Object> map) {
 		
-		return template.insert("auction.add", map);
+		template.insert("auction.addAuction", map);
+	}
+
+	public void addMaster(HashMap<String, Object> map) {
+		
+		template.insert("auction.addMaster", map);
 	}
 	
 	

@@ -18,53 +18,21 @@
         
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리 <span class="text-rose-500">*</span></label>
-            <select name="category" class="select select-bordered w-full focus:border-brand-500 focus:outline-none" required>
-                <option disabled selected value="">카테고리를 선택하세요</option>
-                
-                <optgroup label="전자기기">
-                    <option value="컴퓨터램">컴퓨터램</option>
-                    <option value="cpu">cpu</option>
-                    <option value="그래픽카드">그래픽카드</option>
-                    <option value="핸드폰케이스">핸드폰케이스</option>
-                    <option value="액정필름">액정필름</option>
-                    <option value="카드케이스">카드케이스</option>
-                    <option value="TV벽걸이TV">TV벽걸이TV</option>
-                    <option value="스탠드TV">스탠드TV</option>
-                    <option value="에어컨벽걸이에어컨">에어컨벽걸이에어컨</option>
-                    <option value="스탠드에어컨">스탠드에어컨</option>
-                </optgroup>
-                
-                <optgroup label="생활용품">
-                    <option value="주방용품세제">주방용품세제</option>
-                    <option value="도마">도마</option>
-                    <option value="칼">칼</option>
-                    <option value="주방가위">주방가위</option>
-                    <option value="청소용품청소기">청소용품청소기</option>
-                    <option value="로봇청소기">로봇청소기</option>
-                    <option value="세탁기">세탁기</option>
-                    <option value="건조기">건조기</option>
-                    <option value="스타일러">스타일러</option>
-                </optgroup>
-                
-                <optgroup label="의류/신발">
-                    <option value="상의반팔">상의반팔</option>
-                    <option value="니트">니트</option>
-                    <option value="긴팔">긴팔</option>
-                    <option value="맨투맨">맨투맨</option>
-                    <option value="셔츠">셔츠</option>
-                    <option value="하의청바지">하의청바지</option>
-                    <option value="면바지">면바지</option>
-                    <option value="반바지">반바지</option>
-                    <option value="아우터패딩">아우터패딩</option>
-                    <option value="코트">코트</option>
-                    <option value="후리스">후리스</option>
-                    <option value="후드">후드</option>
-                    <option value="신발슬리퍼">신발슬리퍼</option>
-                    <option value="운동화">운동화</option>
-                    <option value="구두">구두</option>
-                </optgroup>
-            </select>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">대분류 <span class="text-rose-500">*</span></label>
+                    <select id="mainCategory" class="select select-bordered w-full focus:border-brand-500 focus:outline-none" required>
+                        <option disabled selected value="">대분류 선택</option>
+                    </select>
+                </div>
+            
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">소분류 <span class="text-rose-500">*</span></label>
+                    <select id="subCategory" name="categorySeq" class="select select-bordered w-full focus:border-brand-500 focus:outline-none disabled:bg-slate-100" required disabled>
+                        <option disabled selected value="">대분류를 먼저 선택하세요</option>
+                    </select>
+                </div>
+            </div>
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 상품 이름 <span class="text-rose-500">*</span></label>
@@ -152,6 +120,68 @@
                 previewContainer.classList.add('hidden');
             }
         });
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // ----- [기존에 작성된 이미지 미리보기 코드 생략] -----
+
+        // ----- [카테고리 동적 연동 로직 시작] -----
+        const mainCategory = document.getElementById('mainCategory');
+        const subCategory = document.getElementById('subCategory');
+
+        // Context Path 설정 (프로젝트 설정에 따라 변경 필요할 수 있음)
+        const contextPath = '/jesiyo'; 
+
+        // 1. 페이지 로드 시 대분류(Roots) 가져오기
+        fetch(contextPath + '/api/roots')
+            .then(response => {
+                if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
+                return response.json();
+            })
+            .then(data => {
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.seq;     // CategoryDto의 seq
+                    option.text = category.name;     // CategoryDto의 name
+                    mainCategory.appendChild(option);
+                });
+            })
+            .catch(error => console.error('대분류 로드 실패:', error));
+
+
+        // 2. 대분류 선택 시 소분류(Children) 가져오기
+        mainCategory.addEventListener('change', function() {
+            const parentSeq = this.value;
+
+            // 소분류 초기화
+            subCategory.innerHTML = '<option disabled selected value="">소분류 선택</option>';
+            subCategory.disabled = true;
+
+            if (parentSeq) {
+                fetch(contextPath + `/api/categories/${parentSeq}/children`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 하위 카테고리가 있을 경우 옵션 추가 및 활성화
+                        if(data.length > 0) {
+                            data.forEach(category => {
+                                const option = document.createElement('option');
+                                option.value = category.seq;
+                                option.text = category.name;
+                                subCategory.appendChild(option);
+                            });
+                            subCategory.disabled = false; // 소분류 셀렉트박스 활성화
+                        } else {
+                            subCategory.innerHTML = '<option disabled selected value="">하위 카테고리 없음</option>';
+                        }
+                    })
+                    .catch(error => console.error('소분류 로드 실패:', error));
+            }
+        });
+        // ----- [카테고리 동적 연동 로직 끝] -----
     });
 </script>
 </body>
