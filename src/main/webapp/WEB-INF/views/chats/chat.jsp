@@ -1,0 +1,271 @@
+<%@page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="sec"
+    uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채팅 - Jesiyo</title>
+
+<%-- 에셋 include --%>
+<%@include file="/WEB-INF/views/inc/asset.jsp"%>
+
+<style>
+<%@include file="/WEB-INF/views/inc/chat.css"%>
+</style>
+</head>
+<body>
+
+    <%-- 헤더 --%>
+    <%@include file="/WEB-INF/views/inc/header.jsp"%>
+
+    <%-- 채팅 루트 --%>
+    <div class="chat-root">
+
+        <%-- ① 왼쪽: 채팅방 목록 패널 --%>
+        <aside class="room-panel">
+            <!-- 개인 채팅 -->
+            <button class="btn-dm-room">
+                <span>개인 채팅</span>
+            </button>
+
+            <div class="room-panel-header">
+                <span>채팅방 목록</span>
+            </div>
+
+            <%-- ① 내가 참여한 채팅방 목록 --%>
+            <div class="room-list" id="roomList">
+                <c:choose>
+                    <c:when test="${not empty list}">
+                        <c:forEach var="room" items="${list}">
+                            <div class="room-item"
+                                data-room-id="${room.seq}">
+                                <span class="room-hash">#</span> <span
+                                    class="room-name">${room.title}</span>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="px-3 py-4 text-center">
+                            <p class="text-xs leading-relaxed"
+                                style="color: #72767d;">
+                                아직 참여한 채팅방이 없어요.<br> 아래 <span
+                                    style="color: #ff8a3d;">+</span>
+                                버튼으로 만들거나<br> 코드로 입장해보세요!
+                            </p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <%-- ④ 채팅방 생성/입장 버튼 --%>
+            <!-- ✅ FIX 3: roomModal() → openRoomModal() 으로 변경 (ID 충돌 방지) -->
+            <button class="btn-add-room" onclick="openRoomModal()">
+                <span style="font-size: 1.1rem; line-height: 1;">+</span>
+                <span>채팅방 만들기 / 입장</span>
+            </button>
+
+        </aside>
+
+        <%-- ② ③ 오른쪽: 채팅 메인 영역 --%>
+        <main class="chat-main">
+
+            <%-- 채팅 헤더 (채팅방 선택 후 노출) --%>
+            <div class="chat-header" id="chatHeader">
+                <span class="hash-icon">#</span> <span
+                    id="currentRoomName">채팅방</span> <span
+                    style="color: #72767d; font-size: 0.75rem; font-weight: 400; margin-left: 0.5rem;"
+                    id="currentRoomDesc"></span>
+
+                <%-- 경매 탭 버튼 --%>
+                <div class="header-actions">
+                    <button class="header-tab-btn">🏬경매</button>
+                </div>
+            </div>
+
+            <%-- ② 채팅방 미참여 상태 (환영 메시지) --%>
+            <div class="empty-state" id="emptyState"
+                style="display: none;">
+                <div class="empty-icon">💬</div>
+                <h3>Jesiyo 채팅에 오신 걸 환영해요!</h3>
+                <p>채팅방을 만들거나, 초대 코드로 기존 채팅방에 입장하세요. 상대방과 실시간으로 대화할 수
+                    있어요.</p>
+                <div class="empty-actions">
+                    <button class="btn-primary-discord">채팅방 만들기</button>
+                    <button class="btn-secondary-discord">코드로
+                        입장</button>
+                </div>
+            </div>
+
+            <%-- ③ 채팅방 내부 영역 (채팅방 선택 후 노출) --%>
+            <div class="chat-body" id="chatBody">
+
+                <div class="chat-content-row">
+
+                    <%-- 메시지 목록 --%>
+                    <div class="messages-area" id="messagesArea">
+                        <c:forEach var="msg" items="${messages}">
+                            <div class="msg-group">
+                                <div class="msg-avatar"
+                                    style="background: ${msg.avatarColor};">
+                                    ${msg.authorInitial}</div>
+                                <div class="msg-content">
+                                    <div class="msg-meta">
+                                        <span
+                                            class="msg-author ${msg.isMe ? 'me' : ''}">${msg.authorName}</span>
+                                        <span class="msg-time">${msg.sentTime}</span>
+                                    </div>
+                                    <p class="msg-text">${msg.content}</p>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+
+                    <%-- 우측 유저 리스트 패널 --%>
+                    <aside class="user-panel">
+                        <div class="user-panel-section-label">
+                            참여자 — <span id="userCount">${fn:length(roomUsers)}</span>명
+                        </div>
+                        <div class="user-list">
+                            <c:forEach var="user" items="${roomUsers}">
+                                <div class="user-item">
+                                    <div
+                                        class="user-avatar ${user.isOnline ? 'online' : 'offline'}">
+                                        ${user.initial}</div>
+                                    <div class="user-info">
+                                        <span
+                                            class="user-name ${user.isMe ? 'me' : ''}">${user.nickname}</span>
+                                        <span class="user-status">${user.isOnline ? '온라인' : '오프라인'}</span>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </aside>
+
+                </div>
+
+                <%-- 채팅 입력창 --%>
+                <div class="chat-input-wrap" id="chatInputWrap">
+                    <div class="chat-input-box">
+                        <button class="chat-input-btn" title="파일 첨부">
+                            <svg width="20" height="20" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                        <path
+                                    d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                    </svg>
+                        </button>
+
+                        <input type="text" class="chat-input"
+                            id="messageInput"
+                            placeholder=" 메시지를 입력하세요..." maxlength="500"
+                            autocomplete="off" />
+
+                        <button class="chat-input-btn" title="이모지">
+                            <svg width="20" height="20" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path
+                                    d="M8 13s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+                    </svg>
+                        </button>
+
+                        <button class="btn-send">전송</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <%-- 채팅방 생성/입장 모달 --%>
+    <dialog id="roomModal">
+    <h2>채팅방</h2>
+    <p>새 채팅방을 만들거나 코드로 기존 방에 입장하세요.</p>
+
+    <div class="room-modal-tabs">
+        <div class="room-modal-tab active" id="tab-create">채팅방 만들기</div>
+        <div class="room-modal-tab" id="tab-join">코드로 입장</div>
+    </div>
+
+    <div id="form-create">
+        <label class="room-modal-label">채팅방 이름</label>
+        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" />
+        
+        <label class="room-modal-label">카테고리(대분류)</label>
+            <select class="room-modal-select" id="roomCategoryL1">
+            </select>
+        
+        <label class="room-modal-label">최대 인원</label>
+        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
+        
+    </div>
+    
+    <div id="form-join" style="display: none;">
+        <label class="room-modal-label">초대 코드</label>
+        <input type="text" class="room-modal-input" id="joinCode" placeholder="초대 코드 8자리 입력" maxlength="8" />
+    </div>
+
+    <div class="room-modal-footer">
+        <button class="room-modal-cancel" onclick="closeModal()">취소</button>
+        <button class="room-modal-confirm" id="btnModalConfirm">생성</button>
+    </div>
+    </dialog>
+
+    <script>
+    
+        // 채팅방 생성/입장 모달창
+        function openRoomModal() {
+            document.getElementById('roomModal').showModal();
+        }
+        function closeModal() {
+            document.getElementById('roomModal').close();
+        }
+        document.getElementById('roomModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        // 탭 전환
+        document.getElementById('tab-create').addEventListener('click', function() {
+            document.getElementById('tab-create').classList.add('active');
+            document.getElementById('tab-join').classList.remove('active');
+            document.getElementById('form-create').style.display = 'block';
+            document.getElementById('form-join').style.display = 'none';
+            document.getElementById('btnModalConfirm').textContent = '생성';
+        });
+        document.getElementById('tab-join').addEventListener('click', function() {
+            document.getElementById('tab-join').classList.add('active');
+            document.getElementById('tab-create').classList.remove('active');
+            document.getElementById('form-join').style.display = 'block';
+            document.getElementById('form-create').style.display = 'none';
+            document.getElementById('btnModalConfirm').textContent = '입장';
+        });
+        // number 
+        document.getElementById('newRoomDescNum').addEventListener('blur', function() {
+            if (this.value < 20) this.value = 20;
+            if (this.value > 50) this.value = 50;
+        });
+        
+        // 모달 카테고리 불러오기
+        const ctx = '${pageContext.request.contextPath}';
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch(ctx + '/api/roots')
+                .then(response => response.json())
+                .then(function(data) {
+                    const select = document.getElementById('roomCategoryL1');
+                    data.forEach(function(category) {
+                        const option = document.createElement('option');
+                        option.value = category.seq;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                });
+        });
+    
+    </script>
+
+</body>
+</html>
