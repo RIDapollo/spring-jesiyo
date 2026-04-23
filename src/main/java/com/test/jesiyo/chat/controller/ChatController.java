@@ -32,6 +32,11 @@ public class ChatController {
 		model.addAttribute("auth", session.getAttribute("auth"));
 		// 여기까지 세션 임시저장
 		
+		
+		// 로그인 된 사용자의 seq를 가지고 채팅방의 내역을 가져와야함
+		// 채팅방 - 채팅 내역/채팅방의 유저들
+		
+		
 		return "chats/chat";
 	}
 	

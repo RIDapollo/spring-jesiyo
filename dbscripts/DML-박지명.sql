@@ -13,3 +13,13 @@ SELECT * from CATEGORY;
 INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, CATEGORY_SEQ, MEMBER_SEQ, CODE) VALUES (CHAT_ROOM_SEQ.nextval, '윤진석의 전자기기 채팅방', DEFAULT, 50, default, 1, 4, 'aI32IKdw');
 
 select * from CHAT_ROOM;
+
+-- 채팅방 참여자 더미
+insert into CHAT_MEMBER (seq, LAST_READ_MESSAGE, ALARM, STATUS, MEMBER_SEQ, CHAT_ROOM_SEQ) VALUES (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, 4, 2);
+
+
+select * from CHAT_MEMBER;
+
+
+-- 채팅방 채팅 내역 더미
+
