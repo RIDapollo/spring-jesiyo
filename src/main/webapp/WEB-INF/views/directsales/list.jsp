@@ -14,7 +14,7 @@
   <body>
   	<h1>Title</h1>
   	
-    ${list.seq}
+    
   
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script src="https://bit.ly/4cMuheh"></script>
