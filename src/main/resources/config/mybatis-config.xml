@@ -10,5 +10,26 @@
     
     <typeAliases>
         <typeAlias type="com.test.jesiyo.category.dto.CategoryDto" alias="cDto"/>
+        
+        <!-- 채팅관련 dto alias -->
+        <typeAlias type="com.test.jesiyo.chat.dto.ChatLogDto" alias="chatLogDto"/>
+        <typeAlias type="com.test.jesiyo.chat.dto.ChatMemberDto" alias="chatMemberDto"/>
+        <typeAlias type="com.test.jesiyo.chat.dto.ChatRoomDto" alias="chatRoomDto"/>
     </typeAliases>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 </configuration>
