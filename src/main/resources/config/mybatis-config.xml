@@ -3,9 +3,6 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
 
-<!-- src/main/resources > config > mybatis-config.xml -->
-
-
 <configuration>
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
@@ -18,14 +15,3 @@
         <typeAlias type="com.test.jesiyo.location.dto.TradeLocationDto" alias="TradeLocationDto"/>
     </typeAliases>
 </configuration>
-
-
-
-
-
-
-
-
-
-
-

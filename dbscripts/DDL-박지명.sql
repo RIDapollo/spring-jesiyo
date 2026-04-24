@@ -314,13 +314,13 @@ CREATE TABLE direct_message_log (
 );
 
 CREATE TABLE chat_member (
-    Key number NOT NULL,
-    last_read_message number NOT NULL,
+    seq number NOT NULL,
+    last_read_message number NULL,
     alarm number DEFAULT 0 NOT NULL,
     status number DEFAULT 1 NOT NULL,
     member_seq number NOT NULL,
     chat_room_seq number NOT NULL,
-    CONSTRAINT PK_CHAT_MEMBER PRIMARY KEY (Key),
+    CONSTRAINT PK_CHAT_MEMBER PRIMARY KEY (seq),
     CONSTRAINT FK_member_TO_chat_member_1 FOREIGN KEY (member_seq) REFERENCES member (seq),
     CONSTRAINT FK_chat_room_TO_chat_member_1 FOREIGN KEY (chat_room_seq) REFERENCES chat_room (seq)
 );
@@ -381,3 +381,9 @@ CREATE TABLE trade_review (
     CONSTRAINT FK_member_TO_trade_review_1 FOREIGN KEY (seller_seq) REFERENCES member (seq),
     CONSTRAINT FK_member_TO_trade_review_2 FOREIGN KEY (buyer_seq) REFERENCES member (seq)
 );
+
+ALTER TABLE chat_room
+ADD (code VARCHAR2(8));
+
+ALTER TABLE chat_room
+ADD CONSTRAINT uk_chatroom_code UNIQUE (code);
