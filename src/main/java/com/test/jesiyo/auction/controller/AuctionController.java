@@ -82,8 +82,8 @@ public class AuctionController {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-
-	    // 5. 기존 로직 수행 (DB Insert)
+	    
+	    //임시멤버dto
 	    MemberDto mdto = service.getMdto(1);
 	    
 	    HashMap<String, Object> map = new HashMap<String, Object>();

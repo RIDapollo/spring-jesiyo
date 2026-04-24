@@ -58,7 +58,7 @@
             
             <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
                 <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중(구현예정)</span>
-                <img src="${dto.image }" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                <img src="${pageContext.request.contextPath}/resources/image/${dto.image }" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
             </div>
 
             <div class="flex-1 flex flex-col justify-between py-1">
@@ -145,7 +145,7 @@
                     <span class="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-50 border-r border-slate-200 cursor-not-allowed">이전</span>
                 </c:when>
                 <c:otherwise>
-                    <a href="/jesiyo/auction.do?page=${paging.n - 1}${query}" 
+                    <a href="/jesiyo/auction?page=${paging.n - 1}${query}" 
                        class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border-r border-slate-200 transition-colors">이전</a>
                 </c:otherwise>
             </c:choose>
@@ -157,7 +157,7 @@
                             <span class="px-4 py-2 text-sm font-bold bg-slate-800 text-white border-r border-slate-200 z-10 shadow-inner">${i}</span>
                         </c:when>
                         <c:otherwise>
-                            <a href="/jesiyo/auction.do?page=${i}${query}" 
+                            <a href="/jesiyo/auction?page=${i}${query}" 
                                class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-brand-500 hover:text-white border-r border-slate-200 transition-all">${i}</a>
                         </c:otherwise>
                     </c:choose>
@@ -169,7 +169,7 @@
                     <span class="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-50 cursor-not-allowed">다음</span>
                 </c:when>
                 <c:otherwise>
-                    <a href="/jesiyo/auction.do?page=${paging.n + paging.blockSize}${query}" 
+                    <a href="/jesiyo/auction?page=${paging.n + paging.blockSize}${query}" 
                        class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">다음</a>
                 </c:otherwise>
             </c:choose>
