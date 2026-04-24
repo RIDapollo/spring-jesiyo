@@ -14,13 +14,8 @@
                 SELECT * FROM auction
                 
                 <where>
-                    <if test="search == 'y'.toString()">
-                        <if test="categorySeq != ''">
-                            AND categorySeq = #{categorySeq}
-                        </if>
-                        <if test="word != ''">
-                            AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
-                        </if>
+                    <if test="word != null and word != ''">
+                        AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
                     </if>
                 </where>
                 
@@ -34,13 +29,8 @@
         SELECT count(*) 
         FROM auction
         <where>
-            <if test="search == 'y'.toString()">
-                <if test="status != ''">
-                    AND status = #{status}
-                </if>
-                <if test="word != ''">
-                    AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
-                </if>
+            <if test="word != null and word != ''">
+                AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
             </if>
         </where>
     </select>
@@ -82,5 +72,18 @@
             #{dto.categorySeq}
         )
     </insert>
+    
+    <select id="getDetail" parameterType="int" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+        select * from auction where seq = #{_parameter}
+    </select>
+    
+    <select id="getHighestBid" parameterType="int" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+        select a.*,
+           (select max(bid_price)
+            from bid_history b
+            where b.auction_seq = a.seq) as highestBid
+        from auction a
+        where a.seq = #{_parameter}
+    </select>
 
 </mapper>

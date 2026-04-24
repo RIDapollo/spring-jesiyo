@@ -41,6 +41,16 @@ public class AuctionService {
 		
 		dao.addAuction(map);
 	}
+
+	public AuctionDto getDetail(int seq) {
+		
+		return dao.getDetail(seq);
+	}
+
+	public AuctionDto getHighestBid(int seq) {
+		
+		return dao.getHighestBid(seq);
+	}
 	
 	
 }

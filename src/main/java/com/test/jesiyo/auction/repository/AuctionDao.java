@@ -42,6 +42,16 @@ public class AuctionDao {
 		
 		template.insert("auction.addMaster", map);
 	}
+
+	public AuctionDto getDetail(int seq) {
+		
+		return template.selectOne("auction.getDetail", seq);
+	}
+
+	public AuctionDto getHighestBid(int seq) {
+		
+		return template.selectOne("auction.getHighestBid", seq);
+	}
 	
 	
 	

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,15 +30,15 @@ public class AuctionController {
 	
 	@GetMapping(value = "/auction")
 	public String auction(Model model, 
-			@RequestParam(required = false, defaultValue = "") String word, 
-			@RequestParam(required = false, defaultValue = "") String categorySeq, 
+			@RequestParam(required = false, defaultValue = "") String word,
 			@RequestParam(required = false, defaultValue = "1") int page) {
 		
 		HashMap<String, String> map = new HashMap<>();
 		
 		//검색정보
-	    map.put("word", word);
-	    map.put("status", categorySeq);
+		if(!word.trim().isEmpty()) {
+			map.put("word", word);
+		}
 		
 	    int totalCount = service.getTotalCount(map);
 	    
@@ -53,15 +54,29 @@ public class AuctionController {
 	    model.addAttribute("list", list);
 	    model.addAttribute("paging", paging);
 	    model.addAttribute("word", word);
-	    model.addAttribute("categorySeq", categorySeq);
 	    
 	    return "auction/auction-list";
 	}
+	
+	
 	
 	@GetMapping(value = "/auction/add")
 	public String add() {
 		
 		return "auction/auction-add";		
+	}
+	
+	@GetMapping(value = "/auction/{seq}")
+	public String detail(@PathVariable("seq") int seq, Model model) {
+	    
+		AuctionDto dto = service.getDetail(seq);
+		
+		AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
+		
+		model.addAttribute("dto", dto);
+		model.addAttribute("dtoHasHighestBid", dtoHasHighestBid);
+		
+	    return "auction/auction-detail";
 	}
 		
 	@PostMapping(value = "/auction")
