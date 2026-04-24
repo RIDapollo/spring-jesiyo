@@ -20,7 +20,7 @@ public class ChatController {
 
 	private final ChatService chatService;
 	
-	@GetMapping(value = "/chat.do")
+	@GetMapping(value = "/chat")
 	public String chat(Model model, HttpSession session) {
 		
 		// 세션 임시 저장용 (회원 기능 구현하면 삭제)

@@ -199,6 +199,15 @@
         <label class="room-modal-label">카테고리(대분류)</label>
             <select class="room-modal-select" id="roomCategoryL1">
             </select>
+       <label class="room-modal-label">카테고리(중분류)</label>
+            <select class="room-modal-select" id="roomCategoryL2">
+            	<option value="null">선택 없음</option>
+            </select>
+       <label class="room-modal-label">카테고리(소분류)</label>
+            <select class="room-modal-select" id="roomCategoryL3">
+            	<option value="null">선택 없음</option>
+            </select>
+            
         
         <label class="room-modal-label">최대 인원</label>
         <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
@@ -250,20 +259,89 @@
         });
         
         // 모달 카테고리 불러오기
-        const ctx = '${pageContext.request.contextPath}';
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch(ctx + '/api/roots')
-                .then(response => response.json())
-                .then(function(data) {
-                    const select = document.getElementById('roomCategoryL1');
-                    data.forEach(function(category) {
-                        const option = document.createElement('option');
-                        option.value = category.seq;
-                        option.textContent = category.name;
-                        select.appendChild(option);
-                    });
-                });
-        });
+        // 페이지 로드 시 실행
+		document.addEventListener('DOMContentLoaded', function() {
+		    loadCategoryL1();
+		});
+		
+		function loadCategoryL1() {
+		    fetch('http://localhost:8080/jesiyo/api/roots')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL1');
+		            select.innerHTML = '<option value="">-- 선택하세요 --</option>';
+		
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;    // JSON 필드명 확인 필요
+		                option.textContent = item.name; // JSON 필드명 확인 필요
+		                select.appendChild(option);
+		            });
+		        });
+		}
+		
+		// 대분류 변경 시 중분류 코드
+		document.getElementById('roomCategoryL1').addEventListener('change', function() {
+		    const l1Seq = this.value;
+
+		    resetSelect('roomCategoryL2');
+		    resetSelect('roomCategoryL3');
+
+		    if (!l1Seq || l1Seq === "" || l1Seq === "null") return;
+
+		    fetch('http://localhost:8080/jesiyo/api/categories/' + l1Seq +'/children')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL2');
+
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;
+		                option.textContent = item.name;
+		                select.appendChild(option);
+		            });
+		        });
+		});
+		
+		// 중분류 변경 시 소분류 로드
+		document.getElementById('roomCategoryL2').addEventListener('change', function() {
+		    const l2Seq = this.value;
+
+		    resetSelect('roomCategoryL3');
+
+		    if (!l2Seq || l2Seq === "" || l2Seq === "null") return;
+
+		    fetch('http://localhost:8080/jesiyo/api/categories/' + l2Seq +'/children')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL3');
+
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;
+		                option.textContent = item.name;
+		                select.appendChild(option);
+		            });
+		        });
+		});
+		
+		// 공통 초기화
+		function resetSelect(selectId) {
+		    const select = document.getElementById(selectId);
+		    select.innerHTML = '<option value="null">선택 없음</option>';
+		}
+		
+		
+		// 저장
+		function getRoomCategorySeq() {
+		    const l3 = document.getElementById('roomCategoryL3').value;
+		    const l2 = document.getElementById('roomCategoryL2').value;
+		    const l1 = document.getElementById('roomCategoryL1').value;
+
+		    if (l3 && l3 !== 'null') return l3;
+		    if (l2 && l2 !== 'null') return l2;
+		    return l1;
+		}
     
     </script>
 
