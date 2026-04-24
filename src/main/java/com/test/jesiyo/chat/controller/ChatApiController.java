@@ -16,7 +16,7 @@ public class ChatApiController {
 	
 	private final ChatRoomService chatRoomService;
 	
-	@PostMapping("/room") // HTTP 표준 상태코드(200/400/500)로 성공·실패를 표현하기 위해 사용
+	@PostMapping("/chat/room") // HTTP 표준 상태코드(200/400/500)로 성공·실패를 표현하기 위해 사용
 	public ResponseEntity<?> add(@RequestBody ChatRoomDto dto){
 		
 		try {

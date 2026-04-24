@@ -346,17 +346,42 @@
 		}
 		
 		// btnModalConfirm 클릭시 생성/입장
-		btnModalConfirm.addEventListener('click', function() => {
-			const actino = this.textContext.trim();
+		btnModalConfirm.addEventListener('click', function() {
+			const action = this.textContent.trim();
 			
 			if(action === '생성'){
 				createRoom();
-			} esle if(action === '입장'){
-				joinRomm();
+			} else if(action === '입장'){
+				joinRoom();
 			}
 			
 		});
 		
+		// 방입장
+		function createRoom(){
+			const dto = {
+			        title: document.getElementById('newRoomName').value,
+			        maxMemberCnt: document.getElementById('newRoomDescNum').value,
+			        categorySeq: getRoomCategorySeq(), // 카테고리를 정하는 함수
+			        memberSeq: ${sessionScope.auth.seq}, // 로그인한 유저 seq (세션에서 가져와야 함)
+			};
+			fetch('http://localhost:8080/jesiyo/chat/room', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify(dto)
+		    })
+		    .then(res => {
+		        if (res.ok) {
+		            alert('채팅방이 생성되었습니다!');
+		            closeModal();       // 모달 닫기
+		            loadRoomList();     // 방 목록 새로고침
+		        } else {
+		            alert('채팅방 생성에 실패했습니다.');
+		        }
+		    });
+			
+			
+		};
 		
 		
 		
