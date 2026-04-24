@@ -2,6 +2,7 @@ package com.test.jesiyo.auction.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,27 @@ public class AuctionService {
 	public AuctionDto getHighestBid(int seq) {
 		
 		return dao.getHighestBid(seq);
+	}
+
+	public Map<String, Object> bid(Map<String, Object> map) {
+		
+		Map<String, Object> result = new HashMap<>();
+
+	    int insertResult = dao.bid(map);
+
+	    if (insertResult == 1) {
+
+	        int seq = (int) map.get("seq");
+	        AuctionDto highestBid = dao.getHighestBid(seq);
+
+	        result.put("success", true);
+	        result.put("highestBid", highestBid);
+
+	    } else {
+	        result.put("success", false);
+	    }
+
+	    return result;
 	}
 	
 	

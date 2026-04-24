@@ -85,5 +85,10 @@
         from auction a
         where a.seq = #{_parameter}
     </select>
+    
+    <insert id="bid" parameterType="map">
+        insert into bid_history (seq, bid_price, bid_time, status, member_seq, auction_seq) 
+            values (bid_history_seq.nextVal, #{bidPrice}, default, 0, #{memberSeq}, #{seq})
+    </insert>
 
 </mapper>
