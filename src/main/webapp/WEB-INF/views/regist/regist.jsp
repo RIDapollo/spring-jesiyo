@@ -31,7 +31,7 @@
 </head>
 <body class="bg-[#F8FAFC] text-slate-900 m-0 p-0">
 
-    <%@ include file="/WEB-INF/views/inc/nav.jsp" %>
+    <%@ include file="/WEB-INF/views/inc/header.jsp" %>
 
     <div class="w-full min-h-[calc(100vh-80px)] flex justify-center items-center px-4 py-12">
         
