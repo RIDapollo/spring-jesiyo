@@ -253,7 +253,7 @@
                 submitBtn.disabled = true;
                 submitBtn.innerText = '처리중...';
 
-                const response = await fetch('/auction/bid', {
+                const response = await fetch('${pageContext.request.contextPath}/auction/bid', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -318,7 +318,7 @@
         async function fetchLatestAuctionData() {
             try {
                 // 이 API는 Spring Controller에 @GetMapping("/auction/latestData") 로 구현되어 있어야 합니다.
-                const response = await fetch(`/auction/latestData?seq=\${auctionSeq}`);
+                const response = await fetch(`${pageContext.request.contextPath}/auction/latestData?seq=\${auctionSeq}`);
                 if (response.ok) {
                     const data = await response.json();
                     
