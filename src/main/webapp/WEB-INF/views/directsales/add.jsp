@@ -152,6 +152,8 @@
                 </button>
             </div>
     
+            <input type="hidden" name="sellerSeq" value="${sellerSeq}">
+            
         </form>
     </div>
    

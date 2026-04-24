@@ -1,6 +1,8 @@
 package com.test.jesiyo.directsale.controller;
 
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
@@ -52,9 +54,11 @@ public class DirectSaleController {
 		// TODO 로그인 구현 후 주석 풀어야 함
 //		Long memberSeq = (Long) session.getAttribute("memberSeq");
 //		model.addAttribute("memberSeq", memberSeq);
+		model.addAttribute("sellerSeq", "1");
 		
 		List<CategoryDto> roots = categoryService.findRoots();
 		model.addAttribute("roots", roots);
+		
 		
 		return "/directsales/add";
 	}
@@ -64,8 +68,42 @@ public class DirectSaleController {
 							 @RequestParam("imageFile") MultipartFile imageFile) {
 
 //	    String imageUrl = fileService.upload(imageFile);
-		String imageUrl = "test";
-		dto.setImageUrl(imageUrl);
+		String uploadPath = "C:/dev/upload";
+
+		// 사진파일 경로로 바꾸기
+		try {
+		    if (imageFile != null && !imageFile.isEmpty()) {
+
+		        // 1. 폴더 없으면 생성
+		        File folder = new File(uploadPath);
+		        if (!folder.exists()) {
+		            folder.mkdirs();
+		        }
+
+		        // 2. 원본 파일명 + 확장자 추출
+		        String originalName = imageFile.getOriginalFilename();
+		        String ext = "";
+
+		        if (originalName != null && originalName.contains(".")) {
+		            ext = originalName.substring(originalName.lastIndexOf("."));
+		        }
+
+		        // 3. UUID 파일명 생성
+		        String saveName = UUID.randomUUID().toString() + ext;
+
+		        // 4. 실제 파일 저장
+		        File saveFile = new File(uploadPath, saveName);
+		        imageFile.transferTo(saveFile);
+
+		        // 5. DB에는 URL 저장 (핵심)
+		        String imageUrl = "/upload/" + saveName;
+		        dto.setImageUrl(imageUrl);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
+//		String imageUrl = "test";
 		
 		DirectSaleDto result = directSaleService.add(dto);
 		
