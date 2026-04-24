@@ -3,6 +3,7 @@ package com.test.jesiyo.auction.controller;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
@@ -27,17 +31,18 @@ public class AuctionController {
 	
 	private final AuctionService service;
 	
+	//목록조회+검색목록조회
 	@GetMapping(value = "/auction")
 	public String auction(Model model, 
-			@RequestParam(required = false, defaultValue = "") String word, 
-			@RequestParam(required = false, defaultValue = "") String categorySeq, 
+			@RequestParam(required = false, defaultValue = "") String word,
 			@RequestParam(required = false, defaultValue = "1") int page) {
 		
 		HashMap<String, String> map = new HashMap<>();
 		
 		//검색정보
-	    map.put("word", word);
-	    map.put("status", categorySeq);
+		if(!word.trim().isEmpty()) {
+			map.put("word", word);
+		}
 		
 	    int totalCount = service.getTotalCount(map);
 	    
@@ -53,17 +58,33 @@ public class AuctionController {
 	    model.addAttribute("list", list);
 	    model.addAttribute("paging", paging);
 	    model.addAttribute("word", word);
-	    model.addAttribute("categorySeq", categorySeq);
 	    
 	    return "auction/auction-list";
 	}
 	
+	
+	//등록화면
 	@GetMapping(value = "/auction/add")
 	public String add() {
 		
 		return "auction/auction-add";		
 	}
+	
+	//상세화면
+	@GetMapping(value = "/auction/{seq}")
+	public String detail(@PathVariable("seq") int seq, Model model) {
+	    
+		AuctionDto dto = service.getDetail(seq);
 		
+		AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
+		
+		model.addAttribute("dto", dto);
+		model.addAttribute("dtoHasHighestBid", dtoHasHighestBid);
+		
+	    return "auction/auction-detail";
+	}
+	
+	//등록
 	@PostMapping(value = "/auction")
 	public String add(AuctionDto dto, MultipartFile imageFile, HttpServletRequest req) {
 	    
@@ -99,6 +120,27 @@ public class AuctionController {
 	    service.add(map);
 	    
 	    return "redirect:/auction";
+	}
+	
+	@PostMapping(value = "/auction/bid")
+	@ResponseBody
+	public Map<String, Object> bid(@RequestBody Map<String, Object> map) {
+		
+		int seq = Integer.parseInt(map.get("seq").toString());
+	    int bidPrice = Integer.parseInt(map.get("bidPrice").toString());
+	    
+	    //임시멤버dto
+	    MemberDto mdto = service.getMdto(1);
+	    
+	    Map<String, Object> paramMap = new HashMap<>();
+	    
+	    paramMap.put("seq", seq);
+	    paramMap.put("bidPrice", bidPrice);
+	    paramMap.put("memberSeq", mdto.getSeq());
+	    
+	    Map<String, Object> result = service.bid(paramMap);
+
+	    return result;
 	}
 	
 }

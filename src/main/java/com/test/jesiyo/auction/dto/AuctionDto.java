@@ -22,4 +22,5 @@ public class AuctionDto {
 	private int createMemberSeq;
 	private int categorySeq;
 	
+	private int highestBid;
 }

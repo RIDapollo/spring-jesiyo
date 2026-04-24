@@ -5,9 +5,17 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="chat-member">
+
+	<!-- 임시 -->
     <select id="temp" parameterType="String" resultType="com.test.jesiyo.chat.dto.MemberDto">
         select * from member where seq = #{_prameter}
     </select>
+    
+    <!-- 채팅방 만든후 방장 처리 -->
+    <insert id="addMember" parameterType="chatRoomDto">
+ 		insert into CHAT_MEMBER (seq, LAST_READ_MESSAGE, ALARM, STATUS, MEMBER_SEQ, CHAT_ROOM_SEQ) 
+ 		VALUES (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, #{memberSeq}, #{seq})
+    </insert>
     
 
 </mapper>
