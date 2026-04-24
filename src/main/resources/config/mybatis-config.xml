@@ -15,6 +15,9 @@
         <typeAlias type="com.test.jesiyo.chat.dto.ChatLogDto" alias="chatLogDto"/>
         <typeAlias type="com.test.jesiyo.chat.dto.ChatMemberDto" alias="chatMemberDto"/>
         <typeAlias type="com.test.jesiyo.chat.dto.ChatRoomDto" alias="chatRoomDto"/>
+        <typeAlias type="com.test.jesiyo.directsale.dto.DirectSaleDto" alias="DirectSaleDto"/>
+        <typeAlias type="com.test.jesiyo.location.dto.LocationDto" alias="LocationDto"/>
+        <typeAlias type="com.test.jesiyo.location.dto.TradeLocationDto" alias="TradeLocationDto"/>
     </typeAliases>
     
     
