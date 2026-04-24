@@ -9,7 +9,7 @@
     <header class="main-header">
         <div class="header-inner">
             <div class="header-left">
-                <a href="${pageContext.request.contextPath}/" class="logo">Jesiyo</a>
+                <a href="${pageContext.request.contextPath}/index" class="logo">Jesiyo</a>
                 <nav class="main-nav">
                     <a href="#">채팅방</a>
                     <a href="#">중고 거래</a>
@@ -21,8 +21,8 @@
                 <c:choose>
                     <%-- 로그아웃 상태 --%>
                     <c:when test="${empty sessionScope.user}">
-                        <a href="${pageContext.request.contextPath}/regist" class="auth-link">회원가입</a>
-                        <a href="${pageContext.request.contextPath}/login" class="auth-link">로그인</a>
+                        <a href="${pageContext.request.contextPath}/member/regist" class="auth-link">회원가입</a>
+                        <a href="${pageContext.request.contextPath}/member/login" class="auth-link">로그인</a>
                     </c:when>
                     
                     <%-- 로그인 상태 --%>
