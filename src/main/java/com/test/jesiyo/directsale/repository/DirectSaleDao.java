@@ -30,8 +30,11 @@ public class DirectSaleDao {
     public int update(DirectSaleDto dto) {
         return template.update("directsale.update", dto);
     }
-
+    
     public int delete(Long seq) {
         return template.delete("directsale.delete", seq);
+    }
+    public List<DirectSaleDto> getSaleList() {
+        return template.selectList("directsale.getSaleList");
     }
 }

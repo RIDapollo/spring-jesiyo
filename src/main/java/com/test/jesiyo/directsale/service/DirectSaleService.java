@@ -38,4 +38,8 @@ public class DirectSaleService {
     public int update(DirectSaleDto dto) {
         return dao.update(dto);
     }
+    
+    public List<DirectSaleDto> getSaleList() {
+        return dao.getSaleList();
+    }
 }
