@@ -35,5 +35,19 @@
         DELETE FROM direct_sale
         WHERE seq = #{seq}
     </delete>
-
+	
+	<select id="getListByPage" parameterType="map" resultType="DirectSaleDto">
+	    SELECT
+	        ds.seq, ds.name, ds.product_name AS productName,
+	        ds.price, ds.image_url AS imageUrl, ds.status,
+	        tl.dong, tl.lat, tl.lng, m.name AS sellerName, ds.created_at AS createdAt
+	    FROM direct_sale ds
+	    JOIN member m
+	    	ON ds.seller_seq = m.seq
+	    LEFT JOIN trade_location tl
+	        ON ds.trade_location_seq = tl.seq
+	    ORDER BY ds.seq DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
 </mapper>
