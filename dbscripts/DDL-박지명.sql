@@ -328,6 +328,9 @@ CREATE TABLE chat_member (
 COMMENT ON COLUMN chat_member.last_read_message IS '테이블X논리적인 외래키(채팅방 내역의 seq)';
 COMMENT ON COLUMN chat_member.alarm IS '0:알림 무시 상태 / 1: 알림을 받는 상태';
 COMMENT ON COLUMN chat_member.status IS '0:상시오프라인/1:온라인/2:다른일/3:오프라인';
+ALTER TABLE chat_member
+ADD CONSTRAINT UK_chat_room_member UNIQUE (chat_room_seq, member_seq);
+
 
 CREATE TABLE live_bid_history (
     seq number NOT NULL,
