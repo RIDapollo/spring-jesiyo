@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- XML Mapper -->
+<mapper namespace="tradeLocation">
+
+	<insert id="add">
+		<selectKey keyProperty="seq" resultType="long" order="BEFORE">
+	        select trade_location_seq.nextval from dual
+	    </selectKey>
+	
+		insert into trade_location (seq, dong, lat, lng)
+		values (#{seq}, #{dong}, #{lat}, #{lng})
+	</insert>
+	
+	<select id="findBySeq" parameterType="long"
+	        resultType="com.test.jesiyo.location.dto.TradeLocationDto">
+		select *
+		from trade_location
+		where seq = #{seq}
+	</select>
+	
+	<select id="findByDong" parameterType="string"
+	        resultType="com.test.jesiyo.location.dto.TradeLocationDto">
+		select *
+		from trade_location
+		where dong = #{dong}
+	</select>
+
+</mapper>

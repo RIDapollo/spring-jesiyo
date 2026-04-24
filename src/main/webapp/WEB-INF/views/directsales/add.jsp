@@ -34,7 +34,7 @@
       <h1 class="section-title">내 물건 팔기</h1>
       <p class="section-desc">동네 이웃과 나눌 물건의 정보를 입력해주세요.</p>
     
-        <form action="/directsales" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6">
+        <form action="/jesiyo/directsales" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6">
             <!-- 상품명 -->
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">상품명 <span class="text-rose-500">*</span></label>
@@ -152,6 +152,8 @@
                 </button>
             </div>
     
+            <input type="hidden" name="sellerSeq" value="${sellerSeq}">
+            
         </form>
     </div>
    
@@ -299,6 +301,8 @@
                 return;
             }
 
+            
+            
             fetch('/jesiyo/api/trade-locations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -307,6 +311,8 @@
             .then(res => res.json())
             .then(data => {
 
+            	console.log(data.seq);
+            	
                 document.getElementById('tradeLocationSeq').value = data.seq;
                 alert("거래 위치 설정 완료!");
             });
