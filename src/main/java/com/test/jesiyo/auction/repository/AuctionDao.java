@@ -2,6 +2,7 @@ package com.test.jesiyo.auction.repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -41,6 +42,21 @@ public class AuctionDao {
 	public void addMaster(HashMap<String, Object> map) {
 		
 		template.insert("auction.addMaster", map);
+	}
+
+	public AuctionDto getDetail(int seq) {
+		
+		return template.selectOne("auction.getDetail", seq);
+	}
+
+	public AuctionDto getHighestBid(int seq) {
+		
+		return template.selectOne("auction.getHighestBid", seq);
+	}
+
+	public int bid(Map<String, Object> map) {
+		
+		return template.insert("auction.bid", map);
 	}
 	
 	
