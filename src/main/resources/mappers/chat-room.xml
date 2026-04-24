@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="chat-room">
+	
+	<select id="checkCode" parameterType="String" resultType="int">
+		select count(*) from chat_room where = #{_parameter}
+	</select>
+	
+	
+	<insert id="add" parameterType="chatRoomDto">
+		INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, CATEGORY_SEQ, MEMBER_SEQ, CODE) 
+		VALUES (CHAT_ROOM_SEQ.nextval, #{title}, DEFAULT, #{maxMemberCnt}, default, @{categorySeq}, #{memberSeq}, #{code});
+	</insert>
+
+</mapper>

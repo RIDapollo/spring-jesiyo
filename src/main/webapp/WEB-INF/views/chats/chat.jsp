@@ -227,6 +227,9 @@
 
     <script>
     
+    	// 채팅방 생성/입장 버
+    	const btnModalConfirm = document.getElementById('btnModalConfirm');
+    
         // 채팅방 생성/입장 모달창
         function openRoomModal() {
             document.getElementById('roomModal').showModal();
@@ -243,14 +246,14 @@
             document.getElementById('tab-join').classList.remove('active');
             document.getElementById('form-create').style.display = 'block';
             document.getElementById('form-join').style.display = 'none';
-            document.getElementById('btnModalConfirm').textContent = '생성';
+            btnModalConfirm.textContent = '생성';
         });
         document.getElementById('tab-join').addEventListener('click', function() {
             document.getElementById('tab-join').classList.add('active');
             document.getElementById('tab-create').classList.remove('active');
             document.getElementById('form-join').style.display = 'block';
             document.getElementById('form-create').style.display = 'none';
-            document.getElementById('btnModalConfirm').textContent = '입장';
+            btnModalConfirm.textContent = '입장';
         });
         // number 
         document.getElementById('newRoomDescNum').addEventListener('blur', function() {
@@ -269,8 +272,7 @@
 		        .then(res => res.json())
 		        .then(data => {
 		            const select = document.getElementById('roomCategoryL1');
-		            select.innerHTML = '<option value="">-- 선택하세요 --</option>';
-		
+
 		            data.forEach(item => {
 		                const option = document.createElement('option');
 		                option.value = item.seq;    // JSON 필드명 확인 필요
@@ -342,6 +344,22 @@
 		    if (l2 && l2 !== 'null') return l2;
 		    return l1;
 		}
+		
+		// btnModalConfirm 클릭시 생성/입장
+		btnModalConfirm.addEventListener('click', function() => {
+			const actino = this.textContext.trim();
+			
+			if(action === '생성'){
+				createRoom();
+			} esle if(action === '입장'){
+				joinRomm();
+			}
+			
+		});
+		
+		
+		
+		
     
     </script>
 
