@@ -20,6 +20,14 @@
             value="jdbc:oracle:thin:@xhvnup5lje1tl88s_high?TNS_ADMIN=${wallet.path}"></property>
         <property name="username" value="${db.username}"></property>
         <property name="password" value="${db.password}"></property>
+        
+        <!-- 개발시 DB연결 끊김 문제 설정 -->
+        <property name="connectionTestQuery" value="SELECT 1 FROM DUAL"/>
+	    <property name="validationTimeout" value="3000"/>
+	
+	    <property name="maxLifetime" value="1800000"/>
+	    <property name="idleTimeout" value="600000"/>
+	    <property name="keepaliveTime" value="300000"/>
     </bean>
 
     <!-- 커넥션 풀 > DataSource -->
