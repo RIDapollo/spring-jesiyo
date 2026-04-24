@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
 import com.test.jesiyo.directsale.repository.DirectSaleDao;
+import com.test.jesiyo.directsale.util.TimeUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +41,16 @@ public class DirectSaleService {
     }
     
     public List<DirectSaleDto> getSaleList() {
-        return dao.getSaleList();
+        List<DirectSaleDto> list = dao.getSaleList();
+
+        // 중고거래 등록 시간과 현재 시간 차이 구하기
+		list.forEach(
+			item -> item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
+		);
+        
+        return list;
     }
+    
+    
+    
 }

@@ -39,7 +39,8 @@
               <!-- 동네 + 추가정보 -->
               <div class="item-meta">
                   ${not empty item.dong ? item.dong.concat(' · ') : ''}
-                  <fmt:formatDate value="${item.createdAt}" pattern="M월 d일" />
+<%--                   <fmt:formatDate value="${item.createdAt}" pattern="M월 d일" /> --%>
+                  ${item.timeAgo}
               </div>
             </div>
           </article>

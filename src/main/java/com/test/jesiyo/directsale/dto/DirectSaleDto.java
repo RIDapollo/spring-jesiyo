@@ -26,4 +26,5 @@ public class DirectSaleDto {
     private Double lat;
     private Double lng;
     private String sellerName;
+    private String timeAgo;
 }
