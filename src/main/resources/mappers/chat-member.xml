@@ -14,7 +14,7 @@
     <!-- 채팅방 만든후 방장 처리 -->
     <insert id="addMember" parameterType="chatRoomDto">
  		insert into CHAT_MEMBER (seq, LAST_READ_MESSAGE, ALARM, STATUS, MEMBER_SEQ, CHAT_ROOM_SEQ) 
- 		VALUES (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, #{memberSeq}, #{seq});   
+ 		VALUES (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, #{memberSeq}, #{seq})
     </insert>
     
 
