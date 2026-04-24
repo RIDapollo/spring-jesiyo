@@ -27,7 +27,7 @@ public class ChatController {
 		if(session.getAttribute("loginUser")==null) {
 			MemberDto member = new MemberDto();
 			
-			member = chatService.findBySeq("4");
+			member = chatService.findBySeq("3");
 			
 			session.setAttribute("auth", member);
 		}

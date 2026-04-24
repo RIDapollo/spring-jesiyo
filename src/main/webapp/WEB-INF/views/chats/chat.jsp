@@ -39,27 +39,6 @@
 
             <%-- ① 내가 참여한 채팅방 목록 --%>
             <div class="room-list" id="roomList">
-                <!--<c:choose>
-                    <c:when test="${not empty list}">
-                        <c:forEach var="room" items="${list}">
-                            <div class="room-item"
-                                data-room-id="${room.seq}">
-                                <span class="room-hash">#</span> <span
-                                    class="room-name">${room.title}</span>
-                            </div>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="px-3 py-4 text-center">
-                            <p class="text-xs leading-relaxed"
-                                style="color: #72767d;">
-                                아직 참여한 채팅방이 없어요.<br> 아래 <span
-                                    style="color: #ff8a3d;">+</span>
-                                버튼으로 만들거나<br> 코드로 입장해보세요!
-                            </p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>-->
             </div>
 
             <%-- ④ 채팅방 생성/입장 버튼 --%>
@@ -75,7 +54,7 @@
         <main class="chat-main">
 
             <%-- 채팅 헤더 (채팅방 선택 후 노출) --%>
-            <div class="chat-header" id="chatHeader">
+            <div class="chat-header" id="chatHeader" style="display: none;">
                 <span class="hash-icon">#</span> <span
                     id="currentRoomName">채팅방</span> <span
                     style="color: #72767d; font-size: 0.75rem; font-weight: 400; margin-left: 0.5rem;"
@@ -88,8 +67,7 @@
             </div>
 
             <%-- ② 채팅방 미참여 상태 (환영 메시지) --%>
-            <div class="empty-state" id="emptyState"
-                style="display: none;">
+            <div class="empty-state" id="emptyState">
                 <div class="empty-icon">💬</div>
                 <h3>Jesiyo 채팅에 오신 걸 환영해요!</h3>
                 <p>채팅방을 만들거나, 초대 코드로 기존 채팅방에 입장하세요. 상대방과 실시간으로 대화할 수
@@ -102,7 +80,7 @@
             </div>
 
             <%-- ③ 채팅방 내부 영역 (채팅방 선택 후 노출) --%>
-            <div class="chat-body" id="chatBody">
+            <div class="chat-body" id="chatBody" style="display: none;">
 
                 <div class="chat-content-row">
 
@@ -242,7 +220,7 @@
      	                // 데이터가 있을 경우
      	                list.forEach(room => {
      	                    const roomHtml = `
-     	                        <div class="room-item" data-room-id="\${room.seq}" onclick="enterRoom(\${room.seq})">
+     	                        <div class="room-item" data-room-id="\${room.seq}">
      	                            <span class="room-hash">#</span> 
      	                            <span class="room-name">\${room.title}</span>
      	                        </div>
@@ -436,12 +414,31 @@
 		        }
 		    });
 			
-			
 		};
 		
+		// 채팅방 선택 처리
+		document.getElementById('roomList').addEventListener('click', function(e) {
+		    // 클릭된 요소 또는 가장 가까운 .room-item 찾기
+		    const roomItem = e.target.closest('.room-item');
+		    
+		    if (!roomItem) return; // room-item이 아닌 곳 클릭 시 무시
 		
-		
-    
+		    const roomId = roomItem.dataset.roomId; // data-room-id 값 읽기 dataset.roomId로 접근 (data-room-id -> roomId로 자동 변환됨)
+		    enterRoom(roomId);
+		});
+			
+		function enterRoom(roomId){
+			const roomSeq = roomId;
+			
+			document.getElementById('emptyState').style.display = 'none';
+			
+			
+			
+			
+		}
+				
+				
+		    
     </script>
 
 </body>
