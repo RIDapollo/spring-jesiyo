@@ -33,9 +33,12 @@ public class DirectSaleController {
 	@GetMapping("/direct-sales")
     public String list(Model model) {
 
-        List<DirectSaleDto> list = directSaleService.getSaleList();
+		int page = 0;
+	    int pageSize = 12;
+		
+        List<DirectSaleDto> list = directSaleService.getListByPage(page);
         model.addAttribute("list", list);
-
+        
         return "/direct-sales/list";
     }
 	
