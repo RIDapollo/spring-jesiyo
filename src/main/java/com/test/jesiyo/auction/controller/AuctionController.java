@@ -67,17 +67,23 @@ public class AuctionController {
 	@PostMapping(value = "/auction")
 	public String add(AuctionDto dto, MultipartFile imageFile, HttpServletRequest req) {
 	    
-	    String path = req.getServletContext().getRealPath("/resources/image");
+		String path = "C:/dev/upload";
 	    
 	    try {
 	        if (imageFile != null && !imageFile.isEmpty()) {
+	        	
+	        	File folder = new File(path);
+	        	if (!folder.exists()) {
+	                folder.mkdirs();
+	            }
+	        	
 	            String fileName = imageFile.getOriginalFilename();
-	            String saveName = UUID.randomUUID().toString() + "_" + fileName;
+	            String saveName = UUID.randomUUID().toString();
 	            
 	            File saveFile = new File(path + "/" + saveName);
 	            imageFile.transferTo(saveFile);
 	            
-	            dto.setImage(saveName); 
+	            dto.setImage(saveName);
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();

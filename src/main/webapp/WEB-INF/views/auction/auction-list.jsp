@@ -24,8 +24,8 @@
     </div>
     
     <!-- 검색창 -->
-    <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리 <span class="text-rose-500">*</span></label>
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리</label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">대분류 <span class="text-rose-500">*</span></label>
@@ -41,13 +41,13 @@
                 </select>
             </div>
         </div>
-    <div>
     
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
-        <form action="/jesiyo/auction" method="GET" class="flex gap-2 w-full">
-            <input type="text" name="word" placeholder="경매 물품을 검색해 보세요" class="input input-bordered flex-1 focus:border-brand-500 focus:outline-none bg-slate-50" />
-            <button type="submit" class="btn-brand w-24">검색</button>
-        </form>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
+            <form action="/jesiyo/auction" method="GET" class="flex gap-2 w-full">
+                <input type="text" name="word" placeholder="경매 물품을 검색해 보세요" class="input input-bordered flex-1 focus:border-brand-500 focus:outline-none bg-slate-50" />
+                <button type="submit" class="btn-brand w-24">검색</button>
+            </form>
+        </div>
     </div>
     
     <!-- 경매목록 -->
@@ -58,7 +58,7 @@
             
             <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
                 <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중(구현예정)</span>
-                <img src="${pageContext.request.contextPath}/resources/image/${dto.image }" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                <img src="${pageContext.request.contextPath}/upload/${dto.image}" alt="상품 이미지" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
             </div>
 
             <div class="flex-1 flex flex-col justify-between py-1">
@@ -192,67 +192,70 @@
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script>
     
-    document.addEventListener('DOMContentLoaded', function() {
-        
-        // ----- [기존에 작성된 이미지 미리보기 코드 생략] -----
+        document.addEventListener('DOMContentLoaded', function() {
 
-        // ----- [카테고리 동적 연동 로직 시작] -----
-        const mainCategory = document.getElementById('mainCategory');
-        const subCategory = document.getElementById('subCategory');
-
-        // Context Path 설정 (프로젝트 설정에 따라 변경 필요할 수 있음)
-        const contextPath = '/jesiyo'; 
-
-        // 1. 페이지 로드 시 대분류(Roots) 가져오기
-        fetch(contextPath + '/api/roots')
-            .then(response => {
-                if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
-                return response.json();
-            })
-            .then(data => {
-                data.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.seq;     // CategoryDto의 seq
-                    option.text = category.name;     // CategoryDto의 name
-                    mainCategory.appendChild(option);
-                });
-            })
-            .catch(error => console.error('대분류 로드 실패:', error));
-
-
-        // 2. 대분류 선택 시 소분류(Children) 가져오기
-        mainCategory.addEventListener('change', function() {
-            const parentSeq = this.value;
-
-            // 소분류 초기화
-            subCategory.innerHTML = '<option disabled selected value="">소분류 선택</option>';
-            subCategory.disabled = true;
-
-            if (parentSeq) {
-                fetch(contextPath + `/api/categories/${parentSeq}/children`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
-                        return response.json();
-                    })
-                    .then(data => {
-                        // 하위 카테고리가 있을 경우 옵션 추가 및 활성화
-                        if(data.length > 0) {
-                            data.forEach(category => {
-                                const option = document.createElement('option');
-                                option.value = category.seq;
-                                option.text = category.name;
-                                subCategory.appendChild(option);
-                            });
-                            subCategory.disabled = false; // 소분류 셀렉트박스 활성화
-                        } else {
-                            subCategory.innerHTML = '<option disabled selected value="">하위 카테고리 없음</option>';
-                        }
-                    })
-                    .catch(error => console.error('소분류 로드 실패:', error));
-            }
+        	// ----- [카테고리 동적 연동 로직 시작] -----
+            const mainCategory = document.getElementById('mainCategory');
+            const subCategory = document.getElementById('subCategory');
+    
+            const contextPath = '/jesiyo'; 
+    
+            // 1. 페이지 로드 시 대분류(Roots) 가져오기
+            fetch(contextPath + '/api/roots')
+                .then(response => {
+                    if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
+                    return response.json();
+                })
+                .then(data => {
+                    data.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.seq;     // CategoryDto의 seq
+                        option.text = category.name;     // CategoryDto의 name
+                        mainCategory.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('대분류 로드 실패:', error));
+    
+    
+            // 2. 대분류 선택 시 소분류(Children) 가져오기
+            mainCategory.addEventListener('change', function() {
+                const parentSeq = this.value;
+    
+                // 소분류 초기화
+                subCategory.innerHTML = '<option disabled selected value="">소분류 선택</option>';
+                subCategory.disabled = true;
+    
+                if (parentSeq) {
+                    const url = contextPath + "/api/categories/" + parentSeq + "/children";
+                    //console.log("요청 URL:", url); // 2. URL이 올바른지 확인
+    
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) {
+                                console.error("서버 응답 에러 코드:", response.status); 
+                                throw new Error('네트워크 응답이 정상이 아닙니다.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // 하위 카테고리가 있을 경우 옵션 추가 및 활성화
+                            if(data.length > 0) {
+                                data.forEach(category => {
+                                    const option = document.createElement('option');
+                                    option.value = category.seq;
+                                    option.text = category.name;
+                                    subCategory.appendChild(option);
+                                });
+                                subCategory.disabled = false; // 소분류 셀렉트박스 활성화
+                            } else {
+                                subCategory.innerHTML = '<option disabled selected value="">하위 카테고리 없음</option>';
+                            }
+                        })
+                        .catch(error => console.error('소분류 로드 실패:', error));
+                }
+            });
+            // ----- [카테고리 동적 연동 로직 끝] -----
         });
-        // ----- [카테고리 동적 연동 로직 끝] -----
-    });
     
     </script>
 </body>

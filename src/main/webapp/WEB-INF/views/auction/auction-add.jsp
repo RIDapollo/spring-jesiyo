@@ -124,8 +124,6 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         
-        
-
         // ----- [카테고리 동적 연동 로직 시작] -----
         const mainCategory = document.getElementById('mainCategory');
         const subCategory = document.getElementById('subCategory');
