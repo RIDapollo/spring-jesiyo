@@ -30,7 +30,7 @@
                         <a href="#" class="auth-link">알림</a>
                         <a href="#" class="auth-link">예치금</a>
                         <a href="#" class="auth-link">마이페이지</a>
-                        <a href="#" class="auth-link logout">로그아웃</a>
+                        <a href="${pageContext.request.contextPath}/member/logout" class="text-sm font-bold text-slate-500 hover:text-[#FF8A3D] transition-colors"> 로그아웃 </a>
                     </c:otherwise>
                 </c:choose>
             </div>

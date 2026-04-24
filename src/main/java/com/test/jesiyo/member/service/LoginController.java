@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.test.jesiyo.member.dto.MemberDto;
 import com.test.jesiyo.member.repository.MemberDao;
@@ -12,6 +13,7 @@ import com.test.jesiyo.member.repository.MemberDao;
 import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -45,5 +47,16 @@ public class LoginController {
             // 로그인 실패 시 다시 로그인 페이지로 리다이렉트 (에러 파라미터 포함)
             return "redirect:/login?error=true"; 
         }
+    }
+    
+    //로그아웃
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        
+        // 1. 세션에 저장된 모든 정보를 삭제하고 무효화합니다.
+        session.invalidate(); 
+        
+        // 2. 로그아웃 후 메인 페이지(index)로 보냅니다.
+        return "redirect:/index?msg=logout";
     }
 }

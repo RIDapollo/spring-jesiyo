@@ -43,7 +43,7 @@ public class RegistController {
         int result = dao.regist(dto);
         
         // 성공 시 로그인 페이지로, 실패 시 다시 가입 페이지로
-        return (result > 0) ? "redirect:/login" : "regist/regist";
+        return (result > 0) ? "redirect:/member/login" : "regist/regist";
     }
 
     /**

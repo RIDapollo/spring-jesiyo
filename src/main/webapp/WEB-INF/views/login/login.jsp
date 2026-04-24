@@ -9,7 +9,7 @@
 </head>
 <body class="bg-[#F8FAFC] text-slate-900 m-0 p-0">
 
-    <%@ include file="/WEB-INF/views/inc/nav.jsp" %>
+    <%@ include file="/WEB-INF/views/inc/header.jsp" %>
 
     <div class="w-full min-h-[calc(100vh-80px)] flex justify-center items-center px-4 py-12">
         
@@ -28,7 +28,7 @@
                 </div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/login" method="POST">
+            <form action="${pageContext.request.contextPath}/member/login" method="POST">
                 
                 <div style="margin-bottom: 1.5rem !important;">
                     <label for="userId" class="block text-xs font-bold text-slate-400 mb-2 ml-2 tracking-widest uppercase">ID</label>
