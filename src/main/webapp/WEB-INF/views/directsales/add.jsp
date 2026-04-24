@@ -40,14 +40,14 @@
                 <label class="block text-sm font-semibold text-slate-700 mb-2">상품명 <span class="text-rose-500">*</span></label>
                 <input type="text" name="productName"
                    class="input input-bordered w-full focus:border-brand-500 focus:outline-none"
-                   placeholder="상품명을 입력하세요" required />
+                   placeholder="예: 갤럭시 S23 울트라 256GB" required />
             </div>
             <!-- 제목 -->
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">제목 <span class="text-rose-500">*</span></label>
                 <input type="text" name="name"
                    class="input input-bordered w-full focus:border-brand-500 focus:outline-none"
-                   placeholder="글 제목을 입력하세요" required />
+                   placeholder="예: 갤럭시 S23 울트라 256GB 거의 새상품 팝니다~" required />
             </div>
     
             <!-- 가격 -->
@@ -55,7 +55,10 @@
                 <label class="block text-sm font-semibold text-slate-700 mb-2">가격 (원) <span class="text-rose-500">*</span></label>
                 <input type="number" name="price"
                    class="input input-bordered w-full focus:border-brand-500 focus:outline-none"
-                   placeholder="가격을 입력하세요" />
+                   min="0"
+                   step="1000"
+                   value="5000"
+                   />
             </div>
     
             <!-- 카테고리 (핵심) -->
@@ -64,7 +67,8 @@
     
                 <div class="grid grid-cols-3 gap-3">
                     <select id="category1"
-                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none">
+                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none"
+                        required>
                       <option value="">대분류</option>
                       <c:forEach var="c" items="${roots}">
                       <option value="${c.seq}">${c.name}</option>
@@ -72,12 +76,14 @@
                     </select>
     
                     <select id="category2"
-                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none">
+                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none"
+                        required>
                       <option value="">중분류</option>
                     </select>
     
                     <select id="category3"
-                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none">
+                      class="select select-bordered w-full focus:border-brand-500 focus:outline-none"
+                        required>
                       <option value="">소분류</option>
                     </select>
                 </div>
@@ -107,7 +113,9 @@
             <!-- 거래 위치 -->
             <div>
                 <div class="flex items-center justify-start mb-2 gap-3">
-                  <label class="block text-sm font-semibold text-slate-700 mb-2">거래 위치</label>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">
+                    거래 위치 <span class="text-slate-400 text-xs">(선택)</span>
+                  </label>
                    <!-- 위치 선택 -->
                   <button type="button" onclick="openMap()" class="btn-brand !bg-point-500 !px-3 !py-1.5 text-sm">
                       위치 선택하기
@@ -125,7 +133,7 @@
                     <button type="button"
                             onclick="selectLocation()"
                             class="btn-brand map-btn !bg-point-500">
-                        거래 위치 설정 완료
+                        여기로 위치 설정
                     </button>
                 </div>
                 
@@ -135,10 +143,13 @@
     
             <!-- 설명 -->
             <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">상세 설명</label>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">
+                  상세 설명 <span class="text-slate-400 text-xs">(선택)</span>
+                </label>
                 <textarea name="description" rows="6"
                   class="textarea textarea-bordered w-full focus:border-brand-500 focus:outline-none"
-                  placeholder="상품 설명을 입력하세요"></textarea>
+                  placeholder="예: 2개월 사용한 제품입니다. 생활기스 약간 있으며 구성품 모두 포함되어 있습니다. 직거래 선호합니다."
+                  ></textarea>
             </div>
     
             <!-- 버튼 -->
@@ -301,8 +312,6 @@
                 return;
             }
 
-            
-            
             fetch('/jesiyo/api/trade-locations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -310,11 +319,8 @@
             })
             .then(res => res.json())
             .then(data => {
-
-            	console.log(data.seq);
-            	
                 document.getElementById('tradeLocationSeq').value = data.seq;
-                alert("거래 위치 설정 완료!");
+                alert("거래 위치가 설정되었습니다!");
             });
         }
         

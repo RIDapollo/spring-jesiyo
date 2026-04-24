@@ -19,7 +19,7 @@
 
     <insert id="add" parameterType="DirectSaleDto">
 	    INSERT INTO direct_sale (seq, name, description, product_name, image_url, price, created_at, seller_seq, category_seq, trade_location_seq)
-	    VALUES (direct_sale_seq.nextval, #{name}, #{description, jdbcType=VARCHAR}, #{productName}, #{imageUrl, jdbcType=VARCHAR}, #{price}, SYSDATE, #{sellerSeq}, #{categorySeq}, #{tradeLocationSeq})
+	    VALUES (direct_sale_seq.nextval, #{name}, #{description, jdbcType=VARCHAR}, #{productName}, #{imageUrl, jdbcType=VARCHAR}, #{price}, SYSDATE, #{sellerSeq}, #{categorySeq}, #{tradeLocationSeq, jdbcType=BIGINT})
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">

@@ -27,7 +27,7 @@ public class DirectSaleService {
     	
     	// image-url 널처리
     	if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
-    	    dto.setImageUrl("/images/default-product.jpg");
+    	    dto.setImageUrl("/upload/default_product.jpg");
     	}
 
         dao.add(dto);
