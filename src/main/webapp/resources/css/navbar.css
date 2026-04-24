@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+/* 기본 여백 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    background-color: #ffffff;
+}
+
+/* 헤더 전체 컨테이너 */
+.main-header {
+    width: 100%;
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 왼쪽 섹션 (로고 + 메뉴) */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: #FF8A3D; /* Jesiyo 시그니처 오렌지 */
+    text-decoration: none;
+}
+
+.main-nav {
+    display: flex;
+    gap: 24px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #333333;
+    font-size: 16px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.main-nav a:hover {
+    color: #FF8A3D;
+}
+
+/* 오른쪽 섹션 (인증/사용자 메뉴) */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.auth-link {
+    text-decoration: none;
+    color: #666666;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: #333333;
+}
+
+/* 로그아웃 버튼 강조(선택사항) */
+.logout {
+    color: #999999;
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    .main-nav {
+        display: none; /* 모바일에서는 별도의 햄버거 메뉴로 대체 가능 */
+    }
+}
