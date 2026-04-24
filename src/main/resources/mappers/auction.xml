@@ -5,7 +5,7 @@
 
 <mapper namespace="auction">
 
-    <select id="list" parameterType="map" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+    <select id="list" parameterType="map" resultType="AuctionDto">
         SELECT * FROM (
             SELECT 
                 s.*, 
@@ -73,11 +73,11 @@
         )
     </insert>
     
-    <select id="getDetail" parameterType="int" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+    <select id="getDetail" parameterType="int" resultType="AuctionDto">
         select * from auction where seq = #{_parameter}
     </select>
     
-    <select id="getHighestBid" parameterType="int" resultType="com.test.jesiyo.auction.dto.AuctionDto">
+    <select id="getHighestBid" parameterType="int" resultType="AuctionDto">
         select a.*,
            (select max(bid_price)
             from bid_history b
@@ -90,5 +90,13 @@
         insert into bid_history (seq, bid_price, bid_time, status, member_seq, auction_seq) 
             values (bid_history_seq.nextVal, #{bidPrice}, default, 0, #{memberSeq}, #{seq})
     </insert>
+    
+    <select id="getLatestBids" parameterType="int" resultType="BidDto">
+    	SELECT *
+		FROM bid_history
+		WHERE auction_seq = #{_parameter}
+		ORDER BY bid_time DESC
+		FETCH FIRST 5 ROWS ONLY;
+    </select>
 
 </mapper>

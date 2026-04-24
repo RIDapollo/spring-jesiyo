@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.test.jesiyo.auction.controller.BidDto;
 import com.test.jesiyo.auction.dto.AuctionDto;
 import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.repository.AuctionDao;
@@ -72,6 +73,11 @@ public class AuctionService {
 	    }
 
 	    return result;
+	}
+
+	public List<BidDto> getLatestBids(int seq) {
+		
+		return dao.getLatestBids(seq);
 	}
 	
 	

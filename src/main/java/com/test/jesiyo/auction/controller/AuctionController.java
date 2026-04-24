@@ -140,6 +140,13 @@ public class AuctionController {
 	    paramMap.put("memberSeq", mdto.getSeq());
 	    
 	    Map<String, Object> result = service.bid(paramMap);
+	    
+	    //최근 입찰목록 5개 조회
+	    if ("success".equals(result.get("status"))) {
+	        List<BidDto> latestBids = service.getLatestBids(seq); // 최근 5개 조회
+	        result.put("latestBids", latestBids);
+	        result.put("newHighestBid", bidPrice); // 새 최고가
+	    }
 
 	    return result;
 	}
