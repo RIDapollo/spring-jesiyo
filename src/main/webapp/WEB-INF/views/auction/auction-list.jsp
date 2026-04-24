@@ -25,36 +25,17 @@
     
     <!-- 검색창 -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">카테고리</label>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">대분류 <span class="text-rose-500">*</span></label>
-                <select id="mainCategory" class="select select-bordered w-full focus:border-brand-500 focus:outline-none" required>
-                    <option disabled selected value="">대분류 선택</option>
-                </select>
-            </div>
-        
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">소분류 <span class="text-rose-500">*</span></label>
-                <select id="subCategory" name="categorySeq" class="select select-bordered w-full focus:border-brand-500 focus:outline-none disabled:bg-slate-100" required disabled>
-                    <option disabled selected value="">대분류를 먼저 선택하세요</option>
-                </select>
-            </div>
-        </div>
-    
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-8">
-            <form action="/jesiyo/auction" method="GET" class="flex gap-2 w-full">
-                <input type="text" name="word" placeholder="경매 물품을 검색해 보세요" class="input input-bordered flex-1 focus:border-brand-500 focus:outline-none bg-slate-50" />
-                <button type="submit" class="btn-brand w-24">검색</button>
-            </form>
-        </div>
+        <form action="/jesiyo/auction" method="GET" class="flex gap-2 w-full">
+            <input type="text" name="word" value="${word}" placeholder="경매 물품을 검색해 보세요" class="input input-bordered flex-1 focus:border-brand-500 focus:outline-none bg-slate-50" />
+            <button type="submit" class="btn-brand w-24">검색</button>
+        </form>
     </div>
     
     <!-- 경매목록 -->
     <c:forEach items="${list }" var="dto">
     <div class="flex flex-col gap-4 mb-10">
         
-        <article class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row p-4 gap-6" onclick="location.href='/jesiyo/auction/detail.do?id=101'">
+        <article class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row p-4 gap-6" onclick="location.href='/jesiyo/auction/${dto.seq}'">
             
             <div class="w-full md:w-56 aspect-[4/3] bg-slate-200 rounded-lg overflow-hidden shrink-0 relative">
                 <span class="absolute top-2 left-2 status-badge badge-auction shadow-sm z-10">진행중(구현예정)</span>
@@ -138,7 +119,7 @@
         <div class="hidden md:block flex-1"></div>
         
         <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-md">
-            <c:set var="query" value="&word=${word}&status=${status}" />
+            <c:set var="query" value="&word=${word}" />
         
             <c:choose>
                 <c:when test="${paging.n == 1}">
@@ -191,71 +172,6 @@
  
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script>
-    
-        document.addEventListener('DOMContentLoaded', function() {
-
-        	// ----- [카테고리 동적 연동 로직 시작] -----
-            const mainCategory = document.getElementById('mainCategory');
-            const subCategory = document.getElementById('subCategory');
-    
-            const contextPath = '/jesiyo'; 
-    
-            // 1. 페이지 로드 시 대분류(Roots) 가져오기
-            fetch(contextPath + '/api/roots')
-                .then(response => {
-                    if (!response.ok) throw new Error('네트워크 응답이 정상이 아닙니다.');
-                    return response.json();
-                })
-                .then(data => {
-                    data.forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category.seq;     // CategoryDto의 seq
-                        option.text = category.name;     // CategoryDto의 name
-                        mainCategory.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('대분류 로드 실패:', error));
-    
-    
-            // 2. 대분류 선택 시 소분류(Children) 가져오기
-            mainCategory.addEventListener('change', function() {
-                const parentSeq = this.value;
-    
-                // 소분류 초기화
-                subCategory.innerHTML = '<option disabled selected value="">소분류 선택</option>';
-                subCategory.disabled = true;
-    
-                if (parentSeq) {
-                    const url = contextPath + "/api/categories/" + parentSeq + "/children";
-                    //console.log("요청 URL:", url); // 2. URL이 올바른지 확인
-    
-                    fetch(url)
-                        .then(response => {
-                            if (!response.ok) {
-                                console.error("서버 응답 에러 코드:", response.status); 
-                                throw new Error('네트워크 응답이 정상이 아닙니다.');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // 하위 카테고리가 있을 경우 옵션 추가 및 활성화
-                            if(data.length > 0) {
-                                data.forEach(category => {
-                                    const option = document.createElement('option');
-                                    option.value = category.seq;
-                                    option.text = category.name;
-                                    subCategory.appendChild(option);
-                                });
-                                subCategory.disabled = false; // 소분류 셀렉트박스 활성화
-                            } else {
-                                subCategory.innerHTML = '<option disabled selected value="">하위 카테고리 없음</option>';
-                            }
-                        })
-                        .catch(error => console.error('소분류 로드 실패:', error));
-                }
-            });
-            // ----- [카테고리 동적 연동 로직 끝] -----
-        });
     
     </script>
 </body>
