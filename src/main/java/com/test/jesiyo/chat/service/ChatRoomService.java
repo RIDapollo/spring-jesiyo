@@ -3,6 +3,7 @@ package com.test.jesiyo.chat.service;
 import java.security.SecureRandom;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.repository.ChatRoomDao;
@@ -15,6 +16,7 @@ public class ChatRoomService {
 	
 	private final ChatRoomDao chatRoomDao;
 
+	@Transactional
 	public void add(ChatRoomDto dto) {
 		
 		// 방코드 추가

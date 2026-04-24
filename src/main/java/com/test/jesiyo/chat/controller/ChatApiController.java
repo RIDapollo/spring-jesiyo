@@ -21,9 +21,9 @@ public class ChatApiController {
 		
 		try {
 			chatRoomService.add(dto); // 실패하면 예외 던짐
-	        return ResponseEntity.ok("생성 완료");
+	        return ResponseEntity.ok("ok");
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("생성 실패");
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	
 	}
