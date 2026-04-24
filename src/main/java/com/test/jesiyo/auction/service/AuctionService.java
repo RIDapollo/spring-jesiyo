@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.test.jesiyo.auction.controller.BidDto;
 import com.test.jesiyo.auction.dto.AuctionDto;
+import com.test.jesiyo.auction.dto.BidDto;
 import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.repository.AuctionDao;
 
@@ -61,15 +61,15 @@ public class AuctionService {
 	    int insertResult = dao.bid(map);
 
 	    if (insertResult == 1) {
-
+	    	
 	        int seq = (int) map.get("seq");
-	        AuctionDto highestBid = dao.getHighestBid(seq);
+	        AuctionDto dtohasHighestBid = dao.getHighestBid(seq);
 
-	        result.put("success", true);
-	        result.put("highestBid", highestBid);
+	        result.put("status", "success");
+	        result.put("dtoHasHighestBid", dtohasHighestBid);
 
 	    } else {
-	        result.put("success", false);
+	        result.put("status", "false");
 	    }
 
 	    return result;

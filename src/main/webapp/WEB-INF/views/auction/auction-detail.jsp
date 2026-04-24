@@ -61,18 +61,12 @@
                     </div>
                     
                     <ul id="bidHistoryList" class="flex flex-col gap-1 text-sm flex-1">
-                        <li class="flex justify-between items-center py-2 px-1 hover:bg-slate-50 rounded">
-                            <span class="text-slate-500 font-medium">user12***</span>
-                            <span class="font-bold text-slate-800">250,000원</span>
-                        </li>
-                        <li class="flex justify-between items-center py-2 px-1 hover:bg-slate-50 rounded">
-                            <span class="text-slate-500 font-medium">test99***</span>
-                            <span class="font-bold text-slate-800">245,000원</span>
-                        </li>
-                        <li class="flex justify-between items-center py-2 px-1 hover:bg-slate-50 rounded">
-                            <span class="text-slate-500 font-medium">hell***</span>
-                            <span class="font-bold text-slate-800">230,000원</span>
-                        </li>
+                    	<c:forEach items="${latestBids}" var="bidDto">
+	                        <li class="flex justify-between items-center py-2 px-1 hover:bg-slate-50 rounded">
+	                            <span class="text-slate-500 font-medium">${bidDto.memberSeq}</span>
+	                            <span class="font-bold text-slate-800">${bidDto.bidPrice}원</span>
+	                        </li>
+                        </c:forEach>
                     </ul>
                 </div>
 
@@ -192,153 +186,171 @@
     </div>
 
     <script>
-        const auctionSeq = parseInt("${dto.seq}", 10);
-        // JS에서 비교 및 갱신을 위해 현재 최고가 상태를 변수로 저장
-        let currentHighestBid = parseInt("${dtoHasHighestBid.highestBid}", 10) || 0;
+	    const auctionSeq = parseInt("${dto.seq}", 10);
+	    // JS에서 비교 및 갱신을 위해 현재 최고가 상태를 변수로 저장
+	    let currentHighestBid = parseInt("${dtoHasHighestBid.highestBid}", 10) || 0;
+	
+	    // 천 단위 콤마 포맷 함수
+	    function formatNumber(num) {
+	        return num.toLocaleString('ko-KR');
+	    }
+	
+	    // 모달 열기 (열 때마다 입력창 및 에러상태 초기화)
+	    function openModal(modalId) {
+	        if(modalId === 'bidModal') {
+	            document.getElementById('bidPrice').value = '';
+	            document.getElementById('bidErrorMsg').classList.add('hidden');
+	            document.getElementById('bidPrice').classList.remove('border-rose-500', 'bg-rose-50');
+	        }
+	        document.getElementById(modalId).classList.remove('hidden');
+	    }
+	
+	    function closeModal(modalId) {
+	        document.getElementById(modalId).classList.add('hidden');
+	    }
+	
+	    // 입력 에러 표시 함수
+	    function showError(msg) {
+	        const inputEl = document.getElementById('bidPrice');
+	        const errorMsgEl = document.getElementById('bidErrorMsg');
+	        errorMsgEl.querySelector('span').innerText = msg;
+	        errorMsgEl.classList.remove('hidden');
+	        
+	        // 붉은색 테두리 및 배경 강조
+	        inputEl.classList.add('border-rose-500', 'bg-rose-50');
+	        inputEl.focus();
+	    }
+	
+	    // 입찰하기 전송
+	    async function submitBid() {
+	        const inputEl = document.getElementById('bidPrice');
+	        const bidPriceInput = parseInt(inputEl.value, 10);
+	        
+	        // 1. 유효성 검사
+	        if (!bidPriceInput || isNaN(bidPriceInput)) {
+	            showError('올바른 입찰 금액을 입력해주세요.');
+	            return;
+	        }
+	
+	        if (bidPriceInput <= currentHighestBid) {
+	            showError('현재 최고가(' + formatNumber(currentHighestBid) + '원)보다 높은 금액이어야 합니다.');
+	            return;
+	        }
+	
+	        // 에러 상태 해제
+	        document.getElementById('bidErrorMsg').classList.add('hidden');
+	        inputEl.classList.remove('border-rose-500', 'bg-rose-50');
+	
+	        try {
+	            // 버튼 비활성화 (중복 방지)
+	            const submitBtn = document.getElementById('submitBtn');
+	            submitBtn.disabled = true;
+	            submitBtn.innerText = '처리중...';
+	
+	            const response = await fetch('${pageContext.request.contextPath}/auction/bid', {
+	                method: 'POST',
+	                headers: {
+	                    'Content-Type': 'application/json',
+	                },
+	                body: JSON.stringify({
+	                    seq: auctionSeq,
+	                    bidPrice: bidPriceInput
+	                })
+	            });
+	
+	            if (!response.ok) throw new Error('Network response was not ok.');
+	            
+	            // 서버에서 응답받은 전체 JSON 데이터
+	            const resultData = await response.json();
+	            
+	            // 컨트롤러에서 세팅한 status 값이 "success"인지 확인
+	            if (resultData.status === "success") {
+	                alert('입찰이 성공적으로 완료되었습니다.');
+	                closeModal('bidModal');
+	                
+	                // [핵심 변경점 1] 
+	                // 서버에서 넘겨준 latestBids 배열을 가공합니다.
+	                // 0번째 인덱스(가장 최근 데이터)에만 isNew=true를 줘서 깜빡임 효과를 부여합니다.
+	                const updatedBids = resultData.latestBids.map((bid, index) => {
+	                    return {
+	                        ...bid,
+	                        isNew: index === 0 
+	                    };
+	                });
+	
+	                // 2. DOM 즉시 갱신 (서버가 보내준 진짜 데이터 사용)
+	                updateAuctionDataUI(resultData.dtoHasHighestBid.highestBid, updatedBids);
+	            } else {
+	                alert('입찰 처리 중 문제가 발생했습니다.');
+	            }
+	
+	        } catch (error) {
+	            console.error('입찰 중 오류 발생:', error);
+	            alert('입찰 처리 중 서버 오류가 발생했습니다.');
+	        } finally {
+	            document.getElementById('submitBtn').disabled = false;
+	            document.getElementById('submitBtn').innerText = '입찰하기';
+	        }
+	    }
+	
+	    // 화면(UI) 데이터 업데이트 함수
+	    function updateAuctionDataUI(newHighestBid, bidList) {
+	        currentHighestBid = newHighestBid;
+	        
+	        // 본문 및 모달 내 최고가 텍스트 갱신
+	        document.getElementById('displayHighestBid').innerText = formatNumber(newHighestBid);
+	        document.getElementById('modalHighestBidDisplay').innerText = formatNumber(newHighestBid);
+	
+	        // 입찰 목록 갱신 (서버에서 받은 최근 5개 목록)
+	        if (bidList && bidList.length > 0) {
+	            const historyList = document.getElementById('bidHistoryList');
+	            
+	            // [핵심 변경점 2]
+	            // 기존에 있던 낡은 리스트를 싹 지워야 중복 출력을 막을 수 있습니다.
+	            historyList.innerHTML = ''; 
+	            
+	            bidList.forEach(bid => {
+	                const highlightClass = bid.isNew ? 'bg-brand-50 animate-pulse' : 'hover:bg-slate-50';
+	                
+	                // 주의: BidDto의 실제 필드명에 맞게 \${bid.필드명} 을 맞춰주세요. (예: memberId, memberSeq 등)
+	                // 만약 DTO 필드가 memberId가 아니라 memberSeq라면 \${bid.memberSeq} 로 변경해야 합니다.
+	                const li = `
+	                    <li class="flex justify-between items-center py-2 px-2 \${highlightClass} rounded transition-colors border-b border-slate-50 last:border-0">
+	                        <span class="text-slate-500 font-medium">\${bid.memberSeq}</span>
+	                        <span class="font-bold text-slate-800">\${formatNumber(bid.bidPrice)}원</span>
+	                    </li>
+	                `;
+	                
+	                // 기존 내용을 지웠으므로 afterbegin 대신 beforeend를 써서 위에서부터 순서대로 차곡차곡 쌓습니다.
+	                historyList.insertAdjacentHTML('beforeend', li);
+	            });
+	        }
+	    }
+	
+	    // 3. 폴링(Polling): 3초마다 다른 사용자의 입찰 확인
+	    async function fetchLatestAuctionData() {
+	        try {
+	            const response = await fetch(`${pageContext.request.contextPath}/auction/latestData?seq=\${auctionSeq}`);
+	            if (response.ok) {
+	                const data = await response.json();
+	                
+	                // 누군가 나보다 높은 입찰을 했다면 갱신!
+	                if (data.highestBid > currentHighestBid) {
+	                    updateAuctionDataUI(data.highestBid, data.latestBids);
+	                }
+	            }
+	        } catch (error) {
+	            // 백그라운드 갱신 실패시 조용히 무시
+	            console.error('실시간 데이터 갱신 실패:', error);
+	        }
+	    }
+	
+	    // 페이지 로딩 완료 시 3초마다 실시간 체크 시작
+	    document.addEventListener('DOMContentLoaded', () => {
+	        // 폴링 기능 테스트 전까지는 주석 처리해두셔도 좋습니다. (서버 컨트롤러 구현 필수)
+	        // setInterval(fetchLatestAuctionData, 3000); 
+	    });
 
-        // 천 단위 콤마 포맷 함수
-        function formatNumber(num) {
-            return num.toLocaleString('ko-KR');
-        }
-
-        // 모달 열기 (열 때마다 입력창 및 에러상태 초기화)
-        function openModal(modalId) {
-            if(modalId === 'bidModal') {
-                document.getElementById('bidPrice').value = '';
-                document.getElementById('bidErrorMsg').classList.add('hidden');
-                document.getElementById('bidPrice').classList.remove('border-rose-500', 'bg-rose-50');
-            }
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // 입력 에러 표시 함수
-        function showError(msg) {
-            const inputEl = document.getElementById('bidPrice');
-            const errorMsgEl = document.getElementById('bidErrorMsg');
-            errorMsgEl.querySelector('span').innerText = msg;
-            errorMsgEl.classList.remove('hidden');
-            
-            // 붉은색 테두리 및 배경 강조
-            inputEl.classList.add('border-rose-500', 'bg-rose-50');
-            inputEl.focus();
-        }
-
-        // 입찰하기 전송
-        async function submitBid() {
-            const inputEl = document.getElementById('bidPrice');
-            const bidPriceInput = parseInt(inputEl.value, 10);
-            
-            // 1. 유효성 검사
-            if (!bidPriceInput || isNaN(bidPriceInput)) {
-                showError('올바른 입찰 금액을 입력해주세요.');
-                return;
-            }
-
-            if (bidPriceInput <= currentHighestBid) {
-                showError('현재 최고가(' + formatNumber(currentHighestBid) + '원)보다 높은 금액이어야 합니다.');
-                return;
-            }
-
-            // 에러 상태 해제
-            document.getElementById('bidErrorMsg').classList.add('hidden');
-            inputEl.classList.remove('border-rose-500', 'bg-rose-50');
-
-            try {
-                // 버튼 비활성화 (중복 방지)
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerText = '처리중...';
-
-                const response = await fetch('${pageContext.request.contextPath}/auction/bid', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        seq: auctionSeq,
-                        bidPrice: bidPriceInput
-                    })
-                });
-
-                if (!response.ok) throw new Error('Network response was not ok.');
-                const resultData = await response.json();
-                
-                alert('입찰이 성공적으로 완료되었습니다.');
-                closeModal('bidModal');
-                
-                // 2. DOM 즉시 갱신 (내 입찰 기록)
-                updateAuctionDataUI(bidPriceInput, [{
-                    memberId: '나 (방금)', 
-                    bidPrice: bidPriceInput,
-                    isNew: true
-                }]);
-
-            } catch (error) {
-                console.error('입찰 중 오류 발생:', error);
-                alert('입찰 처리 중 서버 오류가 발생했습니다.');
-            } finally {
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').innerText = '입찰하기';
-            }
-        }
-
-        // 화면(UI) 데이터 업데이트 함수
-        function updateAuctionDataUI(newHighestBid, bidList) {
-            currentHighestBid = newHighestBid;
-            
-            // 본문 및 모달 내 최고가 텍스트 갱신
-            document.getElementById('displayHighestBid').innerText = formatNumber(newHighestBid);
-            document.getElementById('modalHighestBidDisplay').innerText = formatNumber(newHighestBid);
-
-            // 입찰 목록 갱신 (서버에서 최근 목록을 받았다고 가정)
-            if (bidList && bidList.length > 0) {
-                const historyList = document.getElementById('bidHistoryList');
-                // 기존 내용을 지우고 새로 그리기 (혹은 insertAdjacentHTML로 추가)
-                // historyList.innerHTML = ''; 
-                
-                bidList.forEach(bid => {
-                    const highlightClass = bid.isNew ? 'bg-brand-50 animate-pulse' : 'hover:bg-slate-50';
-                    const li = `
-                        <li class="flex justify-between items-center py-2 px-2 ${highlightClass} rounded transition-colors">
-                            <span class="text-slate-500 font-medium">\${bid.memberId}</span>
-                            <span class="font-bold text-slate-800">\${formatNumber(bid.bidPrice)}원</span>
-                        </li>
-                    `;
-                    // 맨 위에 새 기록 추가
-                    historyList.insertAdjacentHTML('afterbegin', li);
-                });
-            }
-        }
-
-        // 3. 폴링(Polling): 3초마다 다른 사용자의 입찰 확인
-        async function fetchLatestAuctionData() {
-            try {
-                // 이 API는 Spring Controller에 @GetMapping("/auction/latestData") 로 구현되어 있어야 합니다.
-                const response = await fetch(`${pageContext.request.contextPath}/auction/latestData?seq=\${auctionSeq}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // 누군가 나보다 높은 입찰을 했다면 갱신!
-                    if (data.highestBid > currentHighestBid) {
-                        updateAuctionDataUI(data.highestBid, data.recentBids);
-                    }
-                }
-            } catch (error) {
-                // 백그라운드 갱신 실패시 조용히 무시
-                console.error('실시간 데이터 갱신 실패:', error);
-            }
-        }
-
-        // 페이지 로딩 완료 시 3초마다 실시간 체크 시작
-        document.addEventListener('DOMContentLoaded', () => {
-            // 폴링 기능 테스트 전까지는 주석 처리해두셔도 좋습니다. (서버 컨트롤러 구현 필수)
-            // setInterval(fetchLatestAuctionData, 3000); 
-        });
-
-    </script>
+</script>
     </body>
 </html>

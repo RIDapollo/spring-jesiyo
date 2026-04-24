@@ -96,7 +96,7 @@
 		FROM bid_history
 		WHERE auction_seq = #{_parameter}
 		ORDER BY bid_time DESC
-		FETCH FIRST 5 ROWS ONLY;
+		FETCH FIRST 5 ROWS ONLY
     </select>
 
 </mapper>

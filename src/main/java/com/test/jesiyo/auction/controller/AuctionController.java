@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
+import com.test.jesiyo.auction.dto.BidDto;
 import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.service.AuctionService;
 import com.test.jesiyo.pagination.PageDto;
@@ -78,8 +79,12 @@ public class AuctionController {
 		
 		AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
 		
+		//최근입찰조회
+	    List<BidDto> latestBids = service.getLatestBids(seq);
+		
 		model.addAttribute("dto", dto);
 		model.addAttribute("dtoHasHighestBid", dtoHasHighestBid);
+		model.addAttribute("latestBids", latestBids);
 		
 	    return "auction/auction-detail";
 	}
@@ -143,11 +148,10 @@ public class AuctionController {
 	    
 	    //최근 입찰목록 5개 조회
 	    if ("success".equals(result.get("status"))) {
-	        List<BidDto> latestBids = service.getLatestBids(seq); // 최근 5개 조회
+	    	List<BidDto> latestBids = service.getLatestBids(seq); // 최근 5개 조회
 	        result.put("latestBids", latestBids);
-	        result.put("newHighestBid", bidPrice); // 새 최고가
 	    }
-
+	    
 	    return result;
 	}
 	

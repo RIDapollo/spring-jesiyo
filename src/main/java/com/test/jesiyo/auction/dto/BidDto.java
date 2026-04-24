@@ -11,7 +11,7 @@ public class BidDto {
 
 	private int seq;
 	private int bidPrice;
-	private int bidTime;
+	private String bidTime;
 	private int status;
 	
 	private int memberSeq;
