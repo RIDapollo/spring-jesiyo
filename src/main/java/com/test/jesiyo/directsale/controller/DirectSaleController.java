@@ -7,10 +7,12 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.category.service.CategoryService;
@@ -58,11 +60,14 @@ public class DirectSaleController {
 	}
 	
 	@PostMapping("/directsales")
-	public String getAddPage(@RequestBody DirectSaleDto dto) {
+	public String getAddPage(@ModelAttribute DirectSaleDto dto,
+							 @RequestParam("imageFile") MultipartFile imageFile) {
 
+//	    String imageUrl = fileService.upload(imageFile);
+		String imageUrl = "test";
+		dto.setImageUrl(imageUrl);
+		
 		DirectSaleDto result = directSaleService.add(dto);
-		
-		
 		
 		return "redirect:/directsales/";
 	}
