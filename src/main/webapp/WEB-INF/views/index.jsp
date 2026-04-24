@@ -26,7 +26,7 @@
     </style>
 </head>
 <body> 
-    <%@ include file="/WEB-INF/views/inc/nav.jsp" %>
+    <%@ include file="/WEB-INF/views/inc/header.jsp" %>
     
     <div class="page-wrap">
         
@@ -65,4 +65,18 @@
     </div>
     
 </body>
+<script>
+    $(document).ready(function() {
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+
+        if (msg === 'logout') {
+            alert('로그아웃되었습니다. 이용해 주셔서 감사합니다!');
+            
+
+            history.replaceState({}, null, location.pathname);
+        }
+    });
+</script>
 </html>

@@ -5,9 +5,7 @@
 
 <mapper namespace="chat">
 
-    <select id="getChatRoomList" parameterType="String" resultType="com.test.jesiyo.chat.dto.ChatRoomDto">
-        select * from chat_room where MEMBER_SEQ = #{_parameter}
-    </select>
+    
     
 
 </mapper>

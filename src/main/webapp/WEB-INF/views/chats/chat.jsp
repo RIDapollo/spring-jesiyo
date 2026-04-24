@@ -39,7 +39,7 @@
 
             <%-- ① 내가 참여한 채팅방 목록 --%>
             <div class="room-list" id="roomList">
-                <c:choose>
+                <!--<c:choose>
                     <c:when test="${not empty list}">
                         <c:forEach var="room" items="${list}">
                             <div class="room-item"
@@ -59,7 +59,7 @@
                             </p>
                         </div>
                     </c:otherwise>
-                </c:choose>
+                </c:choose>-->
             </div>
 
             <%-- ④ 채팅방 생성/입장 버튼 --%>
@@ -194,10 +194,11 @@
 
     <div id="form-create">
         <label class="room-modal-label">채팅방 이름</label>
-        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" />
+        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" required/>
         
         <label class="room-modal-label">카테고리(대분류)</label>
             <select class="room-modal-select" id="roomCategoryL1">
+            	<option value="null">선택 없음</option>
             </select>
        <label class="room-modal-label">카테고리(중분류)</label>
             <select class="room-modal-select" id="roomCategoryL2">
@@ -210,7 +211,7 @@
             
         
         <label class="room-modal-label">최대 인원</label>
-        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
+        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" required/>
         
     </div>
     
@@ -226,8 +227,49 @@
     </dialog>
 
     <script>
+    	// 채팅방 목록 버튼	
+     	document.addEventListener('DOMContentLoaded', loadRoomList);
+     	
+    	function loadRoomList() {
+     	    const roomListContainer = document.getElementById('roomList');
+
+     	    fetch('http://localhost:8080/jesiyo/chat/rooms') // 실제 API 주소로 수정
+     	        .then(res => res.json())
+     	        .then(list => {
+     	            roomListContainer.innerHTML = ''; // 기존 내용을 초기화
+
+     	            if (list && list.length > 0) {
+     	                // 데이터가 있을 경우
+     	                list.forEach(room => {
+     	                    const roomHtml = `
+     	                        <div class="room-item" data-room-id="\${room.seq}" onclick="enterRoom(\${room.seq})">
+     	                            <span class="room-hash">#</span> 
+     	                            <span class="room-name">\${room.title}</span>
+     	                        </div>
+     	                    `;
+     	                    roomListContainer.insertAdjacentHTML('beforeend', roomHtml);
+     	                });
+     	            } else {
+     	                // 데이터가 없을 경우 (기존 c:otherwise 부분)
+     	                const emptyHtml = `
+     	                    <div class="px-3 py-4 text-center">
+     	                        <p class="text-xs leading-relaxed" style="color: #72767d;">
+     	                            아직 참여한 채팅방이 없어요.<br> 
+     	                            아래 <span style="color: #ff8a3d;">+</span> 버튼으로 만들거나<br> 
+     	                            코드로 입장해보세요!
+     	                        </p>
+     	                    </div>
+     	                `;
+     	                roomListContainer.innerHTML = emptyHtml;
+     	            }
+     	        })
+     	        .catch(err => {
+     	            console.error('채팅방 목록 로드 실패:', err);
+     	            roomListContainer.innerHTML = '<p style="color:red; text-align:center;">목록을 불러오지 못했습니다.</p>';
+     	        });
+     	}  
     
-    	// 채팅방 생성/입장 버
+    	// 채팅방 생성/입장 버튼
     	const btnModalConfirm = document.getElementById('btnModalConfirm');
     
         // 채팅방 생성/입장 모달창
@@ -339,9 +381,16 @@
 		    const l3 = document.getElementById('roomCategoryL3').value;
 		    const l2 = document.getElementById('roomCategoryL2').value;
 		    const l1 = document.getElementById('roomCategoryL1').value;
+		    
+		    if (l1 == 'null') {
+		   		alert('카테고리를 선택해주세요.'); // 사용자 알림
+		        document.getElementById('roomCategoryL1').focus(); // 해당 셀렉박스로 포커스 이동
+		        return null; // 또는 false (호출한 곳에서 체크 가능하도록)
+		    }
 
-		    if (l3 && l3 !== 'null') return l3;
-		    if (l2 && l2 !== 'null') return l2;
+		    if (l3 !== 'null') return l3;
+		    if (l2 !== 'null') return l2;
+		   	
 		    return l1;
 		}
 		
@@ -357,15 +406,22 @@
 			
 		});
 		
-		// 방입장
+		// 방 생성
 		function createRoom(){
+			// 카테고리 선택 검사
+			const categorySeq = getRoomCategorySeq();
+			
+			if(!categorySeq){
+				return;
+			}
+			
 			const dto = {
 			        title: document.getElementById('newRoomName').value,
 			        maxMemberCnt: document.getElementById('newRoomDescNum').value,
-			        categorySeq: getRoomCategorySeq(), // 카테고리를 정하는 함수
+			        categorySeq: categorySeq, // 카테고리를 정하는 함수
 			        memberSeq: ${sessionScope.auth.seq}, // 로그인한 유저 seq (세션에서 가져와야 함)
 			};
-			fetch('http://localhost:8080/jesiyo/chat/room', {
+			fetch('http://localhost:8080/jesiyo/chat/rooms', {
 		        method: 'POST',
 		        headers: { 'Content-Type': 'application/json' },
 		        body: JSON.stringify(dto)
