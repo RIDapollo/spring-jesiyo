@@ -67,7 +67,6 @@ public class DirectSaleController {
 	public String getAddPage(@ModelAttribute DirectSaleDto dto,
 							 @RequestParam("imageFile") MultipartFile imageFile) {
 
-//	    String imageUrl = fileService.upload(imageFile);
 		String uploadPath = "C:/dev/upload";
 
 		// 사진파일 경로로 바꾸기
@@ -102,11 +101,7 @@ public class DirectSaleController {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
-		
-//		String imageUrl = "test";
-		
-		DirectSaleDto result = directSaleService.add(dto);
-		System.out.println(result);
+		directSaleService.add(dto);
 		
 		return "redirect:/directsales";
 	}

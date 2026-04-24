@@ -14,7 +14,8 @@
   <body>
   	<h1>Title</h1>
   	
-    
+    <img src="/jesiyo/upload/default_image.png">
+<!--     <img src="/jesiyo/upload/a.jpg">   -->
   
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script src="https://bit.ly/4cMuheh"></script>
