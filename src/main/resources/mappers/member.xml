@@ -5,6 +5,36 @@
 
 <mapper namespace="member">
 
+    <select id="login" parameterType="com.test.jesiyo.member.dto.MemberDto" resultType="com.test.jesiyo.member.dto.MemberDto">
+        SELECT 
+            ID AS userId, 
+            PW AS userPw,
+            name,
+            nickname,
+            email_address AS email,  
+            regdate,
+            permission
+        FROM member 
+        WHERE ID = #{userId} AND status = 0
+    </select>
     
+    <insert id="regist" parameterType="com.test.jesiyo.member.dto.MemberDto">
+        INSERT INTO member (
+            seq, 
+            ID, PW, name, birth, nickname, 
+            zipcode, address, detail_address, 
+            email_address, regdate, point, permission, status
+        )
+        VALUES (
+            seqMember.nextVal, 
+            #{userId}, #{userPw}, #{name}, #{birth}, #{nickname}, 
+            #{zipcode}, #{address}, #{detailAddress}, 
+            #{email}, SYSDATE, 0, 0, 0
+        )
+    </insert>
+
+    <select id="checkId" parameterType="String" resultType="Integer">
+        SELECT COUNT(*) FROM member WHERE ID = #{id}
+    </select>
 
 </mapper>
