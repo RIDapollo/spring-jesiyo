@@ -122,6 +122,7 @@ public class AuctionController {
 	    return "redirect:/auction";
 	}
 	
+	//입찰
 	@PostMapping(value = "/auction/bid")
 	@ResponseBody
 	public Map<String, Object> bid(@RequestBody Map<String, Object> map) {
@@ -142,5 +143,24 @@ public class AuctionController {
 
 	    return result;
 	}
+	
+	//입찰상세페이지에서 입찰내역 갱신
+//	@GetMapping(value = "/auction/latestData")
+//	@ResponseBody
+//	public Map<String, Object> getLatestData(@RequestParam("seq") int seq) {
+//	    Map<String, Object> result = new HashMap<>();
+//	    
+//	    // 1. 해당 경매(seq)의 현재 최고가 조회
+//	    AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
+//	    
+//	    // 2. 해당 경매의 최근 입찰 기록 리스트 조회 (Top 5 등)
+//	    // 리턴 구조 예: List<Map<String, Object>> (키: memberId, bidPrice)
+//	    List<Map<String, Object>> recentBids = service.getRecentBids(seq); 
+//	    
+//	    result.put("dtoHasHighestBid", dtoHasHighestBid);
+//	    result.put("recentBids", recentBids);
+//	    
+//	    return result;
+//	}
 	
 }
