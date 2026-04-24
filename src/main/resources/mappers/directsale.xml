@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="directsale">
+
+    <select id="findAll" resultType="DirectSaleDto">
+        SELECT *
+        FROM direct_sale
+        ORDER BY seq DESC
+    </select>
+
+    <select id="findBySeq" parameterType="long" resultType="DirectSaleDto">
+        SELECT *
+        FROM direct_sale
+        WHERE seq = #{seq}
+    </select>
+
+    <insert id="add" parameterType="DirectSaleDto">
+	    INSERT INTO direct_sale (seq, name, description, status, product_name, image_url, price, created_at, seller_seq, category_seq, trade_location_seq)
+	    VALUES (direct_sale_seq.nextval, #{name}, #{description}, #{status}, #{productName},  NVL(#{imageUrl}, '/images/default-product.jpg'), #{price}, SYSDATE, #{sellerSeq}, #{categorySeq}, #{tradeLocationSeq})
+	</insert>
+
+    <update id="update" parameterType="DirectSaleDto">
+        UPDATE direct_sale
+        SET
+            name = #{name},
+            price = #{price},
+            description = #{description}
+        WHERE seq = #{seq}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM direct_sale
+        WHERE seq = #{seq}
+    </delete>
+
+</mapper>

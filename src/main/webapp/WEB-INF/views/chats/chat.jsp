@@ -199,6 +199,15 @@
         <label class="room-modal-label">카테고리(대분류)</label>
             <select class="room-modal-select" id="roomCategoryL1">
             </select>
+       <label class="room-modal-label">카테고리(중분류)</label>
+            <select class="room-modal-select" id="roomCategoryL2">
+            	<option value="null">선택 없음</option>
+            </select>
+       <label class="room-modal-label">카테고리(소분류)</label>
+            <select class="room-modal-select" id="roomCategoryL3">
+            	<option value="null">선택 없음</option>
+            </select>
+            
         
         <label class="room-modal-label">최대 인원</label>
         <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
@@ -218,6 +227,9 @@
 
     <script>
     
+    	// 채팅방 생성/입장 버
+    	const btnModalConfirm = document.getElementById('btnModalConfirm');
+    
         // 채팅방 생성/입장 모달창
         function openRoomModal() {
             document.getElementById('roomModal').showModal();
@@ -234,14 +246,14 @@
             document.getElementById('tab-join').classList.remove('active');
             document.getElementById('form-create').style.display = 'block';
             document.getElementById('form-join').style.display = 'none';
-            document.getElementById('btnModalConfirm').textContent = '생성';
+            btnModalConfirm.textContent = '생성';
         });
         document.getElementById('tab-join').addEventListener('click', function() {
             document.getElementById('tab-join').classList.add('active');
             document.getElementById('tab-create').classList.remove('active');
             document.getElementById('form-join').style.display = 'block';
             document.getElementById('form-create').style.display = 'none';
-            document.getElementById('btnModalConfirm').textContent = '입장';
+            btnModalConfirm.textContent = '입장';
         });
         // number 
         document.getElementById('newRoomDescNum').addEventListener('blur', function() {
@@ -250,20 +262,129 @@
         });
         
         // 모달 카테고리 불러오기
-        const ctx = '${pageContext.request.contextPath}';
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch(ctx + '/api/roots')
-                .then(response => response.json())
-                .then(function(data) {
-                    const select = document.getElementById('roomCategoryL1');
-                    data.forEach(function(category) {
-                        const option = document.createElement('option');
-                        option.value = category.seq;
-                        option.textContent = category.name;
-                        select.appendChild(option);
-                    });
-                });
-        });
+        // 페이지 로드 시 실행
+		document.addEventListener('DOMContentLoaded', function() {
+		    loadCategoryL1();
+		});
+		
+		function loadCategoryL1() {
+		    fetch('http://localhost:8080/jesiyo/api/roots')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL1');
+
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;    // JSON 필드명 확인 필요
+		                option.textContent = item.name; // JSON 필드명 확인 필요
+		                select.appendChild(option);
+		            });
+		        });
+		}
+		
+		// 대분류 변경 시 중분류 코드
+		document.getElementById('roomCategoryL1').addEventListener('change', function() {
+		    const l1Seq = this.value;
+
+		    resetSelect('roomCategoryL2');
+		    resetSelect('roomCategoryL3');
+
+		    if (!l1Seq || l1Seq === "" || l1Seq === "null") return;
+
+		    fetch('http://localhost:8080/jesiyo/api/categories/' + l1Seq +'/children')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL2');
+
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;
+		                option.textContent = item.name;
+		                select.appendChild(option);
+		            });
+		        });
+		});
+		
+		// 중분류 변경 시 소분류 로드
+		document.getElementById('roomCategoryL2').addEventListener('change', function() {
+		    const l2Seq = this.value;
+
+		    resetSelect('roomCategoryL3');
+
+		    if (!l2Seq || l2Seq === "" || l2Seq === "null") return;
+
+		    fetch('http://localhost:8080/jesiyo/api/categories/' + l2Seq +'/children')
+		        .then(res => res.json())
+		        .then(data => {
+		            const select = document.getElementById('roomCategoryL3');
+
+		            data.forEach(item => {
+		                const option = document.createElement('option');
+		                option.value = item.seq;
+		                option.textContent = item.name;
+		                select.appendChild(option);
+		            });
+		        });
+		});
+		
+		// 공통 초기화
+		function resetSelect(selectId) {
+		    const select = document.getElementById(selectId);
+		    select.innerHTML = '<option value="null">선택 없음</option>';
+		}
+		
+		
+		// 저장
+		function getRoomCategorySeq() {
+		    const l3 = document.getElementById('roomCategoryL3').value;
+		    const l2 = document.getElementById('roomCategoryL2').value;
+		    const l1 = document.getElementById('roomCategoryL1').value;
+
+		    if (l3 && l3 !== 'null') return l3;
+		    if (l2 && l2 !== 'null') return l2;
+		    return l1;
+		}
+		
+		// btnModalConfirm 클릭시 생성/입장
+		btnModalConfirm.addEventListener('click', function() {
+			const action = this.textContent.trim();
+			
+			if(action === '생성'){
+				createRoom();
+			} else if(action === '입장'){
+				joinRoom();
+			}
+			
+		});
+		
+		// 방입장
+		function createRoom(){
+			const dto = {
+			        title: document.getElementById('newRoomName').value,
+			        maxMemberCnt: document.getElementById('newRoomDescNum').value,
+			        categorySeq: getRoomCategorySeq(), // 카테고리를 정하는 함수
+			        memberSeq: ${sessionScope.auth.seq}, // 로그인한 유저 seq (세션에서 가져와야 함)
+			};
+			fetch('http://localhost:8080/jesiyo/chat/room', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify(dto)
+		    })
+		    .then(res => {
+		        if (res.ok) {
+		            alert('채팅방이 생성되었습니다!');
+		            closeModal();       // 모달 닫기
+		            loadRoomList();     // 방 목록 새로고침
+		        } else {
+		            alert('채팅방 생성에 실패했습니다.');
+		        }
+		    });
+			
+			
+		};
+		
+		
+		
     
     </script>
 

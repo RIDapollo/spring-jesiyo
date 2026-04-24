@@ -24,7 +24,7 @@ public class LocationApi {
 	public ResponseEntity<LocationDto> setMemberLocation(@RequestBody LocationDto dto) {
 
 		LocationDto result = locationService.addOrGet(dto);
-		// 나중에 memberSeq 를 PathVariable로 받아서 처리해야 함!
+		// TODO 나중에 memberSeq 를 PathVariable로 받아서 처리해야 함!
 //		memberService.updateLocation(memberSeq, dto.getSeq());
 		
 		return ResponseEntity.ok(result);
