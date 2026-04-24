@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
+import com.test.jesiyo.auction.dto.BidDto;
 import com.test.jesiyo.auction.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
@@ -57,6 +57,11 @@ public class AuctionDao {
 	public int bid(Map<String, Object> map) {
 		
 		return template.insert("auction.bid", map);
+	}
+
+	public List<BidDto> getLatestBids(int seq) {
+		
+		return template.selectList("auction.getLatestBids", seq);
 	}
 	
 	
