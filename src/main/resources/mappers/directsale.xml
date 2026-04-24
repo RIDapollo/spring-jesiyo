@@ -18,8 +18,8 @@
     </select>
 
     <insert id="add" parameterType="DirectSaleDto">
-	    INSERT INTO direct_sale (seq, name, description, status, product_name, image_url, price, created_at, seller_seq, category_seq, trade_location_seq)
-	    VALUES (direct_sale_seq.nextval, #{name}, #{description}, #{status}, #{productName},  NVL(#{imageUrl}, '/images/default-product.jpg'), #{price}, SYSDATE, #{sellerSeq}, #{categorySeq}, #{tradeLocationSeq})
+	    INSERT INTO direct_sale (seq, name, description, product_name, image_url, price, created_at, seller_seq, category_seq, trade_location_seq)
+	    VALUES (direct_sale_seq.nextval, #{name}, #{description, jdbcType=VARCHAR}, #{productName}, #{imageUrl, jdbcType=VARCHAR}, #{price}, SYSDATE, #{sellerSeq}, #{categorySeq}, #{tradeLocationSeq})
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">

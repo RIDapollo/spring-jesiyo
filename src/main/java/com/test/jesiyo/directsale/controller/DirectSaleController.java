@@ -106,8 +106,9 @@ public class DirectSaleController {
 //		String imageUrl = "test";
 		
 		DirectSaleDto result = directSaleService.add(dto);
+		System.out.println(result);
 		
-		return "redirect:/directsales/";
+		return "redirect:/directsales";
 	}
 	
 	@GetMapping("/directsales/{seq}/edit")

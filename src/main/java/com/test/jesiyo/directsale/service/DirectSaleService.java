@@ -24,6 +24,11 @@ public class DirectSaleService {
     }
 
     public DirectSaleDto add(DirectSaleDto dto) {
+    	
+    	// image-url 널처리
+    	if (dto.getImageUrl() == null || dto.getImageUrl().isEmpty()) {
+    	    dto.setImageUrl("/images/default-product.jpg");
+    	}
 
         dao.add(dto);
 
