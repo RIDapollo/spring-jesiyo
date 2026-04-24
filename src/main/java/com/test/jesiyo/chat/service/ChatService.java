@@ -21,9 +21,5 @@ public class ChatService {
 		return chatDao.findBySeq(seq);
 	}
 
-	public List<ChatRoomDto> getChatRoomList(String seq) {
-	
-		return chatDao.getChatRoomList(seq);
-	}
 
 }

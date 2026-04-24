@@ -20,8 +20,6 @@ public class ChatDao {
 		return template.selectOne("chat-member.temp",seq);
 	}
 
-	public List<ChatRoomDto> getChatRoomList(String seq) {
-		return template.selectList("chat.getChatRoomList", seq);
-	}
+	
 
 }

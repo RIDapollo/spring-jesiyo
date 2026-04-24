@@ -1,5 +1,7 @@
 package com.test.jesiyo.chat.repository;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,11 @@ public class ChatRoomDao {
 
 	private final SqlSessionTemplate template;
 
+	// 채팅방 목록 불러오기
+	public List<ChatRoomDto> getChatRoomList(String seq) {
+		return template.selectList("chat-room.getChatRoomList", seq);
+	}
+	
 	// 채팅방 생성
 	public int add(ChatRoomDto dto) {
 		return template.insert("chat-room.add", dto);

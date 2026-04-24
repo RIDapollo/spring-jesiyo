@@ -1,6 +1,7 @@
 package com.test.jesiyo.chat.service;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class ChatRoomService {
 		
 		// 방코드 추가
 		String code = createCode();;
+		
 		// 중복체크
 		while(checkCode(code) > 0) {
 			code = createCode();
@@ -60,5 +62,10 @@ public class ChatRoomService {
 		return chatRoomDao.checkCode(code);
 	}
 	
-
+	
+	public List<ChatRoomDto> getChatRoomList(String seq) {
+		
+		return chatRoomDao.getChatRoomList(seq);
+	}
+	
 }
