@@ -26,11 +26,15 @@ public class ChatRoomService {
 		
 		dto.setCode(code);
 		
-		int result = chatRoomDao.add(dto);
+		int resultRoom = chatRoomDao.add(dto);
         
-        if (result == 0) {
+        if (resultRoom == 0) {
             throw new RuntimeException("채팅방 생성 실패");
         }
+        
+        // 채팅방 생성에 성공했다면 그 방장의 정보를 채팅방 인원에 포함
+        int resultMember = chatRoomDao.addMember(dto);
+        
 		
 	}
 	

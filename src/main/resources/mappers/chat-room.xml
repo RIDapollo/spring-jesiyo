@@ -11,8 +11,11 @@
 	
 	
 	<insert id="add" parameterType="chatRoomDto">
+		<selectKey keyProperty="seq" resultType="int" order="BEFORE">
+	        SELECT CHAT_ROOM_SEQ.nextval FROM DUAL
+	    </selectKey>
 		INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, CATEGORY_SEQ, MEMBER_SEQ, CODE) 
-		VALUES (CHAT_ROOM_SEQ.nextval, #{title}, DEFAULT, #{maxMemberCnt}, default, @{categorySeq}, #{memberSeq}, #{code});
+		VALUES (#{seq}, #{title}, DEFAULT, #{maxMemberCnt}, default, #{categorySeq}, #{memberSeq}, #{code});
 	</insert>
 
 </mapper>
