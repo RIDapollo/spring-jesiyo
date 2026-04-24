@@ -194,10 +194,11 @@
 
     <div id="form-create">
         <label class="room-modal-label">채팅방 이름</label>
-        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" />
+        <input type="text" class="room-modal-input" id="newRoomName" placeholder="예: 아이폰 거래 채팅" maxlength="30" required/>
         
         <label class="room-modal-label">카테고리(대분류)</label>
             <select class="room-modal-select" id="roomCategoryL1">
+            	<option value="null">선택 없음</option>
             </select>
        <label class="room-modal-label">카테고리(중분류)</label>
             <select class="room-modal-select" id="roomCategoryL2">
@@ -210,7 +211,7 @@
             
         
         <label class="room-modal-label">최대 인원</label>
-        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" />
+        <input type="number" class="room-modal-input" id="newRoomDescNum" placeholder="채팅방 최대인원을 입력하세요" min="20" max="50" required/>
         
     </div>
     
@@ -339,9 +340,16 @@
 		    const l3 = document.getElementById('roomCategoryL3').value;
 		    const l2 = document.getElementById('roomCategoryL2').value;
 		    const l1 = document.getElementById('roomCategoryL1').value;
+		    
+		    if (l1 == 'null') {
+		   		alert('카테고리를 선택해주세요.'); // 사용자 알림
+		        document.getElementById('roomCategoryL1').focus(); // 해당 셀렉박스로 포커스 이동
+		        return null; // 또는 false (호출한 곳에서 체크 가능하도록)
+		    }
 
-		    if (l3 && l3 !== 'null') return l3;
-		    if (l2 && l2 !== 'null') return l2;
+		    if (l3 !== 'null') return l3;
+		    if (l2 !== 'null') return l2;
+		   	
 		    return l1;
 		}
 		
@@ -357,12 +365,19 @@
 			
 		});
 		
-		// 방입장
+		// 방 생성
 		function createRoom(){
+			// 카테고리 선택 검사
+			const categorySeq = getRoomCategorySeq();
+			
+			if(!categorySeq){
+				return;
+			}
+			
 			const dto = {
 			        title: document.getElementById('newRoomName').value,
 			        maxMemberCnt: document.getElementById('newRoomDescNum').value,
-			        categorySeq: getRoomCategorySeq(), // 카테고리를 정하는 함수
+			        categorySeq: categorySeq, // 카테고리를 정하는 함수
 			        memberSeq: ${sessionScope.auth.seq}, // 로그인한 유저 seq (세션에서 가져와야 함)
 			};
 			fetch('http://localhost:8080/jesiyo/chat/room', {
@@ -374,7 +389,7 @@
 		        if (res.ok) {
 		            alert('채팅방이 생성되었습니다!');
 		            closeModal();       // 모달 닫기
-		            loadRoomList();     // 방 목록 새로고침
+		            //loadRoomList();     // 방 목록 새로고침
 		        } else {
 		            alert('채팅방 생성에 실패했습니다.');
 		        }
