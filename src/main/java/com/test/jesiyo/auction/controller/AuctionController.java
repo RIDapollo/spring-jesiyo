@@ -30,14 +30,14 @@ public class AuctionController {
 	@GetMapping(value = "/auction")
 	public String auction(Model model, 
 			@RequestParam(required = false, defaultValue = "") String word, 
-			@RequestParam(required = false, defaultValue = "") String status, 
+			@RequestParam(required = false, defaultValue = "") String categorySeq, 
 			@RequestParam(required = false, defaultValue = "1") int page) {
 		
 		HashMap<String, String> map = new HashMap<>();
 		
 		//검색정보
 	    map.put("word", word);
-	    map.put("status", status);
+	    map.put("status", categorySeq);
 		
 	    int totalCount = service.getTotalCount(map);
 	    
@@ -53,7 +53,7 @@ public class AuctionController {
 	    model.addAttribute("list", list);
 	    model.addAttribute("paging", paging);
 	    model.addAttribute("word", word);
-	    model.addAttribute("status", status);
+	    model.addAttribute("categorySeq", categorySeq);
 	    
 	    return "auction/auction-list";
 	}

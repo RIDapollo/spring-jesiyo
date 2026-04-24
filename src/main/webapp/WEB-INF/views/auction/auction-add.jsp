@@ -66,7 +66,7 @@
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">경매 상품 설명 <span class="text-rose-500">*</span></label>
-            <textarea name="description" rows="6" placeholder="상품의 상태, 구매 시기, 하자가 있는 부분 등 상세한 설명을 작성해주세요." class="textarea textarea-bordered w-full text-base focus:border-brand-500 focus:outline-none" required></textarea>
+            <textarea name="description" rows="6" placeholder="상품의 상세한 설명을 작성해주세요." class="textarea textarea-bordered w-full text-base focus:border-brand-500 focus:outline-none" required></textarea>
         </div>
 
         <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">

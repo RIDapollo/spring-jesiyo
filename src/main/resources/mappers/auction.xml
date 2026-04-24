@@ -15,8 +15,8 @@
                 
                 <where>
                     <if test="search == 'y'.toString()">
-                        <if test="status != ''">
-                            AND status = #{status}
+                        <if test="categorySeq != ''">
+                            AND categorySeq = #{categorySeq}
                         </if>
                         <if test="word != ''">
                             AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
