@@ -109,5 +109,16 @@
     			WHERE auction_seq = #{seq}
     				AND status = 0)
     </update>
+    
+    <select id="getMyBid" parameterType="map" resultType="BidDto">
+    	SELECT * FROM (
+	        SELECT * FROM bid_history 
+	        WHERE auction_seq = #{seq} 
+	          AND member_seq = #{memberSeq} 
+	          AND status = 0
+	        ORDER BY bid_time DESC
+	    	)
+	    WHERE rownum = 1
+    </select>
 
 </mapper>

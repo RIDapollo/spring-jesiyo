@@ -67,6 +67,11 @@ public class AuctionDao {
 		
 		return template.update("auction.cancelAuctionIfHasNoBids", paramMap);
 	}
+
+	public BidDto getMyBid(Map<String, Object> map) {
+		
+		return template.selectOne("auction.getMyBid", map);
+	}
 	
 	
 	

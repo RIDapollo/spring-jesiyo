@@ -1,7 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -74,13 +74,54 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-center">
                         <span class="block text-xs font-bold text-slate-500 mb-2">내 입찰 상태</span>
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold border border-blue-200">
-                                자동 입찰 중
-                            </span>
-                            <div class="mt-1.5 text-sm font-bold text-slate-800">200,000원</div>
-                            
-                            </div>
+                        <c:choose>
+				        <%-- 1. 입찰 정보(bdto)가 존재하는 경우 --%>
+				        <c:when test="${not empty bdto}">
+				            
+				            <c:choose>
+				                <%-- A. 내가 최고가 입찰자인 경우 (내 금액 >= 최고가) --%>
+				                <c:when test="${bdto.bidPrice >= dtoHasHighestBid.highestBid}">
+				                    <div class="flex flex-col gap-1">
+				                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-600 rounded text-xs font-bold border border-amber-200 w-fit">
+				                            🏆 최고가 입찰 중
+				                        </span>
+				                        <div class="mt-1.5 text-sm font-bold text-slate-800">
+				                            <fmt:formatNumber value="${bdto.bidPrice}" type="number"/>원
+				                        </div>
+				                        <span class="text-[11px] text-slate-400 mt-1">※ 최고가 입찰은 취소할 수 없습니다.</span>
+				                    </div>
+				                </c:when>
+				                
+				                <%-- B. 누군가 나를 추월한 경우 (취소 가능) --%>
+				                <c:otherwise>
+				                    <div>
+				                        <div class="flex items-center gap-2">
+				                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold border border-blue-200">
+				                                🔵 입찰 중 (추월당함)
+				                            </span>
+				                            <button type="button" onclick="cancelBid(${dto.seq})" class="text-xs font-bold text-rose-500 hover:text-rose-700 underline underline-offset-2">
+				                                취소하기
+				                            </button>
+				                        </div>
+				                        <div class="mt-1.5 text-sm font-bold text-slate-800">
+				                            <fmt:formatNumber value="${bdto.bidPrice}" type="number"/>원
+				                        </div>
+				                    </div>
+				                </c:otherwise>
+				            </c:choose>
+				
+				        </c:when>
+				
+				        <%-- 2. 입찰 정보가 없는 경우 --%>
+				        <c:otherwise>
+				            <div>
+				                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 text-slate-400 rounded text-xs font-bold border border-slate-200 w-fit">
+				                    ⚪ 입찰 가능
+				                </span>
+				                <div class="mt-1.5 text-sm font-bold text-slate-400">참여 내역 없음</div>
+				            </div>
+				        </c:otherwise>
+				    </c:choose>
                     </div>
                     
                     <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -93,7 +134,9 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
+            
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-10">
@@ -376,6 +419,32 @@
 	            location.href = '/auction'; 
 	        } else {
 	            alert(result.msg); // 컨트롤러가 보내준 실패 메시지 출력
+	        }
+	    }
+	    
+	    // 입찰 취소
+	    async function cancelBid(auctionSeq) {
+	        if (!confirm('정말 입찰을 취소하시겠습니까?')) return;
+
+	        try {
+	            const response = await fetch(`${pageContext.request.contextPath}/auction/${dto.seq}/bid`, { 
+	                method: 'DELETE' 
+	            });
+	            
+	            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+	            
+	            const result = await response.json();
+
+	            if (result.status === 'success') {
+	                alert('입찰이 취소되었습니다.');
+	                // 새로고침하여 바뀐 상태(입찰 가능)를 화면에 반영
+	                location.reload(); 
+	            } else {
+	                alert(result.msg); 
+	            }
+	        } catch (error) {
+	            console.error('입찰 취소 통신 오류:', error);
+	            alert('취소 처리 중 시스템 오류가 발생했습니다.');
 	        }
 	    }
 
