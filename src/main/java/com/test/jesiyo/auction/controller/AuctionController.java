@@ -148,7 +148,7 @@ public class AuctionController {
 	    paramMap.put("bidPrice", bidPrice);
 	    paramMap.put("memberSeq", 1); //임시
 	    
-	    return service.placeBid(paramMap);
+	    return service.placeBid(paramMap); //최근목록5개, 최고가 포함 auctionDto객체 보유
 	}
 	
 	//입찰상세페이지에서 입찰내역 갱신
