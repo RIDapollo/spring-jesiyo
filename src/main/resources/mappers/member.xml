@@ -7,6 +7,7 @@
 
     <select id="login" parameterType="com.test.jesiyo.member.dto.MemberDto" resultType="com.test.jesiyo.member.dto.MemberDto">
         SELECT 
+        	seq,
             ID AS userId, 
             PW AS userPw,
             name,
