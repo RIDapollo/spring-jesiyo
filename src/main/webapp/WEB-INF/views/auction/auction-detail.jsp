@@ -186,6 +186,32 @@
     </div>
 
     <script>
+    
+	 	//웹소켓 연결
+	    const wsUri = "ws://" + location.host + "${pageContext.request.contextPath}/bid-ws";
+	    const socket = new WebSocket(wsUri);
+	
+	    socket.onopen = function() {
+	        console.log("실시간 입찰 서버에 연결되었습니다.");
+	    };
+	
+	    //서버로부터 누군가 입찰했다는 방송(Broadcast)을 수신했을 때
+	    socket.onmessage = function(event) {
+	        // event.data 예시: {"auctionSeq": "5"}
+	        const msg = JSON.parse(event.data);
+	        
+	        // 수신된 메시지의 경매 번호가 지금 내가 보고 있는 페이지의 경매 번호와 같다면?
+	        if (msg.auctionSeq == auctionSeq) {
+	            console.log("새로운 입찰 감지! 데이터를 갱신합니다.");
+	            // 이미 만들어두신 AJAX 함수 호출! (DB 부하를 최소화하면서 화면만 갱신)
+	            fetchLatestAuctionData(); 
+	        }
+	    };
+	
+	    socket.onclose = function() {
+	        console.log("실시간 입찰 서버와 연결이 끊어졌습니다.");
+	    };
+    
 	    const auctionSeq = parseInt("${dto.seq}", 10);
 	    // JS에서 비교 및 갱신을 위해 현재 최고가 상태를 변수로 저장
 	    let currentHighestBid = parseInt("${dtoHasHighestBid.highestBid}", 10) || 0;
@@ -268,7 +294,6 @@
 	                alert('입찰이 성공적으로 완료되었습니다.');
 	                closeModal('bidModal');
 	                
-	                // [핵심 변경점 1] 
 	                // 서버에서 넘겨준 latestBids 배열을 가공합니다.
 	                // 0번째 인덱스(가장 최근 데이터)에만 isNew=true를 줘서 깜빡임 효과를 부여합니다.
 	                const updatedBids = resultData.latestBids.map((bid, index) => {
@@ -278,8 +303,13 @@
 	                    };
 	                });
 	
-	                // 2. DOM 즉시 갱신 (서버가 보내준 진짜 데이터 사용)
+	                // DOM 즉시 갱신 (서버가 보내준 진짜 데이터 사용)
 	                updateAuctionDataUI(resultData.dtoHasHighestBid.highestBid, updatedBids);
+	                
+	             	// 입찰 성공, 서버(웹소켓)에 방송해달라고 신호 보내기
+	                const msgData = { auctionSeq: auctionSeq };
+	                socket.send(JSON.stringify(msgData));
+	                
 	            } else {
 	                alert('입찰 처리 중 문제가 발생했습니다.');
 	            }
@@ -326,30 +356,6 @@
 	            });
 	        }
 	    }
-	
-	    // 3. 폴링(Polling): 3초마다 다른 사용자의 입찰 확인
-	    async function fetchLatestAuctionData() {
-	        try {
-	            const response = await fetch(`${pageContext.request.contextPath}/auction/latestData?seq=\${auctionSeq}`);
-	            if (response.ok) {
-	                const data = await response.json();
-	                
-	                // 누군가 나보다 높은 입찰을 했다면 갱신!
-	                if (data.highestBid > currentHighestBid) {
-	                    updateAuctionDataUI(data.highestBid, data.latestBids);
-	                }
-	            }
-	        } catch (error) {
-	            // 백그라운드 갱신 실패시 조용히 무시
-	            console.error('실시간 데이터 갱신 실패:', error);
-	        }
-	    }
-	
-	    // 페이지 로딩 완료 시 3초마다 실시간 체크 시작
-	    document.addEventListener('DOMContentLoaded', () => {
-	        // 폴링 기능 테스트 전까지는 주석 처리해두셔도 좋습니다. (서버 컨트롤러 구현 필수)
-	        // setInterval(fetchLatestAuctionData, 3000); 
-	    });
 
 </script>
     </body>
