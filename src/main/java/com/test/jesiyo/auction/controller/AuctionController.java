@@ -81,6 +81,12 @@ public class AuctionController {
 	    
 		AuctionDto dto = service.getDetail(seq);
 		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("seq", seq);
+		map.put("memberSeq", 1); //memberDto seq생기면 수정예정***
+		
+		BidDto bdto = service.getMyBid(map);
+		
 		AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
 		
 		//최근입찰조회
@@ -89,6 +95,7 @@ public class AuctionController {
 		model.addAttribute("dto", dto);
 		model.addAttribute("dtoHasHighestBid", dtoHasHighestBid);
 		model.addAttribute("latestBids", latestBids);
+		model.addAttribute("bdto", bdto);
 		
 	    return "auction/auction-detail";
 	}
@@ -179,6 +186,29 @@ public class AuctionController {
 		}
 		
 		return result;
+	}
+	
+	@DeleteMapping(value = "/auction/{seq}/bid")
+	@ResponseBody
+	public Map<String, Object> cancelBid(@PathVariable("seq") int seq, HttpSession session) {
+	    
+	    Map<String, Object> result = new HashMap<>();
+	    MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
+	    
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("seq", seq); // 경매 번호
+	    paramMap.put("memberSeq", 1); //memberDto에 seq가 추가되면 변경예정***
+	    
+	    int cancelResult = service.cancelMyBid(paramMap); 
+	    
+	    if (cancelResult > 0) {
+	        result.put("status", "success");
+	    } else {
+	        result.put("status", "fail");
+	        result.put("msg", "취소할 입찰 내역이 없거나 이미 취소되었습니다.");
+	    }
+	    
+	    return result;
 	}
 	
 }

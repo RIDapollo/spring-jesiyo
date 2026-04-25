@@ -110,6 +110,16 @@ public class AuctionService {
 		
 		return dao.cancelAuctionIfHasNoBids(paramMap); //쿼리에서 해당 memberSeq가 해당 auction을 만들었는지도 확인함
 	}
+
+	public BidDto getMyBid(Map<String, Object> map) {
+		
+		return dao.getMyBid(map);
+	}
+
+	public int cancelMyBid(Map<String, Object> paramMap) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 	
 }
