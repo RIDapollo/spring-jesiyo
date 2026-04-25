@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MemberDto {
+	private String seq;
 	private String userId;
     private String userPw;
     private String name;        
