@@ -1,5 +1,7 @@
 package com.test.jesiyo;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,18 @@ public class DirectSaleTest {
 	@Test
 	public void testDetails() {
 		// given
-		DirectSaleDto result = directSaleService.getDetail(1L);
+		DirectSaleDto result = directSaleService.getDetail(7L);
 
-		System.out.println(result);
-		// when
-
-		// then
-
+		System.out.println(result.getTradeLocationDto());
+	}
+	
+	@Test
+	public void testfindAll() {
+		// given
+//		List<DirectSaleDto> list = directSaleService.findAll();
+//		for (int i=0; i<list.size();i++) {
+//			System.out.println(list.get(i).getSeq() + ":" + list.get(i).getTradeLocationSeq());
+//		}
+		// 6,7,8
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.type.Alias;
 
 import com.test.jesiyo.category.dto.CategoryDto;
+import com.test.jesiyo.location.dto.TradeLocationDto;
 
 import lombok.Data;
 
@@ -38,4 +39,5 @@ public class DirectSaleDto {
     private Double sellerRating;	// 판매자 평점
     private int tradeCount;			//	판매 횟수
     private List<CategoryDto> categoryPath = new ArrayList<>();
+    private TradeLocationDto tradeLocationDto;
 }
