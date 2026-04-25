@@ -1,6 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -104,13 +105,18 @@
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm sticky bottom-4 z-20">
+        <div class="flex flex-col md:flex-row justify-end items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm sticky bottom-4 z-20">
             
-            <div>
-                <button type="button" class="btn bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 px-6 font-bold py-3 rounded-lg">
-                    🗑️ 경매 삭제
-                </button>
-            </div>
+            <%-- <sec:authorize access="isAuthenticated()">
+			    <c:if test="${sessionScope.user.memberSeq == dto.createMemberSeq}"> --%>
+			        <div class="mr-auto w-full md:w-auto">
+			            <button type="button" onclick="deleteAuction()" 
+			                    class="btn bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 px-6 font-bold py-3 rounded-lg">
+			                🗑️ 경매 삭제
+			            </button>
+			        </div>
+			    <%-- </c:if>
+			</sec:authorize> --%>
             
             <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                 <button type="button" onclick="openModal('autoBidModal')" class="btn bg-slate-800 hover:bg-slate-900 text-white border-0 px-8 font-bold flex-1 md:flex-none shadow-md py-3 rounded-lg">
@@ -354,6 +360,22 @@
 	                // 기존 내용을 지웠으므로 afterbegin 대신 beforeend를 써서 위에서부터 순서대로 차곡차곡 쌓습니다.
 	                historyList.insertAdjacentHTML('beforeend', li);
 	            });
+	        }
+	    }
+	    
+	    // 경매 삭제
+	    async function deleteAuction() {
+	        if (!confirm('경매를 삭제하시겠습니까?')) return;
+
+	        const response = await fetch('${pageContext.request.contextPath}/auction/${dto.seq}', { method: 'DELETE' });
+	        const result = await response.json();
+
+	        if (result.status === 'success') {
+	            alert('삭제되었습니다.');
+	            // 서버에서 success를 받으면 브라우저가 직접 페이지를 이동시킵니다 (클라이언트 사이드 리다이렉트)
+	            location.href = '/auction'; 
+	        } else {
+	            alert(result.msg); // 컨트롤러가 보내준 실패 메시지 출력
 	        }
 	    }
 
