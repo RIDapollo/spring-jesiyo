@@ -30,25 +30,28 @@ public class DirectSaleController {
 	private final DirectSaleService directSaleService;
 	private final CategoryService categoryService;
 	
-	@GetMapping("/directsales")
+	@GetMapping("/direct-sales")
     public String list(Model model) {
 
-        List<DirectSaleDto> list = directSaleService.findAll();
+		int page = 0;
+	    int pageSize = 12;
+		
+        List<DirectSaleDto> list = directSaleService.getListByPage(page);
         model.addAttribute("list", list);
-
-        return "/directsales/list";
+        
+        return "/direct-sales/list";
     }
 	
-	@GetMapping("/directsales/{seq}")
+	@GetMapping("/direct-sales/{seq}")
     public String detail(@PathVariable Long seq, Model model) {
 
         DirectSaleDto dto = directSaleService.findBySeq(seq);
         model.addAttribute("dto", dto);
 
-        return "/directsales/detail";
+        return "/direct-sales/detail";
     }
 	
-	@GetMapping("/directsales/new")
+	@GetMapping("/direct-sales/new")
 	public String getAddPage(Model model, HttpSession session) {
 
 		// TODO 로그인 구현 후 주석 풀어야 함
@@ -60,10 +63,10 @@ public class DirectSaleController {
 		model.addAttribute("roots", roots);
 		
 		
-		return "/directsales/add";
+		return "/direct-sales/add";
 	}
 	
-	@PostMapping("/directsales")
+	@PostMapping("/direct-sales")
 	public String getAddPage(@ModelAttribute DirectSaleDto dto,
 							 @RequestParam("imageFile") MultipartFile imageFile) {
 
@@ -103,24 +106,24 @@ public class DirectSaleController {
 		}
 		directSaleService.add(dto);
 		
-		return "redirect:/directsales";
+		return "redirect:/direct-sales";
 	}
 	
-	@GetMapping("/directsales/{seq}/edit")
+	@GetMapping("/direct-sales/{seq}/edit")
     public String editPage(@PathVariable Long seq, Model model) {
 
         DirectSaleDto dto = directSaleService.findBySeq(seq);
         model.addAttribute("dto", dto);
 
-        return "/directsales/edit";
+        return "/direct-sales/edit";
     }
 	
-	@PutMapping("/directsales/{seq}/edit")
+	@PutMapping("/direct-sales/{seq}/edit")
     public String edit(@PathVariable Long seq, DirectSaleDto dto) {
 
         dto.setSeq(seq);
         directSaleService.update(dto);
 
-        return "redirect:/directsales/" + seq;
+        return "redirect:/direct-sales/" + seq;
     }
 }
