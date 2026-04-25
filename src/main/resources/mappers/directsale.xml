@@ -50,4 +50,36 @@
 	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
+	<select id="getDetail" parameterType="long" resultType="DirectSaleDto">
+        SELECT
+        	ds.seq						as seq,
+        	ds.name 					as name,
+        	ds.description 				as description,
+        	ds.status 					as status,
+       		ds.product_name 			as productName,
+        	ds.image_url 				as imageUrl,
+        	ds.price 					as price,
+        	ds.created_at 				as createdAt,
+        	ds.category_seq 			as categorySeq,
+        	ds.trade_location_seq 		as tradeLocationSeq,
+        	
+        	m.seq 		as sellerSeq,
+        	m.nickname 	as sellerNickname,
+        	m.address 	as sellerAddress,
+        	
+        	(SELECT NVL(ROUND(AVG(tr.score), 1), 0)
+		     FROM trade_review tr
+		     WHERE tr.seller_seq = m.seq) as sellerRating,
+		    (SELECT COUNT(*)
+		     FROM trade_review tr
+		     WHERE tr.seller_seq = m.seq) as tradeCount
+        	
+        FROM direct_sale ds
+        join member m
+        	on ds.seller_seq = m.seq
+        where
+        	ds.seq = #{seq}
+    </select>
+	
+	
 </mapper>

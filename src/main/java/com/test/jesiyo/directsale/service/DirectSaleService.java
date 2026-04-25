@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
 import com.test.jesiyo.directsale.repository.DirectSaleDao;
 import com.test.jesiyo.directsale.util.TimeUtil;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class DirectSaleService {
 
 	private final DirectSaleDao dao;
+	private final CategoryService categoryService;
+	
 	// 페이징 처리 시 한번에 보여줄 도메인 수
     private static final int PAGE_SIZE = 12;
 
@@ -55,5 +58,26 @@ public class DirectSaleService {
         
         return list;
     }
+
+	public DirectSaleDto getDetail(Long seq) {
+		
+		DirectSaleDto dto = dao.getDetail(seq);
+	
+		// 중고거래 시간 표시 변환
+		dto.setTimeAgo(TimeUtil.timeAgo(dto.getCreatedAt()));
+		
+		// 카테고리 경로 얻기
+		dto.setCategoryPath(
+			categoryService
+				.getCategoryPath( dto.getCategorySeq().intValue()
+			)
+		);
+		
+		// TODO 나중에 주소 후처리 필요 (member.address 더미 값 보고 해야 함)
+		
+		return dto;
+	}
+    
+    
     
 }

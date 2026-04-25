@@ -45,4 +45,8 @@ public class DirectSaleDao {
 		
 		return template.selectList("directsale.getListByPage", param);
 	}
+
+	public DirectSaleDto getDetail(Long seq) {
+		return template.selectOne("directsale.getDetail", seq);
+	}
 }

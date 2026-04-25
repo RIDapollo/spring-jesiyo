@@ -43,9 +43,9 @@ public class DirectSaleController {
     }
 	
 	@GetMapping("/direct-sales/{seq}")
-    public String detail(@PathVariable Long seq, Model model) {
+    public String detail(@PathVariable("seq") Long seq, Model model) {
 
-        DirectSaleDto dto = directSaleService.findBySeq(seq);
+        DirectSaleDto dto = directSaleService.getDetail(seq);
         model.addAttribute("dto", dto);
 
         return "/direct-sales/detail";
