@@ -57,6 +57,11 @@ public class AuctionDao {
 		
 		return template.selectList("auction.getLatestBids", seq);
 	}
+
+	public void updatePreviousBid(Map<String, Object> paramMap) {
+		
+		template.update("auction.updatePreviousBid", paramMap);
+	}
 	
 	
 	

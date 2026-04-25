@@ -54,7 +54,7 @@ public class AuctionService {
 
 	    int insertResult = dao.bid(map);
 
-	    if (insertResult == 1) {
+	    if (insertResult > 0) {
 	    	
 	        int seq = (int) map.get("seq");
 	        AuctionDto dtohasHighestBid = dao.getHighestBid(seq);
@@ -79,9 +79,29 @@ public class AuctionService {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
+		try {
+			
+			dao.updatePreviousBid(paramMap); //자신의 이전 입찰 status 1로 변경
+			
+			int insertResult = dao.bid(paramMap);
+			
+			if(insertResult > 0) {
+				result.put("status", "success");
+				
+				int seq = Integer.parseInt(paramMap.get("seq").toString());
+				
+				result.put("latestBids", dao.getLatestBids(seq)); //최근 목록 5개
+				result.put("dtoHasHighestBid", dao.getHighestBid(seq)); //최고가를 포함한 auctionDto객체
+			} else {
+				result.put("status", "fail");
+			}
+			
+		} catch (Exception e) {
+			// 예외 발생 시 트랙잭션 롤백을 위해 RuntimeException을 던집니다.
+			throw new RuntimeException("입찰 처리 중 오류 발생!", e);
+		}
 		
-		
-		return null;
+		return result;
 	}
 	
 	

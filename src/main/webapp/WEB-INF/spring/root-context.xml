@@ -17,7 +17,7 @@
         <property name="driverClassName"
             value="oracle.jdbc.OracleDriver"></property>
         <property name="jdbcUrl"
-            value="jdbc:oracle:thin:@xhvnup5lje1tl88s_high?TNS_ADMIN=${wallet.path}"></property>
+            value="jdbc:oracle:thin:@xhvnup5lje1tl88s_low?TNS_ADMIN=${wallet.path}"></property>
         <property name="username" value="${db.username}"></property>
         <property name="password" value="${db.password}"></property>
         

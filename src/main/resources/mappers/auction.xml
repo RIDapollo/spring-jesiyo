@@ -77,7 +77,7 @@
         select a.*,
            (select max(bid_price)
             from bid_history b
-            where b.auction_seq = a.seq) as highestBid
+            where b.auction_seq = a.seq and b.status = 0) as highestBid
         from auction a
         where a.seq = #{_parameter}
     </select>
@@ -90,9 +90,13 @@
     <select id="getLatestBids" parameterType="int" resultType="BidDto">
     	SELECT *
 		FROM bid_history
-		WHERE auction_seq = #{_parameter}
+		WHERE auction_seq = #{_parameter} and status = 0
 		ORDER BY bid_time DESC
 		FETCH FIRST 5 ROWS ONLY
     </select>
+    
+    <update id="updatePreviousBid" parameterType="map">
+    	update bid_history set status = 1 where auction_seq = #{seq} and member_seq = #{memberSeq} and status = 0
+    </update>
 
 </mapper>
