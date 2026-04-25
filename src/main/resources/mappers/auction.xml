@@ -35,10 +35,6 @@
         </where>
     </select>
     
-    <select id="getMdto" parameterType="int" resultType="com.test.jesiyo.auction.dto.MemberDto">
-        select * from member where seq = #{_parameter}
-    </select>
-    
     <insert id="addMaster" parameterType="map">
         <selectKey keyProperty="dto.seq" resultType="int" order="BEFORE">
             SELECT auction_master_seq.nextval FROM dual

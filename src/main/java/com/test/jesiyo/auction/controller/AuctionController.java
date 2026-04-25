@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
 import com.test.jesiyo.auction.dto.BidDto;
-import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.service.AuctionService;
+import com.test.jesiyo.member.dto.MemberDto;
 import com.test.jesiyo.pagination.PageDto;
 
 import lombok.RequiredArgsConstructor;
@@ -73,7 +75,9 @@ public class AuctionController {
 	
 	//상세화면
 	@GetMapping(value = "/auction/{seq}")
-	public String detail(@PathVariable("seq") int seq, Model model) {
+	public String detail(@PathVariable("seq") int seq, Model model, HttpSession session) {
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
 	    
 		AuctionDto dto = service.getDetail(seq);
 		
@@ -91,8 +95,10 @@ public class AuctionController {
 	
 	//등록
 	@PostMapping(value = "/auction")
-	public String add(AuctionDto dto, MultipartFile imageFile, HttpServletRequest req) {
+	public String add(AuctionDto dto, MultipartFile imageFile, HttpServletRequest req, HttpSession session) {
 	    
+		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
+		
 		String path = "C:/dev/upload";
 	    
 	    try {
@@ -115,9 +121,6 @@ public class AuctionController {
 	        e.printStackTrace();
 	    }
 	    
-	    //임시멤버dto
-	    MemberDto mdto = service.getMdto(1);
-	    
 	    HashMap<String, Object> map = new HashMap<String, Object>();
 	    map.put("dto", dto);
 	    map.put("mdto", mdto);
@@ -130,29 +133,22 @@ public class AuctionController {
 	//입찰
 	@PostMapping(value = "/auction/bid")
 	@ResponseBody
-	public Map<String, Object> bid(@RequestBody Map<String, Object> map) {
+	public Map<String, Object> bid(@RequestBody Map<String, Object> map, HttpSession session) {
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
 		
 		int seq = Integer.parseInt(map.get("seq").toString());
 	    int bidPrice = Integer.parseInt(map.get("bidPrice").toString());
-	    
-	    //임시멤버dto
-	    MemberDto mdto = service.getMdto(1);
 	    
 	    Map<String, Object> paramMap = new HashMap<>();
 	    
 	    paramMap.put("seq", seq);
 	    paramMap.put("bidPrice", bidPrice);
-	    paramMap.put("memberSeq", mdto.getSeq());
+	    paramMap.put("memberSeq", 1); //임시
 	    
-	    Map<String, Object> result = service.bid(paramMap);
-	    
-	    //최근 입찰목록 5개 조회
-	    if ("success".equals(result.get("status"))) {
-	    	List<BidDto> latestBids = service.getLatestBids(seq); // 최근 5개 조회
-	        result.put("latestBids", latestBids);
-	    }
-	    
-	    return result;
+	    return service.placeBid(paramMap);
 	}
 	
 	//입찰상세페이지에서 입찰내역 갱신

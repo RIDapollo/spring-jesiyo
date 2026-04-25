@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
 import com.test.jesiyo.auction.dto.BidDto;
-import com.test.jesiyo.auction.dto.MemberDto;
 import com.test.jesiyo.auction.repository.AuctionDao;
 
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,6 @@ public class AuctionService {
 	public int getTotalCount(HashMap<String, String> map) {
 		
 		return dao.getTotalCount(map);
-	}
-
-	public MemberDto getMdto(int i) {
-		
-		return dao.getMdto(1);
 	}
 	
 	@Transactional
@@ -78,6 +72,16 @@ public class AuctionService {
 	public List<BidDto> getLatestBids(int seq) {
 		
 		return dao.getLatestBids(seq);
+	}
+	
+	@Transactional
+	public Map<String, Object> placeBid(Map<String, Object> paramMap) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		
+		
+		return null;
 	}
 	
 	
