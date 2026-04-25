@@ -77,15 +77,19 @@ public class AuctionController {
 	@GetMapping(value = "/auction/{seq}")
 	public String detail(@PathVariable("seq") int seq, Model model, HttpSession session) {
 		
-		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
 	    
 		AuctionDto dto = service.getDetail(seq);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("seq", seq);
-		map.put("memberSeq", 1); //memberDto seq생기면 수정예정***
 		
-		BidDto bdto = service.getMyBid(map);
+		BidDto bdto = null;
+		
+		if(mdto != null) {
+			map.put("memberSeq", mdto.getSeq());
+			bdto = service.getMyBid(map);
+		}
 		
 		AuctionDto dtoHasHighestBid = service.getHighestBid(seq);
 		
@@ -100,11 +104,11 @@ public class AuctionController {
 	    return "auction/auction-detail";
 	}
 	
-	//등록
+	//경매 등록
 	@PostMapping(value = "/auction")
 	public String add(AuctionDto dto, MultipartFile imageFile, HttpServletRequest req, HttpSession session) {
 	    
-		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
 		
 		String path = "C:/dev/upload";
 	    
@@ -144,7 +148,7 @@ public class AuctionController {
 		
 		Map<String, Object> result = new HashMap<>();
 		
-		MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
 		
 		int seq = Integer.parseInt(map.get("seq").toString());
 	    int bidPrice = Integer.parseInt(map.get("bidPrice").toString());
@@ -153,11 +157,12 @@ public class AuctionController {
 	    
 	    paramMap.put("seq", seq);
 	    paramMap.put("bidPrice", bidPrice);
-	    paramMap.put("memberSeq", 1); //임시 membderDto에 seq 추가되면 변경예정***
+	    paramMap.put("memberSeq", mdto.getSeq());
 	    
 	    return service.placeBid(paramMap); //최근목록5개, 최고가 포함 auctionDto객체 보유
 	}
 	
+	//경매 삭제
 	@DeleteMapping(value = "auction/{seq}")
 	@ResponseBody
 	public Map<String, Object> delete(@PathVariable("seq") int seq, HttpSession session) {
@@ -174,7 +179,7 @@ public class AuctionController {
 		
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("seq", seq);
-		paramMap.put("memberSeq", 1); //memberDto에 seq가 추가되면 변경예정***
+		paramMap.put("memberSeq", mdto.getSeq());
 		
 		int delResult = service.cancelAuctionIfHasNoBids(paramMap);
 		
@@ -188,27 +193,139 @@ public class AuctionController {
 		return result;
 	}
 	
-	@DeleteMapping(value = "/auction/{seq}/bid")
+	// 실시간 데이터 갱신용 API (화면 렌더링 없이 JSON 데이터만 반환)
+	@GetMapping(value = "/auction/api/latest/{seq}")
 	@ResponseBody
-	public Map<String, Object> cancelBid(@PathVariable("seq") int seq, HttpSession session) {
-	    
+	public Map<String, Object> getLatestAuctionData(@PathVariable("seq") int seq) {
+		
 	    Map<String, Object> result = new HashMap<>();
-	    MemberDto mdto = (MemberDto) session.getAttribute("loginUser");
 	    
-	    Map<String, Object> paramMap = new HashMap<>();
-	    paramMap.put("seq", seq); // 경매 번호
-	    paramMap.put("memberSeq", 1); //memberDto에 seq가 추가되면 변경예정***
-	    
-	    int cancelResult = service.cancelMyBid(paramMap); 
-	    
-	    if (cancelResult > 0) {
-	        result.put("status", "success");
-	    } else {
-	        result.put("status", "fail");
-	        result.put("msg", "취소할 입찰 내역이 없거나 이미 취소되었습니다.");
-	    }
+	    // 최고가 조회
+	    result.put("dtoHasHighestBid", service.getHighestBid(seq));
+	    // 최근 입찰 기록
+	    result.put("latestBids", service.getLatestBids(seq));
 	    
 	    return result;
 	}
+	
+	//내 일반 경매 목록 화면
+	@GetMapping(value = "/auction/myList")
+	public String myAuctionList(Model model, HttpSession session,
+			@RequestParam(required = false, defaultValue = "1") int page) {
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
+		
+		// 세션 만료 시 로그인 페이지로 리다이렉트
+		if (mdto == null) {
+			return "redirect:/member/login"; 
+		}
+		
+		HashMap<String, String> map = new HashMap<>();
+		map.put("memberSeq", String.valueOf(mdto.getSeq()));
+		
+		// 내가 등록한 경매 총 개수
+		int totalCount = service.getMyAuctionTotalCount(map); 
+		PageDto paging = new PageDto(page, totalCount, 8, 10);
+		
+		map.put("begin", paging.getBegin() + "");
+		map.put("end", paging.getEnd() + "");
+		
+		// 내가 등록한 경매 목록 조회 (서비스/매퍼에 메서드 추가 필요)
+		List<AuctionDto> list = service.getMyAuctionList(map); 
+
+		model.addAttribute("list", list);
+		model.addAttribute("paging", paging);
+		
+		return "auction/auction-myList";
+	}
+
+	// 2. 내 입찰 목록 화면
+	@GetMapping(value = "/auction/myBidList")
+	public String myBidList(Model model, HttpSession session,
+			@RequestParam(required = false, defaultValue = "1") int page) {
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
+		
+		if (mdto == null) {
+			return "redirect:/member/login";
+		}
+		
+		HashMap<String, String> map = new HashMap<>();
+		map.put("memberSeq", String.valueOf(mdto.getSeq()));
+		
+		// 내가 입찰한 경매 총 개수
+		int totalCount = service.getMyBidTotalCount(map); 
+		PageDto paging = new PageDto(page, totalCount, 8, 10);
+		
+		map.put("begin", paging.getBegin() + "");
+		map.put("end", paging.getEnd() + "");
+		
+		// 내가 입찰한 목록 조회 (AuctionDto 안에 myBidPrice, highestBid 등 매핑 필요)
+		List<AuctionDto> list = service.getMyBidList(map); 
+		
+		model.addAttribute("list", list);
+		model.addAttribute("paging", paging);
+		
+		return "auction/auction-myBidList";
+	}
+	
+	// 나의 경매 취소 (내 경매 목록 화면용)
+//		@PostMapping(value = "/auction/cancel/{seq}")
+//		@ResponseBody
+//		public Map<String, Object> cancelMyAuction(@PathVariable("seq") int seq, HttpSession session) {
+//			
+//			Map<String, Object> result = new HashMap<>();
+//			MemberDto mdto = (MemberDto) session.getAttribute("user");
+//			
+//			if (mdto == null) {
+//				result.put("status", "fail");
+//				result.put("msg", "로그인이 필요합니다.");
+//				return result;
+//			}
+//			
+//			Map<String, Object> paramMap = new HashMap<>();
+//			paramMap.put("seq", seq);
+//			paramMap.put("memberSeq", mdto.getSeq());
+//			
+//			// 기존에 만드신 cancelAuctionIfHasNoBids 메서드 활용 또는
+//			// 패널티 부과 로직이 포함된 새로운 취소 로직 호출
+//			int delResult = service.cancelMyAuctionWithPenalty(paramMap); 
+//			
+//			if (delResult > 0) {
+//				result.put("status", "success");
+//			} else {
+//				result.put("status", "fail");
+//				result.put("msg", "경매 종료 1시간 전이거나 이미 낙찰된 경매는 취소할 수 없습니다.");
+//			}
+//			
+//			return result;
+//		}
+
+		// 나의 입찰 취소 (내 입찰 목록 화면용)
+//		@PostMapping(value = "/auction/cancelBid/{bidSeq}")
+//		@ResponseBody
+//		public Map<String, Object> cancelMyBid(@PathVariable("bidSeq") int bidSeq, HttpSession session) {
+//			
+//			Map<String, Object> result = new HashMap<>();
+//			MemberDto mdto = (MemberDto) session.getAttribute("user");
+//			
+//			if (mdto == null) {
+//				result.put("status", "fail");
+//				result.put("msg", "로그인이 필요합니다.");
+//				return result;
+//			}
+//			
+//			// 입찰 취소 로직 (서비스에서 최고가 입찰자인 경우 취소 불가 등의 검증 필요)
+//			int cancelResult = service.cancelBid(bidSeq, mdto.getSeq());
+//			
+//			if (cancelResult > 0) {
+//				result.put("status", "success");
+//			} else {
+//				result.put("status", "fail");
+//				result.put("msg", "최고가 입찰 중이거나 이미 종료된 경매의 입찰은 취소할 수 없습니다.");
+//			}
+//			
+//			return result;
+//		}
 	
 }

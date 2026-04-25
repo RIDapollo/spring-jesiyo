@@ -18,8 +18,8 @@
             <p class="section-desc mb-0">현재 진행 중인 경매 물품과 내 입찰 상태를 확인하세요.</p>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <button class="btn flex-1 md:flex-none bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold" onclick="location.href='/jesiyo/auction/myList.do'">내 경매 목록</button>
-            <button class="btn flex-1 md:flex-none bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold" onclick="location.href='/jesiyo/auction/myBidList.do'">내 입찰 목록</button>
+            <button class="btn flex-1 md:flex-none bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold" onclick="location.href='/jesiyo/auction/myList'">내 경매 목록</button>
+            <button class="btn flex-1 md:flex-none bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold" onclick="location.href='/jesiyo/auction/myBidList'">내 입찰 목록</button>
         </div>
     </div>
     

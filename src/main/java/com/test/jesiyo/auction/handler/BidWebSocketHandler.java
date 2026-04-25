@@ -22,9 +22,14 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		
-		for (WebSocketSession s : sessions) {
-			s.sendMessage(new TextMessage(message.getPayload()));
-		}
+		String payload = message.getPayload();
+        
+        // 접속해 있는 모든 유저에게 해당 메시지를 브로드캐스트
+        for (WebSocketSession s : sessions) {
+            if (s.isOpen()) {
+                s.sendMessage(new TextMessage(payload));
+            }
+        }
 	}
 	
 	@Override

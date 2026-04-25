@@ -72,7 +72,23 @@ public class AuctionService {
 
 	public List<BidDto> getLatestBids(int seq) {
 		
-		return dao.getLatestBids(seq);
+		List<BidDto> latestBids = dao.getLatestBids(seq);
+		
+		for (BidDto bdto : latestBids) {
+            String originalId = bdto.getUserId();
+            if (originalId != null && originalId.length() > 3) {
+            	
+                String maskedId = originalId.substring(0, 3) + "*".repeat(originalId.length() - 3);
+                
+                bdto.setUserId(maskedId);
+                
+            } else if (originalId != null) {
+                // 아이디가 너무 짧은 경우 앞 1글자만 남김
+            	bdto.setUserId(originalId.substring(0, 1) + "**");
+            }
+        }
+		
+		return latestBids;
 	}
 	
 	@Transactional
@@ -80,28 +96,30 @@ public class AuctionService {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
-		try {
+		int seq = Integer.parseInt(String.valueOf(paramMap.get("seq")));
+	    int bidPrice = Integer.parseInt(String.valueOf(paramMap.get("bidPrice")));
+	    
+	    AuctionDto dtoHasHighestBid = dao.getHighestBid(seq);
+	    if (dtoHasHighestBid != null && bidPrice <= dtoHasHighestBid.getHighestBid()) {
+	        result.put("status", "fail");
+	        result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
+	        return result;
+	    }
 			
-			dao.cancelPreviousBid(paramMap); //자신의 이전 입찰 status 1로 변경
-			
-			int insertResult = dao.bid(paramMap);
-			
-			if(insertResult > 0) {
-				result.put("status", "success");
-				
-				int seq = Integer.parseInt(paramMap.get("seq").toString());
-				
-				result.put("latestBids", dao.getLatestBids(seq)); //최근 목록 5개
-				result.put("dtoHasHighestBid", dao.getHighestBid(seq)); //최고가를 포함한 auctionDto객체
-			} else {
-				result.put("status", "fail");
-			}
-			
-		} catch (Exception e) {
-			// 예외 발생 시 트랙잭션 롤백을 위해 RuntimeException을 던집니다.
-			throw new RuntimeException("입찰 처리 중 오류 발생!", e);
-		}
+		dao.cancelPreviousBid(paramMap); //이전 입찰 status 1로 변경
 		
+		int insertResult = dao.bid(paramMap);
+		
+		if (insertResult <= 0) {
+	        result.put("status", "fail");
+	        result.put("msg", "입찰 처리에 실패했습니다.");
+	        return result;
+	    }
+				
+		result.put("status", "success");
+		result.put("latestBids", dao.getLatestBids(seq)); //최근 목록 5개
+		result.put("dtoHasHighestBid", dao.getHighestBid(seq)); //최고가를 포함한 auctionDto객체
+			
 		return result;
 	}
 	
@@ -116,9 +134,24 @@ public class AuctionService {
 		return dao.getMyBid(map);
 	}
 
-	public int cancelMyBid(Map<String, Object> paramMap) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getMyAuctionTotalCount(HashMap<String, String> map) {
+		
+		return dao.getMyAuctionTotalCount(map);
+	}
+
+	public List<AuctionDto> getMyAuctionList(HashMap<String, String> map) {
+		
+		return dao.getMyAuctionList(map);
+	}
+
+	public int getMyBidTotalCount(HashMap<String, String> map) {
+		
+		return dao.getMyBidTotalCount(map);
+	}
+
+	public List<AuctionDto> getMyBidList(HashMap<String, String> map) {
+		
+		return dao.getMyBidList(map);
 	}
 	
 	

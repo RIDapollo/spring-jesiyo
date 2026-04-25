@@ -88,15 +88,23 @@
     </insert>
     
     <select id="getLatestBids" parameterType="int" resultType="BidDto">
-    	SELECT *
-		FROM bid_history
-		WHERE auction_seq = #{_parameter} and status = 0
-		ORDER BY bid_time DESC
-		FETCH FIRST 5 ROWS ONLY
-    </select>
+	    SELECT 
+	        b.seq, 
+	        b.auction_seq, 
+	        b.member_seq, 
+	        b.bid_price, 
+	        b.bid_time,
+	        b.status,
+	        m.id AS userId  
+	    FROM bid_history b
+	    	INNER JOIN member m ON b.member_seq = m.seq
+	    WHERE b.auction_seq = #{_parameter}
+	    ORDER BY b.bid_time DESC
+	    FETCH FIRST 5 ROWS ONLY
+	</select>
     
     <update id="cancelPreviousBid" parameterType="map">
-    	update bid_history set status = 1 where auction_seq = #{seq} and member_seq = #{memberSeq} and status = 0
+    	update bid_history set status = 1 where auction_seq = #{seq} and status = 0
     </update>
     
     <update id="cancelAuctionIfHasNoBids" parameterType="map">
@@ -114,11 +122,82 @@
     	SELECT * FROM (
 	        SELECT * FROM bid_history 
 	        WHERE auction_seq = #{seq} 
-	          AND member_seq = #{memberSeq} 
-	          AND status = 0
+	          AND member_seq = #{memberSeq}
 	        ORDER BY bid_time DESC
 	    	)
 	    WHERE rownum = 1
     </select>
+    
+    <select id="getMyAuctionTotalCount" parameterType="map" resultType="int">
+    	SELECT count(*) 
+        FROM auction 
+        WHERE create_member_seq = #{memberSeq}
+    </select>
+    
+    <select id="getMyAuctionList" parameterType="map" resultType="AuctionDto">
+        SELECT * FROM (
+            SELECT 
+                s.*, 
+                ROWNUM as rnum 
+            FROM (
+                SELECT 
+                    a.*,
+                    c.name as categoryName,
+                    (SELECT max(bid_price) FROM bid_history b WHERE b.auction_seq = a.seq AND b.status = 0) as highestBid
+                FROM auction a
+                LEFT OUTER JOIN category c ON a.category_seq = c.seq
+                WHERE a.create_member_seq = #{memberSeq}
+                ORDER BY a.seq DESC
+            ) s
+        ) 
+        WHERE rnum BETWEEN #{begin} AND #{end}
+    </select>
+    
+    <select id="getMyBidTotalCount" parameterType="map" resultType="int">
+        SELECT count(DISTINCT auction_seq) 
+        FROM bid_history 
+        WHERE member_seq = #{memberSeq}
+    </select>
+
+    <select id="getMyBidList" parameterType="map" resultType="AuctionDto">
+	    SELECT * FROM (
+	        SELECT 
+	            s.*, 
+	            ROWNUM as rnum 
+	        FROM (
+	            SELECT 
+	                a.seq as auctionSeq,
+	                a.name,
+	                a.image,
+	                a.end_date as endDate,
+	                m.id as sellerName,
+	                c.name as categoryName, -- 카테고리 이름 조인
+	                (SELECT max(seq) FROM bid_history WHERE auction_seq = a.seq AND member_seq = #{memberSeq}) as bidSeq,
+	                (SELECT max(bid_price) FROM bid_history WHERE auction_seq = a.seq AND member_seq = #{memberSeq}) as myBidPrice,
+	                (SELECT max(bid_price) FROM bid_history WHERE auction_seq = a.seq AND status = 0) as highestBid
+	            FROM auction a
+	            INNER JOIN member m ON a.create_member_seq = m.seq
+	            LEFT OUTER JOIN category c ON a.category_seq = c.seq
+	            WHERE a.seq IN (SELECT DISTINCT auction_seq FROM bid_history WHERE member_seq = #{memberSeq})
+	            ORDER BY a.end_date ASC
+	        ) s
+	    ) 
+	    WHERE rnum BETWEEN #{begin} AND #{end}
+	</select>
+
+	<!-- <update id="cancelMyAuctionWithPenalty" parameterType="map">
+        UPDATE auction 
+        SET status = '4' 
+        WHERE seq = #{seq} 
+          AND create_member_seq = #{memberSeq}
+          AND (end_date - SYSDATE) * 24 > 1 
+    </update>
+
+    <update id="cancelBid" parameterType="map">
+        UPDATE bid_history 
+        SET status = 1 
+        WHERE seq = #{bidSeq} 
+          AND member_seq = #{memberSeq}
+    </update> -->
 
 </mapper>

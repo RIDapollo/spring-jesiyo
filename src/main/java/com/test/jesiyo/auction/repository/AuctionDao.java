@@ -72,7 +72,25 @@ public class AuctionDao {
 		
 		return template.selectOne("auction.getMyBid", map);
 	}
-	
-	
+
+	public int getMyAuctionTotalCount(HashMap<String, String> map) {
+		
+		return template.selectOne("auction.getMyAuctionTotalCount", map);
+	}
+
+	public List<AuctionDto> getMyAuctionList(HashMap<String, String> map) {
+		
+		return template.selectList("auction.getMyAuctionList", map);
+	}
+
+	public int getMyBidTotalCount(HashMap<String, String> map) {
+		
+		return template.selectOne("auction.getMyBidTotalCount", map);
+	}
+
+	public List<AuctionDto> getMyBidList(HashMap<String, String> map) {
+		
+		return template.selectList("auction.getMyBidList", map);
+	}
 	
 }

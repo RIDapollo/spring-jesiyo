@@ -17,4 +17,5 @@ public class BidDto {
 	private int memberSeq;
 	private int auctionSeq;
 	
+	private String userId;
 }
