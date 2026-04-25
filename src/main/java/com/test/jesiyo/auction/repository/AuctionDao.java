@@ -58,9 +58,14 @@ public class AuctionDao {
 		return template.selectList("auction.getLatestBids", seq);
 	}
 
-	public void updatePreviousBid(Map<String, Object> paramMap) {
+	public void cancelPreviousBid(Map<String, Object> paramMap) {
 		
-		template.update("auction.updatePreviousBid", paramMap);
+		template.update("auction.cancelPreviousBid", paramMap);
+	}
+
+	public int cancelAuctionIfHasNoBids(Map<String, Object> paramMap) {
+		
+		return template.update("auction.cancelAuctionIfHasNoBids", paramMap);
 	}
 	
 	

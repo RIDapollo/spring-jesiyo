@@ -47,7 +47,8 @@ public class AuctionService {
 		
 		return dao.getHighestBid(seq);
 	}
-
+	
+	@Transactional
 	public Map<String, Object> bid(Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<>();
@@ -81,7 +82,7 @@ public class AuctionService {
 		
 		try {
 			
-			dao.updatePreviousBid(paramMap); //자신의 이전 입찰 status 1로 변경
+			dao.cancelPreviousBid(paramMap); //자신의 이전 입찰 status 1로 변경
 			
 			int insertResult = dao.bid(paramMap);
 			
@@ -102,6 +103,12 @@ public class AuctionService {
 		}
 		
 		return result;
+	}
+	
+	@Transactional
+	public int cancelAuctionIfHasNoBids(Map<String, Object> paramMap) {
+		
+		return dao.cancelAuctionIfHasNoBids(paramMap); //쿼리에서 해당 memberSeq가 해당 auction을 만들었는지도 확인함
 	}
 	
 	

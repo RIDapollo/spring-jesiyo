@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.jesiyo.auction.dto.AuctionDto;
 import com.test.jesiyo.auction.dto.BidDto;
@@ -146,9 +146,39 @@ public class AuctionController {
 	    
 	    paramMap.put("seq", seq);
 	    paramMap.put("bidPrice", bidPrice);
-	    paramMap.put("memberSeq", 1); //임시 membderDto에 seq 추가되면 변경예정
+	    paramMap.put("memberSeq", 1); //임시 membderDto에 seq 추가되면 변경예정***
 	    
 	    return service.placeBid(paramMap); //최근목록5개, 최고가 포함 auctionDto객체 보유
+	}
+	
+	@DeleteMapping(value = "auction/{seq}")
+	@ResponseBody
+	public Map<String, Object> delete(@PathVariable("seq") int seq, HttpSession session) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
+		
+		if (mdto == null) {
+	        result.put("status", "fail");
+	        result.put("msg", "세션이 만료되었습니다. 다시 로그인해주세요.");
+	        return result;
+	    }
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("seq", seq);
+		paramMap.put("memberSeq", 1); //memberDto에 seq가 추가되면 변경예정***
+		
+		int delResult = service.cancelAuctionIfHasNoBids(paramMap);
+		
+		if(delResult > 0) {
+			result.put("status", "success");
+		} else {
+			result.put("status", "fail");
+			result.put("msg", "현재 입찰이 진행 중인 경매는 취소할 수 없습니다.");
+		}
+		
+		return result;
 	}
 	
 }

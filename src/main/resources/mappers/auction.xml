@@ -95,8 +95,19 @@
 		FETCH FIRST 5 ROWS ONLY
     </select>
     
-    <update id="updatePreviousBid" parameterType="map">
+    <update id="cancelPreviousBid" parameterType="map">
     	update bid_history set status = 1 where auction_seq = #{seq} and member_seq = #{memberSeq} and status = 0
+    </update>
+    
+    <update id="cancelAuctionIfHasNoBids" parameterType="map">
+    	UPDATE auction 
+    	SET status = 3
+    	WHERE seq = #{seq}
+    		AND create_member_seq = #{memberSeq} AND NOT EXISTS (
+    			SELECT 1
+    			FROM bid_history
+    			WHERE auction_seq = #{seq}
+    				AND status = 0)
     </update>
 
 </mapper>
