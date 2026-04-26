@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,13 @@ public class ChatApiController {
         String seq = auth.getSeq(); // 혹은 auth가 UserDto면 getUserSeq() 등
         return ResponseEntity.ok(chatRoomService.getChatRoomList(seq));
     }
+	
+	// 그 채팅방 가져오기
+	@GetMapping("/{seq}")
+	public ChatRoomDto getChatRoom(@PathVariable int seq) {
+	    return chatRoomService.getChatRoom(seq);
+	}
+	
 	
 	// 채팅방 등록
 	@PostMapping

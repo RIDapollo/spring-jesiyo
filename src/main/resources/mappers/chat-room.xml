@@ -22,5 +22,9 @@
 		INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, CATEGORY_SEQ, MEMBER_SEQ, CODE) 
 		VALUES (#{seq}, #{title}, DEFAULT, #{maxMemberCnt}, default, #{categorySeq}, #{memberSeq}, #{code})
 	</insert>
+	
+	<select id="getChatRoom" resultType="chatRoomDto">
+		select * from chat_room where seq = #{_parameter}
+	</select>
 
 </mapper>
