@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="liveAuction">
+
+    <select id="getCurrentSchedule" resultType="map">
+	    SELECT * FROM (
+	        SELECT 
+	            seq as "SEQ", 
+	            broadcast_date as "BROADCAST_DATE", 
+	            broadcast_status as "BROADCAST_STATUS", 
+	            live_auction_seq as "LIVE_AUCTION_SEQ"
+	        FROM live_auction_schedule
+	        WHERE broadcast_status IN (0, 1)
+	        ORDER BY 
+	            broadcast_status DESC,
+	            broadcast_date ASC
+	    )
+	    WHERE ROWNUM = 1
+	</select>
+	
+	<select id="getDetail" parameterType="int" resultType="LiveAuctionDto">
+	    SELECT 
+	        l.seq,
+	        l.name,
+	        l.bid_open_price as bidOpenPrice,
+	        l.image,
+	        l.description,
+	        l.create_member_seq as createMemberSeq,
+	        l.category_seq as categorySeq,
+	        c.name as categoryName,
+	        m.id as sellerId
+	    FROM live_auction l
+	    LEFT OUTER JOIN category c ON l.category_seq = c.seq
+	    INNER JOIN member m ON l.create_member_seq = m.seq
+	    WHERE l.seq = #{seq}
+	</select>
+	
+	<select id="getHighestBid" parameterType="int" resultType="LiveAuctionDto">
+	    SELECT MAX(bid_price) as highestBid
+	    FROM live_bid_history  WHERE live_auction_seq = #{seq} 
+	      AND status = 0
+	</select>
+
+	<select id="getMyBid" parameterType="map" resultType="LiveBidDto">
+	    SELECT * FROM (
+	        SELECT 
+	            seq, 
+	            bid_price as bidPrice, 
+	            bid_time as bidTime, 
+	            status 
+	        FROM live_bid_history WHERE live_auction_seq = #{seq} 
+	          AND member_seq = #{memberSeq}
+	        ORDER BY bid_price DESC
+	    )
+	    WHERE ROWNUM = 1
+	</select>
+
+</mapper>

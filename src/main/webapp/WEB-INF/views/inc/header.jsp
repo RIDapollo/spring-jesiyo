@@ -105,6 +105,7 @@
                 <a href="#">채팅방</a>
                 <a href="${pageContext.request.contextPath}/direct-sales">중고 거래</a>
                 <a href="${pageContext.request.contextPath}/auction">경매</a>
+                <a href="${pageContext.request.contextPath}/auction/live">Live Auction</a>
             </nav>
         </div>
 

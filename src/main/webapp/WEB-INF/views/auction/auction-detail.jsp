@@ -28,7 +28,7 @@
 			<div class="flex items-center gap-2 mb-3">
 				<span
 					class="text-xs font-bold text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">카테고리:
-					${dto.categorySeq}</span> <span
+					${dto.categoryName}</span> <span
 					class="text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200 px-3 py-1 rounded-full">경매번호
 					#${dto.seq}</span>
 			</div>

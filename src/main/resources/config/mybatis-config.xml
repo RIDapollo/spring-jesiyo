@@ -22,6 +22,8 @@
         <!-- 경매관련 dto alias -->
         <typeAlias type="com.test.jesiyo.auction.dto.AuctionDto" alias="AuctionDto"/>
         <typeAlias type="com.test.jesiyo.auction.dto.BidDto" alias="BidDto"/>
+        <typeAlias type="com.test.jesiyo.liveauction.dto.LiveAuctionDto" alias="LiveAuctionDto"/>
+        <typeAlias type="com.test.jesiyo.liveauction.dto.LiveBidDto" alias="LiveBidDto"/>
     </typeAliases>
     
     

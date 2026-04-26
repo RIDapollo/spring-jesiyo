@@ -18,4 +18,5 @@ public class BidDto {
 	private int auctionSeq;
 	
 	private String userId;
+	
 }

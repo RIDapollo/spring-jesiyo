@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSocket
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketConfigurer{
+public class AuctionWebSocketConfig implements WebSocketConfigurer{
 
 	private final BidWebSocketHandler bidWebSocketHandler;
 	

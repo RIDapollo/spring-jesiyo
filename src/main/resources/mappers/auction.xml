@@ -6,24 +6,32 @@
 <mapper namespace="auction">
 
     <select id="list" parameterType="map" resultType="AuctionDto">
-        SELECT * FROM (
-            SELECT 
-                s.*, 
-                ROWNUM as rnum 
-            FROM (
-                SELECT * FROM auction
-                
-                <where>
-                    <if test="word != null and word != ''">
-                        AND (name LIKE '%' || #{word} || '%' OR description LIKE '%' || #{word} || '%')
-                    </if>
-                </where>
-                
-                ORDER BY seq DESC
-            ) s
-        ) 
-        WHERE rnum BETWEEN #{begin} AND #{end}
-    </select>
+	    SELECT * FROM (
+	        SELECT 
+	            s.*, 
+	            ROWNUM as rnum 
+	        FROM (
+	            SELECT 
+	                a.*,
+	                c.name as categoryName,
+	                m.id as sellerName,
+	                NVL((SELECT max(bid_price) FROM bid_history b WHERE b.auction_seq = a.seq AND b.status = 0), 0) as highestBid,
+	                (SELECT max(bid_price) FROM bid_history WHERE auction_seq = a.seq AND member_seq = #{memberSeq}) as myBidPrice
+	            FROM auction a
+	            LEFT OUTER JOIN category c ON a.category_seq = c.seq
+	            INNER JOIN member m ON a.create_member_seq = m.seq
+	            
+	            <where>
+	                <if test="word != null and word != ''">
+	                    AND (a.name LIKE '%' || #{word} || '%' OR a.description LIKE '%' || #{word} || '%')
+	                </if>
+	            </where>
+	            
+	            ORDER BY a.seq DESC
+	        ) s
+	    ) 
+	    WHERE rnum BETWEEN #{begin} AND #{end}
+	</select>
     
     <select id="getTotalCount" parameterType="map" resultType="int">
         SELECT count(*) 
@@ -70,7 +78,11 @@
     </insert>
     
     <select id="getDetail" parameterType="int" resultType="AuctionDto">
-        select * from auction where seq = #{_parameter}
+        select 
+        	a.*, c.name as categoryName 
+        from auction a
+        LEFT OUTER JOIN category c ON a.category_seq = c.seq
+        where a.seq = #{_parameter}
     </select>
     
     <select id="getHighestBid" parameterType="int" resultType="AuctionDto">
