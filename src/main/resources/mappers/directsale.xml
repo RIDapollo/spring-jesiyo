@@ -23,13 +23,17 @@
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">
-        UPDATE direct_sale
-        SET
-            name = #{name},
-            price = #{price},
-            description = #{description}
-        WHERE seq = #{seq}
-    </update>
+	    UPDATE direct_sale
+	    SET
+	        name = #{name},
+	        description = #{description},
+	        product_name = #{productName},
+	        image_url = #{imageUrl},
+	        price = #{price},
+	        category_seq = #{categorySeq},
+	        trade_location_seq = #{tradeLocationSeq}
+	    WHERE seq = #{seq}
+	</update>
 
     <delete id="delete" parameterType="long">
         DELETE FROM direct_sale
@@ -61,6 +65,7 @@
 	    <result property="price" column="price"/>
 	    <result property="createdAt" column="createdAt"/>
 	    <result property="categorySeq" column="categorySeq"/>
+	    <result property="tradeLocationSeq" column="tradeLocationSeq"/>
 	
 	    <!-- seller -->
 	    <result property="sellerSeq" column="sellerSeq"/>
@@ -91,6 +96,7 @@
 	        ds.price                    AS price,
 	        ds.created_at               AS createdAt,
 	        ds.category_seq            AS categorySeq,
+	        ds.trade_location_seq		AS tradeLocationSeq,
 	
 	        m.seq                      AS sellerSeq,
 	        m.nickname                 AS sellerNickname,
