@@ -14,7 +14,9 @@
     <select id="findBySeq" parameterType="long" resultType="DirectSaleDto">
         SELECT *
         FROM direct_sale
-        WHERE seq = #{seq}
+        WHERE 
+        	seq = #{seq}
+       	and status != '삭제'
     </select>
 
     <insert id="add" parameterType="DirectSaleDto">
@@ -50,6 +52,7 @@
 	    	ON ds.seller_seq = m.seq
 	    LEFT JOIN trade_location tl
 	        ON ds.trade_location_seq = tl.seq
+        WHERE ds.status != '삭제'
 	    ORDER BY ds.seq DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
@@ -123,9 +126,14 @@
 	        ON ds.trade_location_seq = tl.seq
 	
 	    WHERE ds.seq = #{seq}
+	    AND   ds.status != '삭제'
 	</select>
 	
-	
-	
+	<update id="deleteByStatus" parameterType="long">
+	    UPDATE direct_sale
+    	SET
+	        status = '삭제'
+	    WHERE seq = #{seq}
+	</update>
 	
 </mapper>
