@@ -38,9 +38,18 @@ public class AuctionController {
 	@GetMapping(value = "/auction")
 	public String auction(Model model, 
 			@RequestParam(required = false, defaultValue = "") String word,
-			@RequestParam(required = false, defaultValue = "1") int page) {
+			@RequestParam(required = false, defaultValue = "1") int page,
+			HttpSession session) {
 		
 		HashMap<String, String> map = new HashMap<>();
+		
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
+	    if (mdto != null) {
+	        map.put("memberSeq", String.valueOf(mdto.getSeq()));
+	    } else {
+	    	//로그인 아닌경우 에러방지
+	        map.put("memberSeq", "0"); 
+	    }
 		
 		//검색정보
 		if(!word.trim().isEmpty()) {
