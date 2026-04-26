@@ -18,6 +18,12 @@
         <typeAlias type="com.test.jesiyo.directsale.dto.DirectSaleDto" alias="DirectSaleDto"/>
         <typeAlias type="com.test.jesiyo.location.dto.LocationDto" alias="LocationDto"/>
         <typeAlias type="com.test.jesiyo.location.dto.TradeLocationDto" alias="TradeLocationDto"/>
+        
+        <!-- 경매관련 dto alias -->
+        <typeAlias type="com.test.jesiyo.auction.dto.AuctionDto" alias="AuctionDto"/>
+        <typeAlias type="com.test.jesiyo.auction.dto.BidDto" alias="BidDto"/>
+        <typeAlias type="com.test.jesiyo.liveauction.dto.LiveAuctionDto" alias="LiveAuctionDto"/>
+        <typeAlias type="com.test.jesiyo.liveauction.dto.LiveBidDto" alias="LiveBidDto"/>
     </typeAliases>
     
     

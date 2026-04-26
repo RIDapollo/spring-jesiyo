@@ -14,7 +14,9 @@
     <select id="findBySeq" parameterType="long" resultType="DirectSaleDto">
         SELECT *
         FROM direct_sale
-        WHERE seq = #{seq}
+        WHERE 
+        	seq = #{seq}
+       	and status != '삭제'
     </select>
 
     <insert id="add" parameterType="DirectSaleDto">
@@ -23,17 +25,115 @@
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">
-        UPDATE direct_sale
-        SET
-            name = #{name},
-            price = #{price},
-            description = #{description}
-        WHERE seq = #{seq}
-    </update>
+	    UPDATE direct_sale
+	    SET
+	        name = #{name},
+	        description = #{description},
+	        product_name = #{productName},
+	        image_url = #{imageUrl},
+	        price = #{price},
+	        category_seq = #{categorySeq},
+	        trade_location_seq = #{tradeLocationSeq}
+	    WHERE seq = #{seq}
+	</update>
 
     <delete id="delete" parameterType="long">
         DELETE FROM direct_sale
         WHERE seq = #{seq}
     </delete>
-
+	
+	<select id="getListByPage" parameterType="map" resultType="DirectSaleDto">
+	    SELECT
+	        ds.seq, ds.name, ds.product_name AS productName,
+	        ds.price, ds.image_url AS imageUrl, ds.status,
+	        tl.dong, tl.lat, tl.lng, m.name AS sellerName, ds.created_at AS createdAt
+	    FROM direct_sale ds
+	    JOIN member m
+	    	ON ds.seller_seq = m.seq
+	    LEFT JOIN trade_location tl
+	        ON ds.trade_location_seq = tl.seq
+        WHERE ds.status != '삭제'
+	    ORDER BY ds.seq DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	
+	<resultMap id="directSaleDetailMap" type="DirectSaleDto">
+	    <id property="seq" column="seq"/>
+	    <result property="name" column="name"/>
+	    <result property="description" column="description"/>
+	    <result property="status" column="status"/>
+	    <result property="productName" column="productName"/>
+	    <result property="imageUrl" column="imageUrl"/>
+	    <result property="price" column="price"/>
+	    <result property="createdAt" column="createdAt"/>
+	    <result property="categorySeq" column="categorySeq"/>
+	    <result property="tradeLocationSeq" column="tradeLocationSeq"/>
+	
+	    <!-- seller -->
+	    <result property="sellerSeq" column="sellerSeq"/>
+	    <result property="sellerNickname" column="sellerNickname"/>
+	    <result property="sellerAddress" column="sellerAddress"/>
+	
+	    <!-- subquery fields -->
+	    <result property="sellerRating" column="sellerRating"/>
+	    <result property="tradeCount" column="tradeCount"/>
+	
+	    <!-- location DTO -->
+	    <association property="tradeLocationDto" javaType="com.test.jesiyo.location.dto.TradeLocationDto">
+	        <result property="seq" column="location_seq"/>
+	        <result property="dong" column="location_dong"/>
+	        <result property="lat" column="location_lat"/>
+	        <result property="lng" column="location_lng"/>
+	    </association>
+	
+	</resultMap>
+	<select id="getDetail" parameterType="long" resultMap="directSaleDetailMap">
+	    SELECT
+	        ds.seq                      AS seq,
+	        ds.name                     AS name,
+	        ds.description              AS description,
+	        ds.status                   AS status,
+	        ds.product_name             AS productName,
+	        ds.image_url                AS imageUrl,
+	        ds.price                    AS price,
+	        ds.created_at               AS createdAt,
+	        ds.category_seq            AS categorySeq,
+	        ds.trade_location_seq		AS tradeLocationSeq,
+	
+	        m.seq                      AS sellerSeq,
+	        m.nickname                 AS sellerNickname,
+	        m.address                  AS sellerAddress,
+	
+	        tl.seq						AS location_seq,
+	        tl.dong                    AS location_dong,
+	        tl.lat                     AS location_lat,
+	        tl.lng                     AS location_lng,
+	
+	        (SELECT NVL(ROUND(AVG(tr.score), 1), 0)
+	         FROM trade_review tr
+	         WHERE tr.seller_seq = m.seq) AS sellerRating,
+	
+	        (SELECT COUNT(*)
+	         FROM trade_review tr
+	         WHERE tr.seller_seq = m.seq) AS tradeCount
+	
+	    FROM direct_sale ds
+	    JOIN member m
+	        ON ds.seller_seq = m.seq
+	
+	    LEFT JOIN trade_location tl
+	        ON ds.trade_location_seq = tl.seq
+	
+	    WHERE ds.seq = #{seq}
+	    AND   ds.status != '삭제'
+	</select>
+	
+	<update id="deleteByStatus" parameterType="long">
+	    UPDATE direct_sale
+    	SET
+	        status = '삭제'
+	    WHERE seq = #{seq}
+	</update>
+	
 </mapper>

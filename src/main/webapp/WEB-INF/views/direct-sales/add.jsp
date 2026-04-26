@@ -34,7 +34,7 @@
       <h1 class="section-title">내 물건 팔기</h1>
       <p class="section-desc">동네 이웃과 나눌 물건의 정보를 입력해주세요.</p>
     
-        <form action="/jesiyo/directsales" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6">
+        <form action="/jesiyo/direct-sales" method="POST" enctype="multipart/form-data" class="content-card card-pad flex flex-col gap-6">
             <!-- 상품명 -->
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">상품명 <span class="text-rose-500">*</span></label>
@@ -163,7 +163,7 @@
                 </button>
             </div>
     
-            <input type="hidden" name="sellerSeq" value="${sellerSeq}">
+            <input type="hidden" name="sellerSeq" value="${sessionScope.user.seq}">
             
         </form>
     </div>
