@@ -77,6 +77,10 @@ public class DirectSaleService {
 		
 		return dto;
 	}
+
+	public int deleteByStatus(Long seq) {
+		return dao.deleteByStatus(seq);
+	}
     
     
     

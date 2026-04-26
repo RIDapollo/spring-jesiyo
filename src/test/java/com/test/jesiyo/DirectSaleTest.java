@@ -1,5 +1,7 @@
 package com.test.jesiyo;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -34,5 +36,13 @@ public class DirectSaleTest {
 //			System.out.println(list.get(i).getSeq() + ":" + list.get(i).getTradeLocationSeq());
 //		}
 		// 6,7,8
+	}
+	
+	@Test
+	public void testStatusDelete() {
+//		// when
+//		int result = directSaleService.deleteByStatus(21L);
+//		// then
+//		assertEquals(1, result);
 	}
 }

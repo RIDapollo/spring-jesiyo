@@ -49,4 +49,8 @@ public class DirectSaleDao {
 	public DirectSaleDto getDetail(Long seq) {
 		return template.selectOne("directsale.getDetail", seq);
 	}
+
+	public int deleteByStatus(Long seq) {
+		return template.delete("directsale.deleteByStatus", seq);
+	}
 }
