@@ -57,7 +57,6 @@ public class DirectSaleController {
 		// TODO 로그인 구현 후 주석 풀어야 함
 //		Long memberSeq = (Long) session.getAttribute("memberSeq");
 //		model.addAttribute("memberSeq", memberSeq);
-		model.addAttribute("sellerSeq", "1");
 		
 		List<CategoryDto> roots = categoryService.findRoots();
 		model.addAttribute("roots", roots);

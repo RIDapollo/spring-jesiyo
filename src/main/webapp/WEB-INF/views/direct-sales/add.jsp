@@ -163,7 +163,7 @@
                 </button>
             </div>
     
-            <input type="hidden" name="sellerSeq" value="${sellerSeq}">
+            <input type="hidden" name="sellerSeq" value="${sessionScope.user.seq}">
             
         </form>
     </div>
