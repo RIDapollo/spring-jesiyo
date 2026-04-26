@@ -78,7 +78,11 @@
     </insert>
     
     <select id="getDetail" parameterType="int" resultType="AuctionDto">
-        select * from auction where seq = #{_parameter}
+        select 
+        	a.*, c.name as categoryName 
+        from auction a
+        LEFT OUTER JOIN category c ON a.category_seq = c.seq
+        where a.seq = #{_parameter}
     </select>
     
     <select id="getHighestBid" parameterType="int" resultType="AuctionDto">
