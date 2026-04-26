@@ -41,6 +41,11 @@ public class ChatApiController {
 	    return chatRoomService.getChatRoom(seq);
 	}
 	
+	// 채티방 채팅 내역 가져오기
+	@GetMapping("/rooms/logs/{seq}")
+	public List<ChatRoomDto> getChatlogs(@PathVariable int seq) {
+	    return chatRoomService.getChatlogs(seq);
+	}
 	
 	// 채팅방 등록
 	@PostMapping("/rooms")

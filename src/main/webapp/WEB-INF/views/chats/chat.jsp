@@ -404,16 +404,29 @@
         // 유저 리스트 가져오기
         
         // 채팅 목록 가져오기
+        fetch('http://localhost:8080/jesiyo/chat/rooms/logs/' + roomId)
+        .then(res => res.json())
+        .then(logs => {
+        	const area = document.getElementById('messagesArea');
+            area.innerHTML = '';  // 기존 내용 초기화
+
+            logs.forEach(log => {
+                const div = document.createElement('div');
+                div.classList.add('message');
+                div.innerHTML = `
+                    <span class="sender">\${log.chatMemberSeq}</span>
+                    <span class="content">\${log.content}</span>
+                    <span class="time">\${log.regDate}</span>
+                `;
+                area.appendChild(div);
+            });
+
+            // 스크롤 맨 아래로
+            area.scrollTop = area.scrollHeight;
+        });
+        	
         
     }
-    
-    document.getElementById('btn-send').addEventListener('click', function() {
-		
-    	fetch('http://localhost:8080/jesiyo/chat/rooms/')
-    	
-    });
-    
-    
     
     
     </script>
