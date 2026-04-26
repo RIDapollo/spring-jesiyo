@@ -14,7 +14,9 @@
     <select id="findBySeq" parameterType="long" resultType="DirectSaleDto">
         SELECT *
         FROM direct_sale
-        WHERE seq = #{seq}
+        WHERE 
+        	seq = #{seq}
+       	and status != '삭제'
     </select>
 
     <insert id="add" parameterType="DirectSaleDto">
@@ -23,13 +25,17 @@
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">
-        UPDATE direct_sale
-        SET
-            name = #{name},
-            price = #{price},
-            description = #{description}
-        WHERE seq = #{seq}
-    </update>
+	    UPDATE direct_sale
+	    SET
+	        name = #{name},
+	        description = #{description},
+	        product_name = #{productName},
+	        image_url = #{imageUrl},
+	        price = #{price},
+	        category_seq = #{categorySeq},
+	        trade_location_seq = #{tradeLocationSeq}
+	    WHERE seq = #{seq}
+	</update>
 
     <delete id="delete" parameterType="long">
         DELETE FROM direct_sale
@@ -46,6 +52,7 @@
 	    	ON ds.seller_seq = m.seq
 	    LEFT JOIN trade_location tl
 	        ON ds.trade_location_seq = tl.seq
+        WHERE ds.status != '삭제'
 	    ORDER BY ds.seq DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
@@ -61,6 +68,7 @@
 	    <result property="price" column="price"/>
 	    <result property="createdAt" column="createdAt"/>
 	    <result property="categorySeq" column="categorySeq"/>
+	    <result property="tradeLocationSeq" column="tradeLocationSeq"/>
 	
 	    <!-- seller -->
 	    <result property="sellerSeq" column="sellerSeq"/>
@@ -91,6 +99,7 @@
 	        ds.price                    AS price,
 	        ds.created_at               AS createdAt,
 	        ds.category_seq            AS categorySeq,
+	        ds.trade_location_seq		AS tradeLocationSeq,
 	
 	        m.seq                      AS sellerSeq,
 	        m.nickname                 AS sellerNickname,
@@ -117,9 +126,14 @@
 	        ON ds.trade_location_seq = tl.seq
 	
 	    WHERE ds.seq = #{seq}
+	    AND   ds.status != '삭제'
 	</select>
 	
-	
-	
+	<update id="deleteByStatus" parameterType="long">
+	    UPDATE direct_sale
+    	SET
+	        status = '삭제'
+	    WHERE seq = #{seq}
+	</update>
 	
 </mapper>

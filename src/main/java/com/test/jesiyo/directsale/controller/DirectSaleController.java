@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.category.service.CategoryService;
@@ -111,17 +112,63 @@ public class DirectSaleController {
 	@GetMapping("/direct-sales/{seq}/edit")
     public String editPage(@PathVariable Long seq, Model model) {
 
-        DirectSaleDto dto = directSaleService.findBySeq(seq);
+        DirectSaleDto dto = directSaleService.getDetail(seq);
+        List<CategoryDto> roots = categoryService.findRoots();
+		model.addAttribute("roots", roots);
         model.addAttribute("dto", dto);
 
         return "/direct-sales/edit";
     }
 	
-	@PutMapping("/direct-sales/{seq}/edit")
-    public String edit(@PathVariable Long seq, DirectSaleDto dto) {
+	@PostMapping("/direct-sales/{seq}")
+    public String edit(@PathVariable("seq") Long seq, DirectSaleDto dto,
+    					RedirectAttributes rttr,
+    					@RequestParam("imageFile") MultipartFile imageFile) {
+		
 
         dto.setSeq(seq);
-        directSaleService.update(dto);
+        
+    	String uploadPath = "C:/dev/upload";
+
+		// 사진파일 경로로 바꾸기
+		try {
+		    if (imageFile != null && !imageFile.isEmpty()) {
+
+		        // 1. 폴더 없으면 생성
+		        File folder = new File(uploadPath);
+		        if (!folder.exists()) {
+		            folder.mkdirs();
+		        }
+
+		        // 2. 원본 파일명 + 확장자 추출
+		        String originalName = imageFile.getOriginalFilename();
+		        String ext = "";
+
+		        if (originalName != null && originalName.contains(".")) {
+		            ext = originalName.substring(originalName.lastIndexOf("."));
+		        }
+
+		        // 3. UUID 파일명 생성
+		        String saveName = UUID.randomUUID().toString() + ext;
+
+		        // 4. 실제 파일 저장
+		        File saveFile = new File(uploadPath, saveName);
+		        imageFile.transferTo(saveFile);
+
+		        // 5. DB에는 URL 저장 (핵심)
+		        String imageUrl = "/upload/" + saveName;
+		        dto.setImageUrl(imageUrl);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+        
+        int result = directSaleService.update(dto);
+        
+        if (result == 0) {
+            rttr.addFlashAttribute("error", true);
+            return "redirect:/direct-sales/" + seq + "/edit";
+        }
 
         return "redirect:/direct-sales/" + seq;
     }
