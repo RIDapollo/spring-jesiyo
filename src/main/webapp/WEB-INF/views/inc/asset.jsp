@@ -32,6 +32,7 @@
         --color-rose-50: #fff1f2;
         --color-rose-100: #ffe4e6;
         --color-rose-200: #fecdd3;
+		--color-rose-500: #f43f5e;
         --color-rose-600: #e11d48;
     }
 
@@ -49,7 +50,13 @@
         
         /* 버튼 */
         .btn-brand { @apply text-white bg-brand-500 hover:bg-brand-600 border-0 font-bold transition-colors rounded-lg px-4 py-2 cursor-pointer; }
-        
+        /* 서브 버튼 (초록) */
+		.btn-sub { @apply text-white bg-point-500 hover:bg-point-600 border-0 font-bold transition-colors rounded-lg px-4 py-2 cursor-pointer; }
+		/* 취소 버튼 (회색) */
+		.btn-cancel { @apply text-slate-800 bg-slate-200 hover:bg-slate-300 border-0 font-medium transition-colors rounded-lg px-4 py-2 cursor-pointer; }
+		/* 삭제 버튼 */
+		.btn-danger { @apply text-white bg-rose-500 hover:bg-rose-600 border-0 font-bold transition-colors rounded-lg px-4 py-2 cursor-pointer; }
+
         /* 상품 카드 */
         .item-card { @apply bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col; }
         .item-img-wrap { @apply aspect-[4/3] bg-slate-200 overflow-hidden relative; }

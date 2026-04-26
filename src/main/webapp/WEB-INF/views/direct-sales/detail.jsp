@@ -27,26 +27,22 @@
     <div class="page-wrap max-w-3xl">
     
       <div class="flex items-center justify-between mb-4">
-        <button class="btn btn-outline btn-sm text-gray-500 border-gray-300 hover:bg-gray-100"
-          onclick="history.back()">
+        <button class="btn-cancel" onclick="history.back()">
           돌아가기
         </button>
         <!-- 오른쪽: 수정 / 삭제 (작성자만) -->
-        <c:if test="${not empty sessionScope.loginUser 
-        and sessionScope.loginUser.seq == dto.sellerSeq}">
+        <c:if test="${not empty sessionScope.user 
+          and sessionScope.user.seq == dto.sellerSeq}">
           <div class="flex gap-2">
+          
           <!-- 수정 -->
-          <a href="/jesiyo/direct-sales/${dto.seq}/edit" 
-             class="text-sm px-3 py-1.5 border rounded-md hover:bg-slate-100">
-              수정
+          <a href="/jesiyo/direct-sales/${dto.seq}/edit" class="btn-sub">
+            수정
           </a>
           <!-- 삭제 -->
-          <form action="/" method="get">
-              <button type="submit"
-                class="text-sm px-3 py-1.5 border border-red-300 text-red-500 rounded-md hover:bg-red-50">
-                삭제
-              </button>
-          </form>
+          <button type="button" class="btn-danger">
+            삭제
+          </button>
           </div>
         </c:if>
       </div>
@@ -93,7 +89,7 @@
         <div class="flex flex-col gap-3">
             <!-- 제목 -->
             <h1 class="text-2xl font-bold">
-                ${dto.productName}
+                ${dto.name}
             </h1>
             <!-- 카테고리 -->
             <div class="text-sm text-slate-400">
@@ -105,7 +101,7 @@
             </div>
             <!-- 시간 -->
             <div class="text-sm text-slate-400">
-                ${dto.timeAgo}
+                <span class="!text-slate-800">${dto.productName}</span> • ${dto.timeAgo}
             </div>
             <!-- 가격 -->
             <div class="text-2xl font-bold text-slate-900">
