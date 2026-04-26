@@ -25,10 +25,12 @@ select * from CHAT_MEMBER;
 
 
 -- 채팅방 채팅 내역 더미
-insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '안녕하세요', default, 1, 11, 17);
+insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '안녕하세요2', default, 1, 11, 18);
 
-insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '안녕하세요 엄준식입니다.', default, 1, 11, 17);
+insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '안녕하세요 엄준식입니다.2', default, 1, 11, 18);
 
-insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '채팅방 확인용 내역입니다.', default, 1, 11, 17);
+insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '채팅방 확인용 내역입니다.2', default, 1, 11, 18);
 
 select * from chat_log;
+
+select seq from chat_member where member_seq = 3 and CHAT_ROOM_SEQ = 17;
