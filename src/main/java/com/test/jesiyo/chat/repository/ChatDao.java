@@ -20,6 +20,10 @@ public class ChatDao {
 		return template.selectOne("chat-member.temp",seq);
 	}
 
+	public int addChat(ChatRoomDto dto) {
+		return template.insert("chat.addChat", dto);
+	}
+
 	
 
 }

@@ -582,3 +582,86 @@
 
 .room-list::-webkit-scrollbar-thumb,
 .messages-area::-webkit-scrollbar-thumb { background: #1e1f22; border-radius: 2px; }
+
+
+/* 메시지 영역 전체 */
+#messagesArea {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 2px;
+    background-color: #313338; /* 디스코드 배경색 */
+    overflow-y: auto;
+}
+
+/* 메시지 한 줄 (아바타 + 본문) */
+.message {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+
+.message:hover {
+    background-color: #2e3035;
+}
+
+/* 아바타 원형 */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #5865f2; /* 디스코드 보라 */
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    user-select: none;
+    text-transform: uppercase;
+}
+
+/* 본문 영역 */
+.message-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+/* 이름 + 시간 한 줄 */
+.message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+/* 발신자 이름 */
+.sender {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1;
+}
+
+/* 전송 시간 */
+.time {
+    font-size: 0.7rem;
+    color: #72767d;
+    line-height: 1;
+}
+
+/* 메시지 내용 */
+.content {
+    font-size: 0.95rem;
+    color: #dcddde;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+}

@@ -34,5 +34,17 @@ public class ChatRoomDao {
 	public int addMember(ChatRoomDto dto) {
 		return template.insert("chat-member.addMember", dto);
 	}
+
+	public ChatRoomDto getChatRoom(int seq) {
+		return template.selectOne("chat-room.getChatRoom", seq);
+	}
+
+	public int getChatRoomSeq(int seq) {
+		return template.selectOne("chat-room.getChatRoomSeq", seq);
+	}
+
+	public List<ChatRoomDto> getChatlogs(int seq) {
+		return template.selectList("chat-room.getChatLogs", seq);
+	}
 	
 }
