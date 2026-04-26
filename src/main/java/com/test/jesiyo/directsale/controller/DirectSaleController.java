@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.category.service.CategoryService;
@@ -111,17 +112,23 @@ public class DirectSaleController {
 	@GetMapping("/direct-sales/{seq}/edit")
     public String editPage(@PathVariable Long seq, Model model) {
 
-        DirectSaleDto dto = directSaleService.findBySeq(seq);
+        DirectSaleDto dto = directSaleService.getDetail(seq);
         model.addAttribute("dto", dto);
 
         return "/direct-sales/edit";
     }
 	
 	@PutMapping("/direct-sales/{seq}/edit")
-    public String edit(@PathVariable Long seq, DirectSaleDto dto) {
+    public String edit(@PathVariable("seq") Long seq, DirectSaleDto dto,
+    					RedirectAttributes rttr) {
 
         dto.setSeq(seq);
-        directSaleService.update(dto);
+        int result = directSaleService.update(dto);
+        
+        if (result == 0) {
+            rttr.addFlashAttribute("error", true);
+            return "redirect:/direct-sales/" + seq + "/edit";
+        }
 
         return "redirect:/direct-sales/" + seq;
     }

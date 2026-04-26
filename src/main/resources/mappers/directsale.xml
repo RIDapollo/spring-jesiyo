@@ -23,13 +23,17 @@
 	</insert>
 
     <update id="update" parameterType="DirectSaleDto">
-        UPDATE direct_sale
-        SET
-            name = #{name},
-            price = #{price},
-            description = #{description}
-        WHERE seq = #{seq}
-    </update>
+	    UPDATE direct_sale
+	    SET
+	        name = #{name},
+	        description = #{description},
+	        product_name = #{productName},
+	        image_url = #{imageUrl},
+	        price = #{price},
+	        category_seq = #{categorySeq},
+	        trade_location_seq = #{tradeLocationSeq}
+	    WHERE seq = #{seq}
+	</update>
 
     <delete id="delete" parameterType="long">
         DELETE FROM direct_sale
