@@ -71,5 +71,9 @@ public class ChatRoomService {
 	public ChatRoomDto getChatRoom(int seq) {
 		return chatRoomDao.getChatRoom(seq);
 	}
+
+	public int getChatRoomSeq(int seq) {
+		return chatRoomDao.getChatRoomSeq(seq);
+	}
 	
 }

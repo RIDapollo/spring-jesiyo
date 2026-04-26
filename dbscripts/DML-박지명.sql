@@ -25,4 +25,5 @@ select * from CHAT_MEMBER;
 
 
 -- 채팅방 채팅 내역 더미
+insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) values (CHAT_LOG_SEQ.nextval, '안녕하세요', default, 1, 11, 17);
 

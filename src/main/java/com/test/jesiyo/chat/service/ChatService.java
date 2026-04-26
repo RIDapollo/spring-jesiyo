@@ -21,5 +21,11 @@ public class ChatService {
 		return chatDao.findBySeq(seq);
 	}
 
+	public void addChat(ChatRoomDto dto) {
+
+		int resultChat = chatDao.addChat(dto);
+		
+	}
+
 
 }

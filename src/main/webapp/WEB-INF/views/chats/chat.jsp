@@ -390,19 +390,28 @@
         document.getElementById('chatBody').style.display = 'flex';   // 채팅 바디 표시
 
         // 여기서부터 fetch로 방 정보, 메시지, 참여자 채우면 됨
-        alert(roomId);
         fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId)
         .then(res => res.json())
         .then(room => {
             document.getElementById('currentRoomName').textContent = room.title;
         });
-        
+        // 자기 자신의 seq를 알아야함
+       	fetch('http://localhost:8080/jesiyo/chat/rooms/member/'+loginUserSeq)
+        .then(res => res.json())
+        .then(data => {
+        	const mySeq = data.seq;
+        });
         // 유저 리스트 가져오기
         
-        // STOMP 연결
+        // 채팅 목록 가져오기
         
     }
     
+    document.getElementById('btn-send').addEventListener('click', function() {
+		
+    	fetch('http://localhost:8080/jesiyo/chat/rooms/')
+    	
+    });
     
     
     

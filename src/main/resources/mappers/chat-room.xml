@@ -26,5 +26,9 @@
 	<select id="getChatRoom" resultType="chatRoomDto">
 		select * from chat_room where seq = #{_parameter}
 	</select>
+	
+	<select id="getChatRoomSeq" resultType="int">
+		select seq from chat_member where member_seq = #{_parameter}
+	</select>
 
 </mapper>
