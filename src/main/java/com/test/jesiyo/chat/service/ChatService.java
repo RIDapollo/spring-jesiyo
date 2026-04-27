@@ -22,7 +22,7 @@ public class ChatService {
 		return chatDao.findBySeq(seq);
 	}
 
-	public void addChat(ChatRoomDto dto) {
+	public void addChat(ChatLogDto dto) {
 
 		int resultChat = chatDao.addChat(dto);
 		
