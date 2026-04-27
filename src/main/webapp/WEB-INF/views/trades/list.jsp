@@ -99,7 +99,8 @@
         </c:forEach>
         
         <input type="hidden" id="lastSeq" value="${lastSeq}"/>
-        <div class="flex justify-center py-4">
+        <c:if test="${hasMore}">
+        <div class="flex justify-center py-4" id="moreWrap">
             <button 
                 id="moreBtn"
                 class="btn-brand"
@@ -107,6 +108,7 @@
                 더보기
             </button>
         </div>
+</c:if>
         
     </div>
 </div>

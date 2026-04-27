@@ -41,6 +41,9 @@ public class TradeController {
         Long lastSeq = list.isEmpty() ? null : list.get(list.size() - 1).getSeq();
         model.addAttribute("lastSeq", lastSeq);
         
+        // 10개 미만이면 더보기 없음
+        model.addAttribute("hasMore", list.size() == 10);
+        
         return "trades/list";
     }
 }
