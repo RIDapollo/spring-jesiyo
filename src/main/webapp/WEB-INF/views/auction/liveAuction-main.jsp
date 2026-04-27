@@ -25,12 +25,20 @@
                 </h1>
             </div>
             
-            <div>
+            <div class="flex gap-2 items-center">
                 <c:if test="${user.seq == dto.createMemberSeq && schedule.BROADCAST_STATUS == 1}">
+                <span>
+                    <button class="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg shadow-md hover:bg-black transition-all flex items-center gap-2" 
+                            onclick="returnAuction()">
+                        <i class="fas fa-gavel">초기화</i>
+                    </button>
+                </span>
+                <span>
                     <button class="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg shadow-md hover:bg-black transition-all flex items-center gap-2" 
                             onclick="finishAuction()">
-                        <i class="fas fa-gavel"></i> 경매 낙찰 및 종료
+                        <i class="fas fa-gavel">경매 낙찰 및 종료</i>
                     </button>
+                </span>
                 </c:if>
             </div>
         </div>
@@ -102,7 +110,7 @@
                     <div class="mb-5 pb-5 border-b border-slate-100 text-center">
                         <span class="block text-sm font-bold text-slate-500 mb-1">실시간 최고 입찰가</span>
                         <div class="text-4xl font-black text-brand-600 tracking-tighter" id="liveHighestBid">
-                            <fmt:formatNumber value="${dtoHasHighestBid.highestBid != null ? dtoHasHighestBid.highestBid : dto.bidOpenPrice}" pattern="#,###"/>원
+                            <fmt:formatNumber value="${(dtoHasHighestBid != null && dtoHasHighestBid.highestBid != null) ? dtoHasHighestBid.highestBid : dto.bidOpenPrice}" pattern="#,###"/>원
                         </div>
                     </div>
 
@@ -172,7 +180,7 @@
         const auctionSeq = ${dto.seq};
         const isLoggedIn = ${not empty user}; 
         const loginUserId = "${not empty user ? user.userId : '비회원'}";
-        let currentHighestBid = ${dtoHasHighestBid.highestBid != null ? dtoHasHighestBid.highestBid : dto.bidOpenPrice};
+        let currentHighestBid = ${(dtoHasHighestBid != null && dtoHasHighestBid.highestBid != null) ? dtoHasHighestBid.highestBid : dto.bidOpenPrice};
         const liveStatus = ${schedule.BROADCAST_STATUS};
 
         // 타이머용 날짜 파싱
@@ -291,7 +299,11 @@
                 const data = await response.json();
                 
                 // 최고가 갱신
-                currentHighestBid = data.dtoHasHighestBid ? data.dtoHasHighestBid.highestBid : currentHighestBid;
+                if (data.dtoHasHighestBid && data.dtoHasHighestBid.highestBid != null) {
+                    currentHighestBid = data.dtoHasHighestBid.highestBid;
+                } else {
+                    currentHighestBid = ${dto.bidOpenPrice}; // 입찰 내역이 없으면 시작가를 그대로 유지
+                }
                 
                 const formattedHighest = formatNumber(currentHighestBid);
                 document.getElementById('liveHighestBid').innerText = formattedHighest + '원';
@@ -451,6 +463,34 @@
                 }
             })
             .catch(err => console.error("통신 에러:", err));
+        }
+        
+        //개발 테스트용 초기화
+        function returnAuction() {
+            if (!confirm("경매를 초기화하시겠습니까?\n(입찰 내역/포인트락 삭제 및 방송중 상태로 변경됩니다.)")) return;
+            
+            fetch('/jesiyo/auction/live/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    auctionSeq: auctionSeq,
+                    scheduleSeq: ${schedule.SEQ}  // 스케줄 상태 변경을 위해 함께 전송
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 다른 접속자들에게 'RESET' 신호 전송
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'RESET', msg: '경매가 초기화되었습니다.' }));
+                    }
+                    alert("경매가 성공적으로 초기화되었습니다.");
+                    location.reload(); // 방장 본인 화면 새로고침
+                } else {
+                    alert("초기화 실패: " + data.msg);
+                }
+            })
+            .catch(err => console.error("초기화 통신 에러:", err));
         }
     </script>
 </body>
