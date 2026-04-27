@@ -8,6 +8,31 @@
     <meta charset="UTF-8">
     <title>JeSiYo</title>
     <%@ include file="/WEB-INF/views/inc/asset.jsp" %>
+  <style>
+.star {
+    position: relative;
+    display: inline-block;
+    font-size: 32px;
+    color: #d1d5db; /* 회색 */
+}
+
+.star::before {
+    content: "★";
+}
+
+.star-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    overflow: hidden;
+    color: #22c55e; /* 초록 */
+}
+
+.star-fill::before {
+    content: "★";
+}
+</style>
   </head>
   <%@ include file="/WEB-INF/views/inc/header.jsp" %>
   <body class="bg-slate-50">
@@ -85,11 +110,22 @@
                 
                 <!-- 비고 -->
                 <div class="p-3 flex justify-center">
+                    <!-- 판매자: 요청 수락 -->
                     <c:if test="${sessionScope.user.seq == trade.sellerSeq and trade.status != '완료'}">
                         <button 
                             class="btn-sub text-xs px-3 py-1"
                             onclick="acceptTrade(${trade.seq})">
                             요청수락
+                        </button>
+                    </c:if>
+                    <!-- 구매자: 후기 작성 -->
+                    <c:if test="${sessionScope.user.seq == trade.buyerSeq 
+                        and trade.status == '완료'
+                        and not trade.hasWritten}">
+                        <button 
+                            class="btn-sub text-xs px-3 py-1"
+                            onclick="openReviewModal(${trade.seq}, ${trade.sellerSeq}, ${trade.buyerSeq})">
+                            후기작성
                         </button>
                     </c:if>
                 </div>
@@ -110,6 +146,39 @@
         </div>
 </c:if>
         
+    </div>
+</div>
+<!-- 후기 작성 모달 -->
+<div id="reviewModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-80">
+        <div class="text-lg font-bold mb-4 text-center">
+            후기 작성
+        </div>
+        <!-- 별점 영역 -->
+        <div id="starWrap" class="flex justify-center gap-1 mb-4">
+          <span class="star" data-index="0">
+              <span class="star-fill"></span>
+          </span>
+          <span class="star" data-index="1">
+              <span class="star-fill"></span>
+          </span>
+          <span class="star" data-index="2">
+              <span class="star-fill"></span>
+          </span>
+          <span class="star" data-index="3">
+              <span class="star-fill"></span>
+          </span>
+          <span class="star" data-index="4">
+              <span class="star-fill"></span>
+          </span>
+        </div>
+        <div id="scoreText" class="text-center text-sm text-slate-500 mb-4">
+            0점
+        </div>
+        <div class="flex justify-between">
+            <button class="px-3 py-1 bg-slate-200 rounded cursor-pointer" onclick="closeReviewModal()">취소</button>
+            <button class="px-3 py-1 bg-green-500 text-white rounded cursor-pointer" onclick="submitReview()">등록</button>
+        </div>
     </div>
 </div>
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
@@ -193,7 +262,89 @@
     	    });
     	}
   	
-  	
-  	</script>   
+    	let reviewData = {
+    		    tradeSeq: null,
+    		    sellerSeq: null,
+    		    buyerSeq: null,
+    		    score: 0
+    		};
+
+    		// 모달 열기
+    		function openReviewModal(tradeSeq, sellerSeq, buyerSeq) {
+    		    reviewData.tradeSeq = tradeSeq;
+    		    reviewData.sellerSeq = sellerSeq;
+    		    reviewData.buyerSeq = buyerSeq;
+
+    		    $("#reviewModal").removeClass("hidden");
+    		}
+
+    		// 모달 닫기
+    		function closeReviewModal() {
+    		    $("#reviewModal").addClass("hidden");
+    		    reviewData.score = 0;
+    		}
+
+    		// 후기 등록 AJAX
+    		function submitReview() {
+
+    		    if (reviewData.score === 0) {
+    		        alert("점수를 선택하세요.");
+    		        return;
+    		    }
+
+    		    $.ajax({
+    		        url: "/jesiyo/api/trade-reviews/add",
+    		        type: "POST",
+    		        contentType: "application/json",
+    		        data: JSON.stringify({
+    		            tradeSeq: reviewData.tradeSeq,
+    		            sellerSeq: reviewData.sellerSeq,
+    		            buyerSeq: reviewData.buyerSeq,
+    		            score: reviewData.score
+    		        }),
+    		        success: function() {
+    		            alert("후기 등록 완료");
+    		            location.reload();
+    		        },
+    		        error: function() {
+    		            alert("후기 등록 실패");
+    		        }
+    		    });
+    		}
+    		let currentHoverScore = 0;
+
+    		// 별 hover (마우스 움직임)
+    		$(".star").on("mousemove", function(e) {
+    		    const index = $(this).data("index");
+    		    const width = $(this).width();
+    		    const offsetX = e.offsetX;
+    		    let score = index + (offsetX < width / 2 ? 0.5 : 1);
+    		    currentHoverScore = score;
+    		    renderStars(score);
+    		});
+
+    		// 마우스 빠지면 선택값 유지
+    		$(".star").on("mouseleave", function() {
+    		    renderStars(reviewData.score);
+    		});
+    		// 클릭하면 점수 확정
+    		$(".star").on("click", function() {
+    		    reviewData.score = currentHoverScore;
+    		    $("#scoreText").text(reviewData.score + "점");
+    		});
+    		
+    		function renderStars(score) {
+    		    $(".star").each(function(i) {
+    		        let fill = 0;
+    		        if (score >= i + 1) {
+    		            fill = 100;
+    		        } else if (score > i) {
+    		            fill = (score - i) * 100; // 0~100%
+    		        }
+    		        $(this).find(".star-fill").css("width", fill + "%");
+    		    });
+    		}
+  	</script>
+        
   </body>
 </html>
