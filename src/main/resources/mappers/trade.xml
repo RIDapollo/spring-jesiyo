@@ -23,5 +23,86 @@
 	    )
 	</insert>
 
+	<select id="selectTradeList" resultType="TradeDto">
+	    SELECT
+	        t.seq,
+	        t.status, 
+	        t.created_at AS createdAt,
+	        t.completed_at AS completedAt,
+	        t.direct_sale_seq AS directSaleSeq,
+	        t.buyer_seq AS buyerSeq,
+	        t.seller_seq AS sellerSeq,
+	                
+	        d.name AS name,
+	        d.product_name AS productName,
+	
+	        bm.nickname AS buyerNickname,
+	        sm.nickname AS sellerNickname,
+	
+	        CASE 
+	            WHEN EXISTS (
+	                SELECT 1
+	                FROM trade_review tr
+	                WHERE tr.trade_seq = t.seq
+	                AND tr.buyer_seq = #{memberSeq}
+	            )
+	            THEN 1 ELSE 0
+	        END AS hasWritten
+	
+	    FROM trade t
+	    
+	    JOIN direct_sale d
+	        ON t.direct_sale_seq = d.seq
+	
+	    JOIN member sm
+	        ON t.seller_seq = sm.seq
+	
+	    JOIN member bm
+	        ON t.buyer_seq = bm.seq
+	
+	    WHERE
+	        (t.buyer_seq = #{memberSeq}
+	         OR t.seller_seq = #{memberSeq})
+	
+	    <if test="lastSeq != null">
+	        AND t.seq &lt; #{lastSeq}
+	    </if>
+	
+	    ORDER BY t.seq DESC
+	    FETCH FIRST 10 ROWS ONLY
+	</select>
+
+	<update id="updateTradeToAccepted" parameterType="long">
+		update trade
+		set status = '완료'
+		where seq = #{tradeSeq}
+	</update>
+
+	<update id="updateDirectStatus" parameterType="long">
+		update direct_sale
+		set status = '완료'
+		WHERE seq = (
+	        SELECT direct_sale_seq
+	        FROM trade
+	        WHERE seq = #{tradeSeq}
+	    )
+	</update>
+	
+	<insert id="addReview" parameterType="TradeReviewDto">
+	    INSERT INTO trade_review (
+	        seq,
+	        trade_seq,
+	        seller_seq,
+	        buyer_seq,
+	        score
+	    )
+	    VALUES (
+	        trade_review_seq.NEXTVAL,
+	        #{tradeSeq},
+	        #{sellerSeq},
+	        #{buyerSeq},
+	        #{score}
+	    )
+	</insert>
 
 </mapper>

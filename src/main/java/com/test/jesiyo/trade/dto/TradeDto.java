@@ -13,4 +13,12 @@ public class TradeDto {
 	private Long directSaleSeq;
 	private Long buyerSeq;
 	private Long sellerSeq;
+	
+	// 목록 조회시 필요한 정보
+	private String name;
+	private String productName;
+	private String buyerNickname;
+	private String sellerNickname;
+	private String timeAgo;
+	private boolean hasWritten; // 후기 작성 여부
 }

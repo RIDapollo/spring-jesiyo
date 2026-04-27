@@ -7,7 +7,7 @@
 
 	<!-- 채팅방 목록 가져오기 -->
 	<select id="getChatRoomList" parameterType="String" resultType="chatRoomDto">
-        select * from chat_room where MEMBER_SEQ = #{_parameter} order by seq
+		select * from chat_room cr where cr.SEQ in (select cm.chat_room_seq from CHAT_member cm where MEMBER_SEQ=#{_parameter}) order by cr.seq asc
     </select>
 	
 	<select id="checkCode" parameterType="String" resultType="int">
@@ -37,5 +37,31 @@
             join member m on m.seq = cm.MEMBER_SEQ
 		where cl.chat_room_seq = #{_parameter} order by cl.seq asc
 	</select>
+	
+	<select id="checkRoomCode" parameterType="com.test.jesiyo.chat.dto.EnterRoomDto" resultType="String">
+		select seq from chat_room where code=#{roomCode}
+	</select>
+	
+	
+	<insert id="enterRoom" parameterType="com.test.jesiyo.chat.dto.EnterRoomDto">
+		insert into chat_member (seq, LAST_READ_MESSAGE, ALARM, STATUS, MEMBER_SEQ, CHAT_ROOM_SEQ)
+		values (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, #{memberSeq}, #{roomSeq})
+	</insert>
+	
+	
+	<select id="getRoomMembers" parameterType="String" resultType="chatMemberDto">
+		select cm.*, m.NICKNAME from chat_member cm
+         join member m on m.seq = cm.MEMBER_SEQ
+         where chat_room_seq = #{_parameter} 
+         order by cm.seq
+	</select>
+	
+	<select id="enterSeq" resultType="int">
+		SELECT chat_room_seq 
+		FROM chat_member 
+		ORDER BY seq DESC 
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
 
 </mapper>

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
+import com.test.jesiyo.chat.dto.EnterRoomDto;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +48,22 @@ public class ChatRoomDao {
 
 	public List<ChatRoomDto> getChatlogs(int seq) {
 		return template.selectList("chat-room.getChatLogs", seq);
+	}
+
+	public String checkRoomCode(EnterRoomDto dto) {
+		return template.selectOne("chat-room.checkRoomCode", dto);
+	}
+
+	public int enterRoom(EnterRoomDto dto) {
+		return template.insert("chat-room.enterRoom", dto);
+	}
+
+	public List<MemberDto> getRoomMembers(String roomId) {
+		return template.selectList("chat-room.getRoomMembers", roomId);
+	}
+
+	public int enterSeq() {
+		return template.selectOne("chat-room.enterSeq");
 	}
 	
 }

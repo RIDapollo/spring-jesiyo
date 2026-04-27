@@ -1,8 +1,13 @@
 package com.test.jesiyo.trade.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.test.jesiyo.directsale.util.TimeUtil;
 import com.test.jesiyo.trade.dto.TradeDto;
+import com.test.jesiyo.trade.dto.TradeReviewDto;
 import com.test.jesiyo.trade.repository.TradeDao;
 
 import lombok.RequiredArgsConstructor;
@@ -13,10 +18,38 @@ public class TradeService {
 
 	private final TradeDao dao;
 	
+	
 	public int add(TradeDto dto) {
 	
 		int result = dao.add(dto);
 		
 		return result;
+	}
+
+	public List<TradeDto> getTradeList(Long memberSeq, Long lastSeq) {
+		List<TradeDto> list = dao.selectTradeList(memberSeq, lastSeq);
+		
+		list.forEach(
+				trade -> trade.setTimeAgo(TimeUtil.timeAgo(trade.getCreatedAt()))
+			);
+		
+        return list;
+    }
+
+	@Transactional
+	public int acceptTrade(Long tradeSeq) {
+		
+		int directResult = dao.updateDirectStatus(tradeSeq);
+		int tradeResult = dao.updateTradeToAccepted(tradeSeq);
+		
+		if ((directResult == 1) && (tradeResult == 1)) {
+			return 1;
+		}
+		
+		return 0;
+	}
+
+	public int addReview(TradeReviewDto dto) {
+		return dao.addReview(dto);
 	}
 }

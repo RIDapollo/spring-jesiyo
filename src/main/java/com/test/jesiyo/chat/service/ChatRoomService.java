@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
+import com.test.jesiyo.chat.dto.EnterRoomDto;
 import com.test.jesiyo.chat.repository.ChatRoomDao;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -79,6 +81,30 @@ public class ChatRoomService {
 
 	public List<ChatRoomDto> getChatlogs(int seq) {
 		return chatRoomDao.getChatlogs(seq);
+	}
+
+	@Transactional
+	public int enterRoom(EnterRoomDto dto) {
+		
+		String roomSeq = checkRoomCode(dto); 
+		
+		dto.setRoomSeq(roomSeq);
+		
+		int result = chatRoomDao.enterRoom(dto);
+		if(result>0) {
+			return chatRoomDao.enterSeq();
+		} else {
+			return 0;
+		}
+		
+	}
+
+	private String checkRoomCode(EnterRoomDto dto) {
+		return chatRoomDao.checkRoomCode(dto);
+	}
+
+	public List<MemberDto> getRoomMembers(String roomId) {
+		return chatRoomDao.getRoomMembers(roomId);
 	}
 	
 }
