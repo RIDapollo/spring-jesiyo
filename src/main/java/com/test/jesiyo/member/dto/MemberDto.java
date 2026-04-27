@@ -15,4 +15,5 @@ public class MemberDto {
     private String detailAddress;
     private String email;
     private String permission;
+    private String point;
 }
