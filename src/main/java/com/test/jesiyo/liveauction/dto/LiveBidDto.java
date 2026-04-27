@@ -13,4 +13,5 @@ public class LiveBidDto {
 	private int memberSeq;
 	private int liveAuctionSeq;
 	
+	private String userId;
 }

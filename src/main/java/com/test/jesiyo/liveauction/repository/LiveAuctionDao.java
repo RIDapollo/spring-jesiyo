@@ -1,11 +1,12 @@
 package com.test.jesiyo.liveauction.repository;
 
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.test.jesiyo.auction.dto.AuctionDto;
+import com.test.jesiyo.auction.dto.BidDto;
 import com.test.jesiyo.liveauction.dto.LiveAuctionDto;
 import com.test.jesiyo.liveauction.dto.LiveBidDto;
 
@@ -35,6 +36,31 @@ public class LiveAuctionDao {
 	public LiveBidDto getMyBid(Map<String, Object> map) {
 		
 		return template.selectOne("liveAuction.getMyBid", map);
+	}
+
+	public void cancelPreviousLiveBid(Map<String, Object> paramMap) {
+		
+		template.update("liveAuction.cancelPreviousLiveBid", paramMap);
+	}
+
+	public int liveBid(Map<String, Object> paramMap) {
+		
+		return template.insert("liveAuction.liveBid", paramMap);
+	}
+
+	public List<LiveBidDto> getLatestLiveBids(int seq) {
+		
+		return template.selectList("liveAuction.getLatestLiveBids", seq);
+	}
+
+	public int completeLiveAuctionSchedule(Map<String, Object> map) {
+		
+		return template.update("liveAuction.completeLiveAuctionSchedule", map);
+	}
+
+	public int updateLiveAuctionWinner(Map<String, Object> map) {
+		
+		return template.update("liveAuction.updateLiveAuctionWinner", map);
 	}
 
 }

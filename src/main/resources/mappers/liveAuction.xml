@@ -57,5 +57,43 @@
 	    )
 	    WHERE ROWNUM = 1
 	</select>
-
+    
+    <update id="cancelPreviousLiveBid" parameterType="map">
+        update live_bid_history set status = 1 where live_auction_seq = #{seq} and status = 0
+    </update>
+    
+    <insert id="liveBid" parameterType="map">
+        insert into live_bid_history (seq, bid_price, bid_time, status, member_seq, live_auction_seq) 
+            values (live_bid_history_seq.nextVal, #{bidPrice}, default, 0, #{memberSeq}, #{seq})
+    </insert>
+    
+    <select id="getLatestLiveBids" parameterType="int" resultType="LiveBidDto">
+        SELECT 
+            b.seq, 
+            b.live_auction_seq, 
+            b.member_seq, 
+            b.bid_price, 
+            b.bid_time,
+            b.status,
+            m.id AS userId  
+        FROM live_bid_history b
+            INNER JOIN member m ON b.member_seq = m.seq
+        WHERE b.live_auction_seq = #{_parameter}
+        ORDER BY b.bid_time DESC
+        FETCH FIRST 5 ROWS ONLY
+    </select>
+    
+    <update id="completeLiveAuctionSchedule" parameterType="map">
+        UPDATE live_auction_schedule
+        SET broadcast_status = 2
+        WHERE seq = #{scheduleSeq} 
+          AND live_auction_seq = #{auctionSeq}
+    </update>
+    
+    <update id="updateLiveAuctionWinner" parameterType="map">
+        UPDATE live_auction
+        SET winner_seq = #{winnerSeq}, 
+            status = 2 WHERE seq = #{auctionSeq}
+    </update>
+    
 </mapper>

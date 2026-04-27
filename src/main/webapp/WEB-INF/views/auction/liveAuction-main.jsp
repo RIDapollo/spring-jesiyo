@@ -17,12 +17,22 @@
 
     <div class="page-wrap max-w-6xl mx-auto py-8">
 
-        <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
-            <h1 class="text-3xl font-black text-rose-600 tracking-tight flex items-center gap-2">
-                <span class="animate-pulse h-3 w-3 bg-rose-600 rounded-full inline-block"></span>
-                LIVE AUCTION
-            </h1>
-            <button class="btn bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold" onclick="location.href='/jesiyo/auction/myList'">나의 경매 목록</button>
+        <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4 min-h-[4rem]">
+            <div>
+                <h1 class="text-3xl font-black text-rose-600 tracking-tight flex items-center gap-2">
+                    <span class="animate-pulse h-3 w-3 bg-rose-600 rounded-full inline-block"></span>
+                    LIVE AUCTION
+                </h1>
+            </div>
+            
+            <div>
+                <c:if test="${user.seq == dto.createMemberSeq && schedule.BROADCAST_STATUS == 1}">
+                    <button class="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg shadow-md hover:bg-black transition-all flex items-center gap-2" 
+                            onclick="finishAuction()">
+                        <i class="fas fa-gavel"></i> 경매 낙찰 및 종료
+                    </button>
+                </c:if>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -68,8 +78,13 @@
                         <li class="text-center my-2 text-xs text-slate-400">바르고 고운 말을 사용해 주세요.</li>
                     </ul>
                     <div class="border-t border-slate-200 p-3 bg-white flex gap-2">
-                        <input type="text" id="chatInput" class="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500" placeholder="메시지를 입력하세요..." ${schedule.BROADCAST_STATUS != 1 ? 'disabled' : ''} onkeyup="if(event.keyCode==13) sendChat()">
-                        <button class="bg-slate-800 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-900" onclick="sendChat()" ${schedule.BROADCAST_STATUS != 1 ? 'disabled' : ''}>전송</button>
+                        <input type="text" id="chatInput" class="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500" 
+                            placeholder="${empty user ? '로그인 후 채팅에 참여할 수 있습니다.' : '메시지를 입력하세요...'}" 
+                            ${(schedule.BROADCAST_STATUS != 1 || empty user) ? 'disabled' : ''} 
+                            onkeyup="if(event.keyCode==13) sendChat()">
+                        <button class="bg-slate-800 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-900 disabled:opacity-50" 
+                            onclick="${empty user ? 'requireLogin()' : 'sendChat()'}" 
+                            ${schedule.BROADCAST_STATUS != 1 ? 'disabled' : ''}>전송</button>
                     </div>
                 </div>
 
@@ -100,7 +115,7 @@
 
                     <div class="flex flex-col gap-2">
                         <div class="flex gap-2">
-                            <button class="flex-1 py-3 bg-white border border-brand-500 text-brand-600 font-bold rounded-lg hover:bg-brand-50 transition-colors" onclick="directBid()">
+                            <button class="flex-1 py-3 bg-white border border-brand-500 text-brand-600 font-bold rounded-lg hover:bg-brand-50 transition-colors" onclick="openBidModal()">
                                 직접 입력
                             </button>
                             <button class="flex-[2] py-3 bg-brand-500 text-white font-bold rounded-lg shadow-md hover:bg-brand-600 transition-colors flex justify-center items-center gap-1" onclick="quickBid()">
@@ -132,11 +147,31 @@
         </div>
     </div>
 
+    <div id="bidModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
+            <h3 class="text-2xl font-black text-slate-800 mb-2">직접 입찰하기</h3>
+            <p class="text-sm text-slate-500 mb-4 border-b border-slate-100 pb-4">
+                현재 최고가: <span id="modalHighestBid" class="font-bold text-rose-600"><fmt:formatNumber value="${dtoHasHighestBid.highestBid != null ? dtoHasHighestBid.highestBid : dto.bidOpenPrice}" pattern="#,###"/></span>원
+            </p>
+            
+            <div class="mb-5">
+                <label class="block text-xs font-bold text-slate-500 mb-2">희망 입찰가 (원)</label>
+                <input type="number" id="modalBidInput" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-lg font-bold focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all" placeholder="금액을 입력하세요" onkeyup="if(event.keyCode==13) submitModalBid()">
+            </div>
+            
+            <div class="flex gap-2">
+                <button class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-lg hover:bg-slate-200 transition-colors" onclick="closeBidModal()">취소</button>
+                <button class="flex-1 py-3 bg-brand-500 text-white font-bold rounded-lg shadow-md hover:bg-brand-600 transition-colors" onclick="submitModalBid()">입찰하기</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script>
-        // 기본 정보 세팅
+        // 1. 기본 정보 세팅
         const auctionSeq = ${dto.seq};
-        const loginUserId = "${not empty user ? user.id : '비회원'}";
+        const isLoggedIn = ${not empty user}; 
+        const loginUserId = "${not empty user ? user.userId : '비회원'}";
         let currentHighestBid = ${dtoHasHighestBid.highestBid != null ? dtoHasHighestBid.highestBid : dto.bidOpenPrice};
         const liveStatus = ${schedule.BROADCAST_STATUS};
 
@@ -147,17 +182,56 @@
         // 포맷팅 헬퍼
         function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
+        // 로그인 체크 헬퍼
+        function requireLogin() {
+            if (confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                location.href = '/jesiyo/member/login';
+            }
+        }
+
         // ==========================================
-        // 1. 입찰 기능 로직 (AJAX)
+        // 2. 모달 제어 로직
+        // ==========================================
+        function openBidModal() {
+            if (!isLoggedIn) { requireLogin(); return; }
+            
+            document.getElementById('bidModal').classList.remove('hidden');
+            const input = document.getElementById('modalBidInput');
+            input.value = parseInt(currentHighestBid) + 10000;
+            input.focus();
+        }
+
+        function closeBidModal() {
+            document.getElementById('bidModal').classList.add('hidden');
+            document.getElementById('modalBidInput').value = '';
+        }
+
+        function submitModalBid() {
+            const amountStr = document.getElementById('modalBidInput').value;
+            if (!amountStr) {
+                alert("입찰 금액을 입력해주세요.");
+                return;
+            }
+            
+            const amount = parseInt(amountStr.replace(/,/g, ''));
+            if (isNaN(amount)) {
+                alert("정확한 숫자를 입력해주세요.");
+                return;
+            }
+
+            processBid(amount);
+        }
+
+        // ==========================================
+        // 3. 입찰 기능 로직 (AJAX)
         // ==========================================
         function processBid(bidAmount) {
             if (bidAmount <= currentHighestBid) {
-                alert("현재 최고가보다 높은 금액을 입력해야 합니다.");
+                alert("현재 최고가(" + formatNumber(currentHighestBid) + "원)보다 높은 금액을 입력해야 합니다.");
                 return;
             }
             if (!confirm(formatNumber(bidAmount) + "원에 입찰하시겠습니까?")) return;
-
-            // 백엔드 API로 입찰 요청 (POST: /auction/live/bid)
+        
             fetch('/jesiyo/auction/live/bid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -166,50 +240,64 @@
                     bidPrice: bidAmount
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                // 서버에서 JSON이 아닌 HTML 에러 페이지를 뱉을 경우를 대비한 방어 코드
+                if (!res.ok) throw new Error("서버 응답 상태가 정상(200)이 아닙니다.");
+                return res.json();
+            })
             .then(data => {
-                if(data.success) {
+                // [핵심] 여기서 isSuccess와 errorMsg 변수를 선언해주어야 아래에서 쓸 수 있습니다!
+                const isSuccess = data.success === true || data.status === 'success';
+                const errorMsg = data.message || data.msg || '서버에서 에러 사유를 보내지 않았습니다.';
+        
+                if(isSuccess) {
                     alert("입찰 성공!");
-                    currentHighestBid = bidAmount; // 프론트엔드 최고가 즉시 갱신
-                    // 나의 입찰가 UI 갱신
+                    closeBidModal();
+                    
+                    // 화면 나의 입찰가 즉시 갱신
                     document.getElementById('liveMyBidPrice').innerText = formatNumber(bidAmount) + "원";
-                    fetchLiveBids(); // 전체 입찰 로그 및 최고가 갱신 트리거
+                    
+                    // 웹소켓 브로드캐스팅 (다른 사람 화면도 갱신되도록)
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'BID', msg: 'UPDATE_BIDS' }));
+                    } else {
+                        fetchLiveBids(); 
+                    }
                 } else {
-                    alert("입찰 실패: " + data.message);
+                    // 위에서 선언한 errorMsg를 여기서 사용합니다.
+                    alert("입찰 실패: " + errorMsg); 
                 }
             })
-            .catch(err => console.error("입찰 통신 에러", err));
+            .catch(err => {
+                console.error("입찰 통신 에러 상세 원인:", err);
+                alert("입찰 처리 중 오류가 발생했습니다. 개발자 도구(F12) 콘솔을 확인해주세요.");
+            });
         }
 
         // 빠른 입찰 (현재가 + 1만원)
         function quickBid() {
+            if (!isLoggedIn) { requireLogin(); return; }
             const nextPrice = parseInt(currentHighestBid) + 10000;
             processBid(nextPrice);
         }
 
-        // 직접 입력 입찰 (Prompt 사용, 추후 모달로 변경 가능)
-        function directBid() {
-            const input = prompt("입찰하실 금액을 숫자로만 입력해주세요.\n(현재 최고가: " + formatNumber(currentHighestBid) + "원)");
-            if(input) {
-                const amount = parseInt(input.replace(/,/g, ''));
-                if(!isNaN(amount)) {
-                    processBid(amount);
-                } else {
-                    alert("정확한 숫자를 입력해주세요.");
-                }
-            }
-        }
-
-        // 주기적 입찰 로그 갱신 (기존 코드 유지하되 타겟 ID 변경)
+        // ==========================================
+        // 4. 비동기 입찰 현황 갱신 로직
+        // ==========================================
         async function fetchLiveBids() {
             if (liveStatus !== 1) return; 
             try {
-                const response = await fetch('/jesiyo/auction/api/latest/' + auctionSeq);
+                const response = await fetch('/jesiyo/auction/live/api/latest/' + auctionSeq);
                 const data = await response.json();
                 
+                // 최고가 갱신
                 currentHighestBid = data.dtoHasHighestBid ? data.dtoHasHighestBid.highestBid : currentHighestBid;
-                document.getElementById('liveHighestBid').innerText = formatNumber(currentHighestBid) + '원';
+                
+                const formattedHighest = formatNumber(currentHighestBid);
+                document.getElementById('liveHighestBid').innerText = formattedHighest + '원';
+                document.getElementById('modalHighestBid').innerText = formattedHighest;
 
+                // 입찰 로그 갱신
                 const logList = document.getElementById('liveBidLogList');
                 logList.innerHTML = '';
                 
@@ -226,21 +314,43 @@
         }
 
         // ==========================================
-        // 2. 웹소켓 채팅 로직
+        // 5. 웹소켓 채팅 및 입찰 알림 로직 (이벤트 드리븐)
         // ==========================================
         let socket;
         
         function connectWebSocket() {
-            // 현재 호스트 동적 획득 (http -> ws)
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const host = window.location.host;
             socket = new WebSocket(protocol + "//" + host + "/jesiyo/liveAuction");
 
             socket.onmessage = function(event) {
                 const data = JSON.parse(event.data);
-                const chatList = document.getElementById('liveAuctionList');
+
+                // [핵심] 1. 경매 종료(낙찰) 신호 수신 시
+                if (data.type === 'FINISH') {
+                    const winnerId = data.winnerId;
+                    
+                    if (!winnerId || winnerId === '') {
+                        alert("입찰자가 없어 유찰된 상태로 경매가 종료되었습니다.");
+                    } else if (loginUserId === winnerId) {
+                        alert("🎉 축하합니다! 최고가로 낙찰되셨습니다.");
+                    } else {
+                        alert("경매가 종료되었습니다. (낙찰자: " + winnerId + "님)");
+                    }
+                    
+                    // 알림창 확인 버튼을 누르면 모두 목록 페이지로 강제 추방
+                    location.href = '/jesiyo/auction/live'; // 실제 목록 URL로 변경해주세요
+                    return;
+                }
+
+                // 2. 누군가 입찰 시 현황 갱신
+                if (data.type === 'BID') {
+                    fetchLiveBids();
+                    return;
+                }
                 
-                // 내가 보낸 메시지인지 확인하여 스타일 분기
+                // 3. 일반 채팅 메시지 처리
+                const chatList = document.getElementById('liveAuctionList');
                 const isMine = (data.userId === loginUserId);
                 const alignClass = isMine ? "justify-end" : "justify-start";
                 const bgClass = isMine ? "bg-brand-50 border-brand-100" : "bg-white border-slate-200";
@@ -256,24 +366,28 @@
                     </div>
                 `;
                 chatList.appendChild(li);
-                chatList.scrollTop = chatList.scrollHeight; // 스크롤 맨 아래로
+                chatList.scrollTop = chatList.scrollHeight;
             };
         }
 
         function sendChat() {
+            if (!isLoggedIn) { requireLogin(); return; }
+
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             if(message === '') return;
             
-            // JSON 형태로 아이디와 메시지 전송
-            const payload = { userId: loginUserId, msg: message };
+            // type: 'CHAT'을 추가하여 전송
+            const payload = { type: 'CHAT', userId: loginUserId, msg: message };
             socket.send(JSON.stringify(payload));
             
             input.value = '';
             input.focus();
         }
 
-        // 타이머 함수 (기존과 동일)
+        // ==========================================
+        // 6. 타이머 함수
+        // ==========================================
         function updateLiveTimer() {
             const now = new Date().getTime();
             let distance;
@@ -292,17 +406,52 @@
                 String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0');
         }
 
-        // 초기화
+        // ==========================================
+        // 7. 초기화
+        // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             updateLiveTimer();
             setInterval(updateLiveTimer, 1000);
 
             if (liveStatus === 1) {
-                fetchLiveBids();
-                setInterval(fetchLiveBids, 1000);
-                connectWebSocket(); // 방송 중일 때만 웹소켓 연결
+                fetchLiveBids();       // 최초 화면 로딩 시 1회 호출
+                connectWebSocket();    // 방송 중일 때 웹소켓 연결
+                // setInterval(fetchLiveBids, 1000); <-- (삭제됨) 더 이상 1초마다 무작정 갱신하지 않음
             }
         });
+        
+        // ==========================================
+        // 8. 낙찰 및 경매 종료 (개설자 전용)
+        // ==========================================
+        function finishAuction() {
+            if (!confirm("현재 최고가로 낙찰하고 경매를 종료하시겠습니까?")) return;
+
+            fetch('/jesiyo/auction/live/finish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    auctionSeq: auctionSeq,
+                    scheduleSeq: ${schedule.SEQ} 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 서버 연산 성공 시, 다른 모든 접속자에게 'FINISH' 신호 브로드캐스팅
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ 
+                            type: 'FINISH', 
+                            winnerId: data.winnerId 
+                        }));
+                    }
+                    alert("경매가 성공적으로 종료되었습니다.");
+                    location.href = '/jesiyo/auction/live'; // 개설자 본인도 목록으로 이동
+                } else {
+                    alert("종료 처리 실패: " + data.msg);
+                }
+            })
+            .catch(err => console.error("통신 에러:", err));
+        }
     </script>
 </body>
 </html>
