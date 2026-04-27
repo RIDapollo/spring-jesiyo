@@ -2,7 +2,9 @@ package com.test.jesiyo.category.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -64,4 +66,30 @@ public class CategoryService {
 	public List<CategoryDto> findAll() {
 	    return dao.findAll();
 	}
+
+	// 카테고리 조회용 트리구조 구하기
+	public List<CategoryDto> getCategoryTree() {
+
+	    List<CategoryDto> all = dao.findAll();
+
+	    Map<Long, CategoryDto> map = new HashMap<>();
+	    List<CategoryDto> roots = new ArrayList<>();
+
+	    for (CategoryDto c : all) {
+	        map.put(c.getSeq(), c);
+	    }
+
+	    for (CategoryDto c : all) {
+	        if (c.getParentSeq() == 0) {
+	            roots.add(c); // 대분류
+	        } else {
+	            CategoryDto parent = map.get((long) c.getParentSeq());
+	            if (parent != null) {
+	                parent.getChildren().add(c);
+	            }
+	        }
+	    }
+	    return roots;
+	}
+
 }

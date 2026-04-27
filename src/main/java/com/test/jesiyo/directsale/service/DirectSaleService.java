@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
+import com.test.jesiyo.directsale.dto.DirectSaleSearchDto;
 import com.test.jesiyo.directsale.repository.DirectSaleDao;
 import com.test.jesiyo.directsale.util.TimeUtil;
 
@@ -45,17 +46,26 @@ public class DirectSaleService {
         return dao.update(dto);
     }
     
-    public List<DirectSaleDto> getListByPage(int page) {
-    	int offset = page * PAGE_SIZE;
-        
-    	// 페이징처리한 중고거래 목록 가져오기
-    	List<DirectSaleDto> list = dao.getListByPage(offset, PAGE_SIZE);
+//    public List<DirectSaleDto> getListByPage(int page) {
+//    	int offset = page * PAGE_SIZE;
+//    	// 페이징처리한 중고거래 목록 가져오기
+//    	List<DirectSaleDto> list = dao.getListByPage(offset, PAGE_SIZE);
+//        // 중고거래 등록 시간과 현재 시간 차이 구하기
+//		list.forEach(
+//			item -> item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
+//		);
+//        return list;
+//    }
+    
+    public List<DirectSaleDto> search(DirectSaleSearchDto dto) {
 
-        // 중고거래 등록 시간과 현재 시간 차이 구하기
-		list.forEach(
-			item -> item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
-		);
-        
+        int offset = dto.getPage() * PAGE_SIZE;
+        // DAO에 DTO + offset 전달
+        List<DirectSaleDto> list = dao.search(dto, offset, PAGE_SIZE);
+        // 시간 계산
+        list.forEach(
+            item -> item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
+        );
         return list;
     }
 

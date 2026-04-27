@@ -25,6 +25,9 @@
   <%@ include file="/WEB-INF/views/inc/header.jsp" %>
   
   	<main class="page-wrap">
+      <h1 class="section-title">내 동네 설정</h1>
+      <p class="section-desc">선호하는 동네를 골라주세요</p>
+    
       <div class="map_wrap">
         <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
         <div class="hAddr">
@@ -105,15 +108,14 @@
         }
         
         function sendLocation() {
-            console.log(currentRegion);
-
             $.ajax({
-                url: '/jesiyo/api/location/member',
+                url: '/jesiyo/api/member/location',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(currentRegion),
                 success: function(res) {
                     alert("동네 설정 완료!");
+                    window.location.href = '/jesiyo/index';
                 }
             });
         }

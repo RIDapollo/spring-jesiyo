@@ -1,5 +1,8 @@
 package com.test.jesiyo.location.repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +33,16 @@ public class LocationDao {
 		LocationDto dto = template.selectOne("location.findByDong", dong);
 		return dto;
 	}
-	
-	
 
+	public int deleteMemberLocation(String memberSeq) {
+        return template.delete("location.deleteMemberLocation", memberSeq);
+    }
+
+    public int insertMemberLocation(String memberSeq, String locationSeq) {
+        Map<String, String> param = new HashMap<>();
+        param.put("memberSeq", memberSeq);
+        param.put("locationSeq", locationSeq);
+
+        return template.insert("location.insertMemberLocation", param);
+    }
 }
