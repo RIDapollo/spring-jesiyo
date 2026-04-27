@@ -5,6 +5,7 @@ import java.util.List;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,8 @@ public class ChatRoomDao {
 		return template.selectOne("chat-room.getChatRoom", seq);
 	}
 
-	public int getChatRoomSeq(int seq) {
-		return template.selectOne("chat-room.getChatRoomSeq", seq);
+	public int getChatRoomSeq(ChatLogDto dto) {
+		return template.selectOne("chat-room.getChatRoomSeq", dto);
 	}
 
 	public List<ChatRoomDto> getChatlogs(int seq) {

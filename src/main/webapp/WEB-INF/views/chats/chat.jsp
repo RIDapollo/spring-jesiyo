@@ -396,7 +396,7 @@
             document.getElementById('currentRoomName').textContent = room.title;
         });
         // 자기 자신의 seq를 알아야함
-       	fetch('http://localhost:8080/jesiyo/chat/rooms/member/'+loginUserSeq)
+       	fetch('http://localhost:8080/jesiyo/chat/rooms/'+ roomId +'/member/'+loginUserSeq)
         .then(res => res.json())
         .then(data => {
         	const mySeq = data.seq;
@@ -419,11 +419,11 @@
                     <span class="time">\${log.regDate}</span>
                 `;
                 area.appendChild(div);
-            });
+            }); 
 
             // 스크롤 맨 아래로
             area.scrollTop = area.scrollHeight;
-        });
+        }); 
         	
         
     }

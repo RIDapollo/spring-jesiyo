@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.repository.ChatRoomDao;
 
@@ -72,8 +73,8 @@ public class ChatRoomService {
 		return chatRoomDao.getChatRoom(seq);
 	}
 
-	public int getChatRoomSeq(int seq) {
-		return chatRoomDao.getChatRoomSeq(seq);
+	public int getChatRoomSeq(ChatLogDto dto) {
+		return chatRoomDao.getChatRoomSeq(dto);
 	}
 
 	public List<ChatRoomDto> getChatlogs(int seq) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 import com.test.jesiyo.chat.service.ChatRoomService;
@@ -61,9 +62,13 @@ public class ChatApiController {
 	}
 	
 	// 채팅방에서 자기 seq 가져오기
-	@GetMapping("/rooms/member/{seq}")
-	public int getChatRoomSeq(@PathVariable int seq) {
-	    return chatRoomService.getChatRoomSeq(seq);
+	@GetMapping("/rooms/{chatRoomSeq}/member/{memberSeq}")
+	public int getChatRoomSeq(@PathVariable String chatRoomSeq, @PathVariable String memberSeq) {
+		
+		ChatLogDto dto = new ChatLogDto();
+	    dto.setChatRoomSeq(chatRoomSeq);
+	    dto.setChatMemberSeq(memberSeq);
+	    return chatRoomService.getChatRoomSeq(dto);
 	}
 	
 	
