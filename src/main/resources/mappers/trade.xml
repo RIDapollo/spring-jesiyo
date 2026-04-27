@@ -61,4 +61,20 @@
 	    FETCH FIRST 10 ROWS ONLY
 	</select>
 
+	<update id="updateTradeToAccepted" parameterType="long">
+		update trade
+		set status = '완료'
+		where seq = #{tradeSeq}
+	</update>
+
+	<update id="updateDirectStatus" parameterType="long">
+		update direct_sale
+		set status = '완료'
+		WHERE seq = (
+	        SELECT direct_sale_seq
+	        FROM trade
+	        WHERE seq = #{tradeSeq}
+	    )
+	</update>
+
 </mapper>

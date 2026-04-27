@@ -36,12 +36,12 @@
             <div class="grid grid-cols-7 text-sm border-b border-slate-100 hover:bg-slate-50">
 
                 <!-- 상품명 -->
-                <div class="p-3 text-slate-800 font-medium">
+                <div class="p-3 text-slate-800 font-medium truncate whitespace-nowrap overflow-hidden">
                     ${trade.productName}
                 </div>
                 
                 <!-- 제목 -->
-                <div class="p-3 text-slate-800">
+                <div class="p-3 text-slate-800 truncate whitespace-nowrap overflow-hidden">
                     ${trade.name}
                 </div>
 
@@ -67,8 +67,8 @@
                             <span class="status-badge badge-reserved">예약중</span>
                         </c:when>
 
-                        <c:when test="${trade.status == '거래완료'}">
-                            <span class="status-badge badge-sold">완료</span>
+                        <c:when test="${trade.status == '완료'}">
+                            <span class="status-badge badge-sold">거래완료</span>
                         </c:when>
 
                         <c:otherwise>
@@ -85,7 +85,7 @@
                 
                 <!-- 비고 -->
                 <div class="p-3 flex justify-center">
-                    <c:if test="${sessionScope.user.seq == trade.sellerSeq}">
+                    <c:if test="${sessionScope.user.seq == trade.sellerSeq and trade.status != '완료'}">
                         <button 
                             class="btn-sub text-xs px-3 py-1"
                             onclick="acceptTrade(${trade.seq})">
@@ -99,7 +99,8 @@
         </c:forEach>
         
         <input type="hidden" id="lastSeq" value="${lastSeq}"/>
-        <div class="flex justify-center py-4">
+        <c:if test="${hasMore}">
+        <div class="flex justify-center py-4" id="moreWrap">
             <button 
                 id="moreBtn"
                 class="btn-brand"
@@ -107,6 +108,7 @@
                 더보기
             </button>
         </div>
+</c:if>
         
     </div>
 </div>
@@ -115,12 +117,10 @@
     	function acceptTrade(tradeSeq) {
   
     	    $.ajax({
-    	        url: "/api/trades/accept",
+    	        url: "/jesiyo/api/trades/accept",
     	        type: "POST",
     	        contentType: "application/json",
-    	        data: JSON.stringify({
-    	            seq: tradeSeq
-    	        }),
+    	        data: JSON.stringify(tradeSeq),
     	        success: function(res) {
     	            alert("거래 요청이 수락되었습니다.");
     	            location.reload();

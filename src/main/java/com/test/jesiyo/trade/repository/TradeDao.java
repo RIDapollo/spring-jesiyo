@@ -29,5 +29,13 @@ public class TradeDao {
 
         return template.selectList("trade.selectTradeList", param);
     }
+
+	public int updateTradeToAccepted(Long tradeSeq) {
+		return template.update("trade.updateTradeToAccepted", tradeSeq);
+	}
+	
+	public int updateDirectStatus(Long tradeSeq) {
+		return template.update("trade.updateDirectStatus", tradeSeq);	
+	}
 	
 }

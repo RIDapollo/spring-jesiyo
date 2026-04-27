@@ -48,6 +48,15 @@
       </div>
     
     </div>
+    <!-- 중고거래 등록 버튼 (우하단 고정) -->
+    <div class="fixed bottom-6 right-10 z-50">
+        <a href="/jesiyo/direct-sales/new"
+           class="btn-brand shadow-lg px-5 py-3 rounded-full flex items-center gap-2">
+            <span class="text-lg">+</span>
+            <span class="text-sm font-bold">등록하기</span>
+        </a>
+    </div>
+    
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
   	<script>
   	let page = 1;
