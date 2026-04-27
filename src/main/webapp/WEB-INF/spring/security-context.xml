@@ -36,5 +36,6 @@
             <password-encoder ref="bcryptEncoder" />
         </authentication-provider>
     </authentication-manager>
-
+	<beans:bean id="customSuccessHandler" class="com.test.jesiyo.member.handler.CustomSuccessHandler" />
+	<beans:bean id="customUserDetailsService" class="com.test.jesiyo.member.service.CustomUserDetailsService" />
 </beans:beans>
