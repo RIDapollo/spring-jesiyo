@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.test.jesiyo.member.dto.MemberDto;
 import com.test.jesiyo.trade.dto.TradeDto;
+import com.test.jesiyo.trade.dto.TradeReviewDto;
 import com.test.jesiyo.trade.service.TradeService;
 
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,18 @@ public class TradeApi {
     public ResponseEntity<String> acceptTrade(@RequestBody Long tradeSeq) {
     	
     	int result = tradeService.acceptTrade(tradeSeq);
+    	
+    	if (result > 0) {
+            return ResponseEntity.ok("success");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
+        }
+    }
+    
+    @PostMapping("/trade-reviews/add")
+    public ResponseEntity<String> writeReview(@RequestBody TradeReviewDto dto) {
+    	
+    	int result = tradeService.addReview(dto);
     	
     	if (result > 0) {
             return ResponseEntity.ok("success");

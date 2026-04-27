@@ -26,27 +26,38 @@
 	<select id="selectTradeList" resultType="TradeDto">
 	    SELECT
 	        t.seq,
-	        t.status,
+	        t.status, 
 	        t.created_at AS createdAt,
 	        t.completed_at AS completedAt,
 	        t.direct_sale_seq AS directSaleSeq,
 	        t.buyer_seq AS buyerSeq,
 	        t.seller_seq AS sellerSeq,
-	        	        
+	                
 	        d.name AS name,
 	        d.product_name AS productName,
 	
 	        bm.nickname AS buyerNickname,
-	        sm.nickname AS sellerNickname
+	        sm.nickname AS sellerNickname,
+	
+	        CASE 
+	            WHEN EXISTS (
+	                SELECT 1
+	                FROM trade_review tr
+	                WHERE tr.trade_seq = t.seq
+	                AND tr.buyer_seq = #{memberSeq}
+	            )
+	            THEN 1 ELSE 0
+	        END AS hasWritten
+	
 	    FROM trade t
 	    
 	    JOIN direct_sale d
-        	ON t.direct_sale_seq = d.seq
-
+	        ON t.direct_sale_seq = d.seq
+	
 	    JOIN member sm
 	        ON t.seller_seq = sm.seq
 	
-		JOIN member bm
+	    JOIN member bm
 	        ON t.buyer_seq = bm.seq
 	
 	    WHERE
@@ -76,5 +87,22 @@
 	        WHERE seq = #{tradeSeq}
 	    )
 	</update>
+	
+	<insert id="addReview" parameterType="TradeReviewDto">
+	    INSERT INTO trade_review (
+	        seq,
+	        trade_seq,
+	        seller_seq,
+	        buyer_seq,
+	        score
+	    )
+	    VALUES (
+	        trade_review_seq.NEXTVAL,
+	        #{tradeSeq},
+	        #{sellerSeq},
+	        #{buyerSeq},
+	        #{score}
+	    )
+	</insert>
 
 </mapper>
