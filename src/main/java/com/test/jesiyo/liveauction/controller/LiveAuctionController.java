@@ -128,35 +128,36 @@ public class LiveAuctionController {
 	    }
 
 	    try {
-	        int auctionSeq = Integer.parseInt(map.get("auctionSeq").toString());
+	        // 모든 비즈니스 로직(낙찰자 확인, 정산, 상태 변경)을 트랜잭션이 걸린 Service로 위임
+	        result = service.completeLiveAuction(map);
 	        
-	        // 실시간 경매 특성상 가장 마지막(최신)에 입찰한 사람이 최고가 낙찰자
-	        List<LiveBidDto> latestBids = service.getLatestLiveBids(auctionSeq);
-	        String winnerId = "";
-	        
-	        if (latestBids != null && !latestBids.isEmpty()) {
-	            LiveBidDto winner = latestBids.get(0); 
-	            map.put("winnerSeq", winner.getMemberSeq()); // 당첨자 회원번호
-	            winnerId = winner.getUserId();               // 당첨자 아이디
-	        } else {
-	            map.put("winnerSeq", null); // 아무도 입찰하지 않은 유찰 상태
-	        }
-	        
-	        // 프론트엔드로 낙찰자 아이디를 넘겨줌
-	        result.put("winnerId", winnerId);
-
-	        int row = service.completeLiveAuction(map);
-	        
-	        if (row > 0) {
-	            result.put("status", "success");
-	        } else {
-	            result.put("status", "fail");
-	            result.put("msg", "경매 종료 처리에 실패했습니다.");
-	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        result.put("status", "fail");
-	        result.put("msg", "서버 오류 발생");
+	        result.put("msg", "경매 종료 처리 중 서버 오류가 발생했습니다.");
+	    }
+	    
+	    return result;
+	}
+	
+	@PostMapping(value = "/auction/live/reset")
+	@ResponseBody
+	public Map<String, Object> resetLiveAuction(@RequestBody Map<String, Object> map, HttpSession session) {
+	    Map<String, Object> result = new HashMap<>();
+	    MemberDto mdto = (MemberDto) session.getAttribute("user");
+
+	    if (mdto == null) {
+	        result.put("status", "fail");
+	        result.put("msg", "세션이 만료되었습니다.");
+	        return result;
+	    }
+
+	    try {
+	        result = service.resetLiveAuction(map);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("status", "fail");
+	        result.put("msg", "초기화 중 서버 오류가 발생했습니다.");
 	    }
 	    
 	    return result;

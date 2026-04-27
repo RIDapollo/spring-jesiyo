@@ -7,7 +7,7 @@ public class LiveAuctionDto {
 
 	private int seq;
 	private String name;
-	private int bidOpenPrice; 
+	private Long bidOpenPrice; 
 	private String image;
 	private String description;
 	private String createdAt;
@@ -17,11 +17,14 @@ public class LiveAuctionDto {
 	private int createMemberSeq;
 	private int categorySeq;
 	
-	private int highestBid;
+	private Long highestBid;
 	
 	private int auctionSeq;    
     private String sellerId; 
-    private int myBidPrice; 
+    private Long myBidPrice; 
     private String categoryName;
     private int bidSeq;
+    
+    private int highestBidMemberSeq;   // 최고 입찰자 번호
+    private String highestBidUserId;
 }
