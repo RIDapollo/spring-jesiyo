@@ -116,10 +116,10 @@
     </dialog>
 
     <script>
-    const loginUserSeq = ${sessionScope.auth.seq};
+    const loginUserSeq = ${sessionScope.user.seq};
     let ws = null;
     let mySeq = null;
-    const nickname = '${sessionScope.auth.nickname}';
+    const nickname = '${sessionScope.user.nickname}';
 
     // ✅ DOMContentLoaded 하나로 통합
     document.addEventListener('DOMContentLoaded', function() {
