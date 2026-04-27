@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="trade">
+	<insert id="add" parameterType="TradeDto">
+	    INSERT INTO trade (
+	        seq,
+	        status,
+	        created_at,
+	        direct_sale_seq,
+	        buyer_seq,
+	        seller_seq
+	    )
+	    VALUES (
+	        trade_seq.NEXTVAL,
+	        '확인요청중',
+	        SYSDATE,
+	        #{directSaleSeq},
+	        #{buyerSeq},
+	        #{sellerSeq}
+	    )
+	</insert>
+
+
+</mapper>
