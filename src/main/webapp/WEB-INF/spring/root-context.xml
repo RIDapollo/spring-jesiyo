@@ -24,6 +24,8 @@
         <!-- 개발시 DB연결 끊김 문제 설정 -->
         <property name="connectionTestQuery" value="SELECT 1 FROM DUAL"/>
 	    <property name="validationTimeout" value="3000"/>
+	    
+	    <property name="maximumPoolSize" value="4" />
 	
 	    <property name="maxLifetime" value="1800000"/>
 	    <property name="idleTimeout" value="600000"/>

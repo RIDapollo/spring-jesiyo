@@ -24,15 +24,15 @@ public class ChatController {
 	public String chat(Model model, HttpSession session) {
 		
 		// 세션 임시 저장용 (회원 기능 구현하면 삭제)
-		if(session.getAttribute("loginUser")==null) {
-			MemberDto member = new MemberDto();
-			
-			member = chatService.findBySeq("3");
-			
-			session.setAttribute("auth", member);
-		}
+//		if(session.getAttribute("loginUser")==null) {
+//			MemberDto member = new MemberDto();
+//			
+//			member = chatService.findBySeq("3");
+//			
+//			session.setAttribute("user", member);
+//		}
 		
-		model.addAttribute("auth", session.getAttribute("auth"));
+		model.addAttribute("user", session.getAttribute("user"));
 		
 		// 여기까지 세션 임시저장
 		

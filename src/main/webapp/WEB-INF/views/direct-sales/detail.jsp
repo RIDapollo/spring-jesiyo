@@ -116,8 +116,9 @@
             <div id="map" class="w-full h-56 rounded-md"></div>
             </c:if>
             <!-- 버튼 -->
-            <button class="btn-brand py-3 text-base">
-                판매자와 1:1 채팅하기
+            <button class="btn-brand py-3 text-base"
+              onclick="requestTrade(${dto.seq}, ${dto.sellerSeq})">
+                판매자에게 구매 요청 하기
             </button>
         </div>
 
@@ -184,7 +185,40 @@
         });
 
     });
+    
     </script>
     </c:if>
+    
+    <script>
+    function requestTrade(directSaleSeq, sellerSeq) {
+
+        fetch("/jesiyo/api/trades", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                directSaleSeq: directSaleSeq,
+                sellerSeq: sellerSeq
+            })
+        })
+        .then(res => {
+            if (res.status === 401) {
+                alert("로그인이 필요합니다.");
+                window.location.href = "/jesiyo/member/login";
+                return;
+            }
+            return res.text();
+        })
+        .then(data => {
+            if (data === "OK") {
+                alert("거래요청 완료!");
+                window.location.href = "/jesiyo/direct-sales"; // 또는 상세페이지 유지
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    }</script>
   </body>
 </html>

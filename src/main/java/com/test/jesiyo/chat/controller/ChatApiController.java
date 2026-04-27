@@ -72,17 +72,4 @@ public class ChatApiController {
 	}
 	
 	
-	// 채팅 등록
-	@PostMapping
-	public ResponseEntity<?> addChat(@RequestBody ChatRoomDto dto){
-		
-		try {
-			chatService.addChat(dto); // 실패하면 예외 던짐
-	        return ResponseEntity.ok("ok");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	
-	}
-	
 }

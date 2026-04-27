@@ -10,6 +10,7 @@
     
     <typeAliases>
         <typeAlias type="com.test.jesiyo.category.dto.CategoryDto" alias="cDto"/>
+        <typeAlias type="com.test.jesiyo.trade.dto.TradeDto" alias="TradeDto"/>
         
         <!-- 채팅관련 dto alias -->
         <typeAlias type="com.test.jesiyo.chat.dto.ChatLogDto" alias="chatLogDto"/>

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <style>
@@ -102,30 +103,30 @@
         <div class="header-left">
             <a href="${pageContext.request.contextPath}/index" class="logo">Jesiyo</a>
             <nav class="main-nav">
-                <a href="#">채팅방</a>
+                <a href="${pageContext.request.contextPath}/chat">채팅방</a>
                 <a href="${pageContext.request.contextPath}/direct-sales">중고 거래</a>
                 <a href="${pageContext.request.contextPath}/auction">경매</a>
                 <a href="${pageContext.request.contextPath}/auction/live">Live Auction</a>
             </nav>
         </div>
 
-        <div class="header-right">
-            <c:choose>
-                <%-- 로그아웃 상태: 세션의 user가 비어있을 때 --%>
-                <c:when test="${empty sessionScope.user}">
-                    <a href="${pageContext.request.contextPath}/member/regist" class="auth-link">회원가입</a>
-                    <a href="${pageContext.request.contextPath}/member/login" class="auth-link">로그인</a>
-                </c:when>
-                
-                <%-- 로그인 상태: 세션에 user 정보가 있을 때 --%>
-                <c:otherwise>
-                    <span class="auth-link" style="color: #333; font-weight: 700;">${sessionScope.user.name}님</span>
-                    <a href="#" class="auth-link">알림</a>
-                    <a href="#" class="auth-link">예치금</a>
-                    <a href="#" class="auth-link">마이페이지</a>
-                    <a href="${pageContext.request.contextPath}/member/logout" class="logout-btn">로그아웃</a>
-                </c:otherwise>
-            </c:choose>
-        </div>
+		<div class="header-right">
+		    <%-- 로그아웃 상태 (익명 사용자) --%>
+		    <sec:authorize access="isAnonymous()">
+		        <a href="${pageContext.request.contextPath}/member/regist" class="auth-link">회원가입</a>
+		        <a href="${pageContext.request.contextPath}/member/login" class="auth-link">로그인</a>
+		    </sec:authorize>
+		
+		    <%-- 로그인 성공 상태 --%>
+		    <sec:authorize access="isAuthenticated()">
+		        <span class="auth-link" style="color: #333; font-weight: 700;">
+		            <%-- 우리가 만든 CustomUser 안의 memberDto에서 이름을 가져옵니다 --%>
+		            <sec:authentication property="principal.memberDto.name" />님
+		        </span>
+		        <a href="#" class="auth-link">알림</a>
+		        <a href="#" class="auth-link">마이페이지</a>
+		        <a href="${pageContext.request.contextPath}/member/logout" class="logout-btn">로그아웃</a>
+		    </sec:authorize>
+		</div>
     </div>
 </header>
