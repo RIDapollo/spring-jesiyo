@@ -1,6 +1,8 @@
 package com.test.jesiyo.member.repository;
 
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.test.jesiyo.member.dto.MemberDto;
@@ -10,8 +12,14 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class MemberDao {
+	@Autowired
+    private SqlSession sqlSession;
 
     private final SqlSessionTemplate template;
+    public MemberDto getMemberById(String userId) {
+        // 클래스 내부라면 반드시 이렇게 { } 바디가 있어야 합니다.
+        return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.getMemberById", userId);
+    }
     
     /**
      * 로그인 검증
@@ -35,4 +43,5 @@ public class MemberDao {
         */
         return template.selectOne("member.checkId", id);
     }
+    
 }
