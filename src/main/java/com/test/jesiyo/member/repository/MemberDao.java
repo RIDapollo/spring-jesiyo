@@ -1,5 +1,7 @@
 package com.test.jesiyo.member.repository;
 
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +39,35 @@ public class MemberDao {
         // XML의 namespace와 id를 모두 포함한 풀 경로 작성
         return sqlSession.insert("com.test.jesiyo.member.repository.MemberDao.regist", dto);
     }
+    
     public int checkId(String id) {
         /* member.xml의 <select id="checkId">를 호출합니다.
         */
         return template.selectOne("com.test.jesiyo.member.repository.MemberDao.checkId", id);
     }
+    
     public String findIdByEmail(String email) {
         // namespace.id 형식으로 호출 (mapper 파일의 설정과 일치해야 함)
         return template.selectOne("com.test.jesiyo.member.repository.MemberDao.findIdByEmail", email);
     }
+    
     public int checkEmail(String email) {
         return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.checkEmail", email);
+    }
+    
+    public int checkMemberForPwReset(Map<String, String> map) {
+        return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.checkMemberForPwReset", map);
+    }
+    
+    public int updateResetToken(Map<String, Object> map) {
+        return sqlSession.update("com.test.jesiyo.member.repository.MemberDao.updateResetToken", map);
+    }
+    
+    public MemberDto validateToken(String token) {
+        return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.validateToken", token);
+    }
+    
+    public int resetPassword(Map<String, String> map) {
+        return sqlSession.update("com.test.jesiyo.member.repository.MemberDao.resetPassword", map);
     }
 }
