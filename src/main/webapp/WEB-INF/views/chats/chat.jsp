@@ -298,6 +298,11 @@
             }
         });
     }
+    
+    // 방 입장
+    function joinRoom() {
+    	alert(loginUserSeq);
+    }
 
     // 채팅방 클릭 → 입장
     document.getElementById('roomList').addEventListener('click', function(e) {

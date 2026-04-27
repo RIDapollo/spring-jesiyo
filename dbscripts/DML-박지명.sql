@@ -14,7 +14,17 @@ INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, C
 
 INSERT INTO CHAT_ROOM (SEQ, TITLE, STATUS, MAX_MEMBER_CNT, CURRENT_MEMBER_CNT, CATEGORY_SEQ, MEMBER_SEQ, CODE) VALUES (CHAT_ROOM_SEQ.nextval, '윤진석이 그냥 만든 채팅방', DEFAULT, 50, default, 2, 4, 'aI32Ivcw');
 
-select * from CHAT_ROOM;
+select * from CHAT_member where MEMBER_SEQ=3;
+
+select * from chat_room cr
+         join member m on cr.MEMBER_SEQ = m.seq
+         where MEMBER_SEQ = 3 order by seq
+
+select * from chat_room cr where cr.SEQ in (select cm.chat_room_seq from CHAT_member cm where MEMBER_SEQ=3);
+
+
+select cr.* from chat_member cm
+         where cm.member_seq= 3;
 
 commit;
 -- 채팅방 참여자 더미

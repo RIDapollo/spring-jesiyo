@@ -7,7 +7,7 @@
 
 	<!-- 채팅방 목록 가져오기 -->
 	<select id="getChatRoomList" parameterType="String" resultType="chatRoomDto">
-        select * from chat_room where MEMBER_SEQ = #{_parameter} order by seq
+		select * from chat_room cr where cr.SEQ in (select cm.chat_room_seq from CHAT_member cm where MEMBER_SEQ=#{_parameter}) order by cr.seq asc
     </select>
 	
 	<select id="checkCode" parameterType="String" resultType="int">
