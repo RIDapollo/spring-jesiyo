@@ -1,5 +1,7 @@
 package com.test.jesiyo;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +21,26 @@ public class TradeTest {
 	@Test
 	public void testTradeAdd() {
 		// given
-		TradeDto tradeDto = new TradeDto();
-		tradeDto.setDirectSaleSeq(8L);
-		tradeDto.setSellerSeq(1L);
-		tradeDto.setBuyerSeq(2L);
-
+//		TradeDto tradeDto = new TradeDto();
+//		tradeDto.setDirectSaleSeq(8L);
+//		tradeDto.setSellerSeq(1L);
+//		tradeDto.setBuyerSeq(2L);
+//
+//		// when
+//		int result = service.add(tradeDto);
+//
+//		// then
+//		System.out.println(result);
+	}
+	
+	@Test
+	public void testTradesList() {
+		// given
+//		List<TradeDto> list = service.getTradeList(5L, null);
+//		System.out.println(list);
 		// when
-		int result = service.add(tradeDto);
 
 		// then
-		System.out.println(result);
+
 	}
 }

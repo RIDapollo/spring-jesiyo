@@ -1,11 +1,15 @@
 package com.test.jesiyo.trade.api;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.test.jesiyo.member.dto.MemberDto;
@@ -36,4 +40,12 @@ public class TradeApi {
         tradeService.add(dto);
         return ResponseEntity.ok("OK");
     }
+    
+    @GetMapping("/trades/more")
+    public List<TradeDto> moreTrade(HttpSession session, @RequestParam Long lastSeq) {
+
+        MemberDto loginMember = (MemberDto) session.getAttribute("user");
+        return tradeService.getTradeList(Long.parseLong(loginMember.getSeq()), lastSeq);
+    }
+    
 }

@@ -1,5 +1,9 @@
 package com.test.jesiyo.trade.repository;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +20,14 @@ public class TradeDao {
 	public int add(TradeDto dto) {
 		return template.insert("trade.add", dto);
 	}
+
+	public List<TradeDto> selectTradeList(Long memberSeq, Long lastSeq) {
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("memberSeq", memberSeq);
+        param.put("lastSeq", lastSeq);
+
+        return template.selectList("trade.selectTradeList", param);
+    }
 	
 }
