@@ -20,4 +20,5 @@ public class TradeDto {
 	private String buyerNickname;
 	private String sellerNickname;
 	private String timeAgo;
+	private boolean hasWritten; // 후기 작성 여부
 }

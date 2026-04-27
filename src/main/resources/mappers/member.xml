@@ -17,7 +17,8 @@
             address,
             detail_address AS detailAddress,
             email_address AS email,  
-            permission
+            permission,
+            point
         FROM member 
         WHERE ID = #{userId} AND status = 0
     </select>
