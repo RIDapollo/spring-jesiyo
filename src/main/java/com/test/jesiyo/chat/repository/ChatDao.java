@@ -5,6 +5,7 @@ import java.util.List;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 
@@ -23,6 +24,7 @@ public class ChatDao {
 	public int addChat(ChatRoomDto dto) {
 		return template.insert("chat.addChat", dto);
 	}
+
 
 	
 

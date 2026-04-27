@@ -118,6 +118,7 @@
     <script>
     const loginUserSeq = ${sessionScope.auth.seq};
     let ws = null;
+    let mySeq = null;
 
     // ✅ DOMContentLoaded 하나로 통합
     document.addEventListener('DOMContentLoaded', function() {
@@ -322,7 +323,7 @@
         fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId + '/member/' + loginUserSeq)
             .then(res => res.json())
             .then(data => {
-                const mySeq = data.seq;
+                mySeq = data;
             });
 
         // 채팅 로그
@@ -386,7 +387,8 @@
         if (content === '' || ws === null || ws.readyState !== WebSocket.OPEN) return;
         const message = {
             code: '3',
-            sender: loginUserSeq,
+            sender: mySeq,
+            chatMemberSeq: mySeq,
             content: content,
             regDate: new Date().toLocaleString()
         };

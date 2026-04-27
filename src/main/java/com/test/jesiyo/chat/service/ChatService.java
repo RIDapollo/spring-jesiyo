@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.MemberDto;
 import com.test.jesiyo.chat.repository.ChatDao;
@@ -26,6 +27,7 @@ public class ChatService {
 		int resultChat = chatDao.addChat(dto);
 		
 	}
+
 
 
 }

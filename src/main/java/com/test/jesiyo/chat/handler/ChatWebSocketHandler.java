@@ -1,15 +1,23 @@
 package com.test.jesiyo.chat.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.test.jesiyo.chat.dto.ChatLogDto;
+import com.test.jesiyo.chat.service.ChatService;
 
+@Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private ChatRoomSessionManager sessionManager;
+    @Autowired
+    private ChatService chatService;
 
     // roomId 꺼내는 공통 메서드
     private String getRoomId(WebSocketSession session) {
@@ -29,6 +37,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     	String roomId = getRoomId(session);
         String payload = message.getPayload();
+        
+        // JSON → Dto
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(payload, JsonObject.class);
+        ChatLogDto dto = gson.fromJson(payload, ChatLogDto.class);
+        dto.setChatRoomSeq(roomId);
+        dto.setType("1");
+       
+        System.out.println(dto.toString());
+        // DB 저장
+        chatService.addChat(dto);
 
         // 같은 방에 있는 모든 세션에게 전송 (보낸 사람 포함)
         for (WebSocketSession s : sessionManager.getSessions(roomId)) {
@@ -36,6 +55,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 s.sendMessage(new TextMessage(payload));
             }
         }
+        
     }
 
     @Override
