@@ -23,5 +23,42 @@
 	    )
 	</insert>
 
+	<select id="selectTradeList" resultType="TradeDto">
+	    SELECT
+	        t.seq,
+	        t.status,
+	        t.created_at AS createdAt,
+	        t.completed_at AS completedAt,
+	        t.direct_sale_seq AS directSaleSeq,
+	        t.buyer_seq AS buyerSeq,
+	        t.seller_seq AS sellerSeq,
+	        	        
+	        d.name AS name,
+	        d.product_name AS productName,
+	
+	        bm.nickname AS buyerNickname,
+	        sm.nickname AS sellerNickname
+	    FROM trade t
+	    
+	    JOIN direct_sale d
+        	ON t.direct_sale_seq = d.seq
+
+	    JOIN member sm
+	        ON t.seller_seq = sm.seq
+	
+		JOIN member bm
+	        ON t.buyer_seq = bm.seq
+	
+	    WHERE
+	        (t.buyer_seq = #{memberSeq}
+	         OR t.seller_seq = #{memberSeq})
+	
+	    <if test="lastSeq != null">
+	        AND t.seq &lt; #{lastSeq}
+	    </if>
+	
+	    ORDER BY t.seq DESC
+	    FETCH FIRST 10 ROWS ONLY
+	</select>
 
 </mapper>
