@@ -18,7 +18,6 @@
             detail_address AS detailAddress,
             email_address AS email,  
             permission,
-            //포인트 추가
             point
         FROM member 
         WHERE ID = #{userId} AND status = 0
