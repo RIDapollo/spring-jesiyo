@@ -170,6 +170,9 @@
     <script>
     // JSP 서버 변수는 여기서 한 번만 JS 변수로 받기
     const loginUserSeq = ${sessionScope.auth.seq};
+    
+    // 소켓
+    let ws = null;
 
     // 채팅방 목록 버튼
     document.addEventListener('DOMContentLoaded', loadRoomList);
@@ -389,6 +392,11 @@
         document.getElementById('chatHeader').style.display = 'flex'; // 헤더 표시
         document.getElementById('chatBody').style.display = 'flex';   // 채팅 바디 표시
 
+     	// 기존에 다른 방 소켓 연결 있으면 끊기
+        if (ws !== null && ws.readyState === WebSocket.OPEN) {
+            ws.close();
+        }
+        
         // 여기서부터 fetch로 방 정보, 메시지, 참여자 채우면 됨
         fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId)
         .then(res => res.json())
@@ -424,9 +432,67 @@
             // 스크롤 맨 아래로
             area.scrollTop = area.scrollHeight;
         }); 
+        
+        // 소켓 연결
+        ws = new WebSocket('ws://localhost:8080/jesiyo/chat/ws/' + roomId);
+        
+        ws.onopen = function(){
+        	console.log('소켓 연결됨 - roomId:' + roomId);
+        }
+        
+        ws.onmessage = function(evt) {
+            const message = JSON.parse(evt.data);
+            const area = document.getElementById('messagesArea');
+
+            const div = document.createElement('div');
+            div.classList.add('message');
+            div.innerHTML = `
+                <span class="sender">\${message.sender}</span>
+                <span class="content">\${message.content}</span>
+                <span class="time">\${message.regDate}</span>
+            `;
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        };
+
+        ws.onclose = function() {
+            console.log('소켓 연결 종료');
+        };
+
+        ws.onerror = function(err) {
+            console.error('소켓 오류:', err);
+        };
         	
         
     }
+    
+    // 전송 부분
+    function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const content = input.value.trim();
+
+    if (content === '' || ws === null || ws.readyState !== WebSocket.OPEN) return;
+
+    const message = {
+        code: '3',
+        sender: loginUserSeq,
+        content: content,
+        regDate: new Date().toLocaleString()
+    };
+
+    ws.send(JSON.stringify(message));
+    input.value = '';
+	}
+
+	document.getElementById('btn-send').addEventListener('click', sendMessage);
+	document.getElementById('messageInput').addEventListener('keydown', function(e) {
+	    if (e.key === 'Enter') sendMessage();
+	});
+    
+    
+    
+
+    
     
     
     </script>
