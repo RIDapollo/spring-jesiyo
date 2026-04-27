@@ -15,5 +15,7 @@ public class MemberDto {
     private String detailAddress;
     private String email;
     private String permission;
+    //포인트 추가
     private String point;
+    
 }
