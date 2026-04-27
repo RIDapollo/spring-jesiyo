@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.test.jesiyo.directsale.util.TimeUtil;
 import com.test.jesiyo.trade.dto.TradeDto;
 import com.test.jesiyo.trade.repository.TradeDao;
 
@@ -23,6 +24,12 @@ public class TradeService {
 	}
 
 	public List<TradeDto> getTradeList(Long memberSeq, Long lastSeq) {
-        return dao.selectTradeList(memberSeq, lastSeq);
+		List<TradeDto> list = dao.selectTradeList(memberSeq, lastSeq);
+		
+		list.forEach(
+				trade -> trade.setTimeAgo(TimeUtil.timeAgo(trade.getCreatedAt()))
+			);
+		
+        return list;
     }
 }

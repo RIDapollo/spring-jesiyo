@@ -19,4 +19,5 @@ public class TradeDto {
 	private String productName;
 	private String buyerNickname;
 	private String sellerNickname;
+	private String timeAgo;
 }

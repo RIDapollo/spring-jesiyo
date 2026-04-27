@@ -24,27 +24,23 @@ public class TradeController {
 	@GetMapping("/trades/list")
     public String tradeListPage(HttpSession session, Model model) {
 
-//        MemberDto loginMember = (MemberDto) session.getAttribute("user");
-//
-//        if (loginMember == null) {
-//            return "redirect:/member/login";
-//        }
-//
-//        Long memberSeq = Long.parseLong(loginMember.getSeq());
+        MemberDto loginMember = (MemberDto) session.getAttribute("user");
 
-		// TODO 테스트용
+        if (loginMember == null) {
+            return "redirect:/member/login";
+        }
+
+        Long memberSeq = Long.parseLong(loginMember.getSeq());
+
         // 최초 10개
-        List<TradeDto> list = service.getTradeList(5L, null);
+        List<TradeDto> list = service.getTradeList(memberSeq, null);
 
         model.addAttribute("tradeList", list);
 
         // 마지막 seq (더보기용)
         Long lastSeq = list.isEmpty() ? null : list.get(list.size() - 1).getSeq();
         model.addAttribute("lastSeq", lastSeq);
-
-        System.out.println(list);
         
-        
-        return "trades/list"; // JSP 경로
+        return "trades/list";
     }
 }
