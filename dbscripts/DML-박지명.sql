@@ -34,3 +34,18 @@ insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SE
 select * from chat_log;
 
 select seq from chat_member where member_seq = 3 and CHAT_ROOM_SEQ = 17;
+
+select * from chat_room;
+
+SELECT cl.*, m.NICKNAME
+FROM chat_log cl
+JOIN member m ON cl.CHAT_MEMBER_SEQ = m.seq
+WHERE cl.chat_room_seq = 17
+ORDER BY cl.seq ASC;
+
+select * from chat_log where chat_room_seq = 17 order by seq asc;
+
+select cl.*, m.NICKNAME from chat_log cl
+            join chat_member cm on cl.CHAT_MEMBER_SEQ = cm.SEQ
+            join member m on m.seq = cm.MEMBER_SEQ
+where cl.chat_room_seq = 17 order by cl.seq asc;

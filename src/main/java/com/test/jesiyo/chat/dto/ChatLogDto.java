@@ -13,5 +13,6 @@ public class ChatLogDto {
 	private String chatRoomSeq;
 	private String code;
 	private String sender;
+	private String nickname;
 
 }

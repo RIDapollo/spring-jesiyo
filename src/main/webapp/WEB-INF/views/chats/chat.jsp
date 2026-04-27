@@ -119,6 +119,7 @@
     const loginUserSeq = ${sessionScope.auth.seq};
     let ws = null;
     let mySeq = null;
+    const nickname = '${sessionScope.auth.nickname}';
 
     // ✅ DOMContentLoaded 하나로 통합
     document.addEventListener('DOMContentLoaded', function() {
@@ -325,6 +326,7 @@
             .then(data => {
                 mySeq = data;
             });
+        
 
         // 채팅 로그
         fetch('http://localhost:8080/jesiyo/chat/rooms/logs/' + roomId)
@@ -336,10 +338,10 @@
                     const div = document.createElement('div');
                     div.classList.add('message');
                     div.innerHTML = `
-                        <div class="avatar">\${String(log.chatMemberSeq).charAt(0)}</div>
+                        <div class="avatar">\${String(log.nickname).charAt(0)}</div>
                         <div class="message-body">
                             <div class="message-header">
-                                <span class="sender">\${log.chatMemberSeq}</span>
+                                <span class="sender">\${log.nickname}</span>
                                 <span class="time">\${log.regDate}</span>
                             </div>
                             <div class="content">\${log.content}</div>
@@ -387,7 +389,7 @@
         if (content === '' || ws === null || ws.readyState !== WebSocket.OPEN) return;
         const message = {
             code: '3',
-            sender: mySeq,
+            sender: nickname,
             chatMemberSeq: mySeq,
             content: content,
             regDate: new Date().toLocaleString()

@@ -392,3 +392,4 @@ ADD (code VARCHAR2(8));
 
 ALTER TABLE chat_room
 ADD CONSTRAINT uk_chatroom_code UNIQUE (code);
+
