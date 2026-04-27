@@ -33,4 +33,8 @@ public class LocationService {
 		dao.deleteMemberLocation(memberSeq);
 	    dao.insertMemberLocation(memberSeq, locationSeq);
 	}
+	
+	public LocationDto selectMainLocationByMember(Long memberSeq) {
+		return dao.selectMainLocationByMember(memberSeq);
+	}
 }
