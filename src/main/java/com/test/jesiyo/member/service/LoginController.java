@@ -42,6 +42,10 @@ public class LoginController {
         if (loginUser != null) {
             // 로그인 성공 시 세션에 사용자 정보 저장 후 메인 페이지('/')로 이동
             session.setAttribute("user", loginUser);
+            System.out.println("========== 로그인 성공 ==========");
+            System.out.println("세션에 저장된 사용자 정보: " + loginUser.toString());
+            System.out.println("사용자 ID: " + loginUser.getUserId()); // DTO에 getUserId가 있다고 가정
+            System.out.println("================================");
             return "redirect:/index";
         } else {
             // 로그인 실패 시 다시 로그인 페이지로 리다이렉트 (에러 파라미터 포함)
