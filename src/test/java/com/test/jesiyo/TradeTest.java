@@ -43,4 +43,14 @@ public class TradeTest {
 		// then
 
 	}
+	
+	@Test
+	public void testUpdateTradeStatus() {
+		// when
+		int result = service.acceptTrade(2L);
+		System.out.println(result);
+
+		// then
+
+	}
 }

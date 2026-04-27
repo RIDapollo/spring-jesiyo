@@ -40,5 +40,37 @@
     <select id="checkId" parameterType="String" resultType="Integer">
         SELECT COUNT(*) FROM member WHERE ID = #{userId}
     </select>
+    
+    <select id="checkEmail" resultType="int">
+	    SELECT COUNT(*) FROM member WHERE email_address = #{email}
+	</select>
+    
+    <select id="findIdByEmail" parameterType="string" resultType="string">
+        SELECT ID FROM member WHERE email_address = #{email}
+    </select>
+    
+    <select id="checkMemberForPwReset" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM member WHERE ID = #{userId} AND email_address = #{email}
+    </select>
+    
+    <update id="updateResetToken" parameterType="map">
+        UPDATE member 
+        SET pw_token = #{token}, 
+            token_expiry = SYSDATE + (30/1440) 
+        WHERE ID = #{userId}
+    </update>
+    
+    <select id="validateToken" parameterType="string" resultType="com.test.jesiyo.member.dto.MemberDto">
+        SELECT * FROM member 
+        WHERE pw_token = #{token} AND token_expiry > SYSDATE
+    </select>
+
+    <update id="resetPassword" parameterType="map">
+        UPDATE member 
+        SET PW = #{userPw}, 
+            pw_token = NULL, 
+            token_expiry = NULL 
+        WHERE pw_token = #{token}
+    </update>
 
 </mapper>

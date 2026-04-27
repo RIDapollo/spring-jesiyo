@@ -61,9 +61,9 @@
                 </div>
                 
                 <div class="flex items-center space-x-6 opacity-80">
-                    <a href="#" class="hover:text-slate-800">ID 찾기</a>
+                    <a href="${pageContext.request.contextPath}/member/findId" class="hover:text-slate-800">ID 찾기</a>
                     <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-                    <a href="#" class="hover:text-slate-800">PW 재설정</a>
+                    <a href="${pageContext.request.contextPath}/member/findPw" class="hover:text-slate-800">PW 재설정</a>
                 </div>
             </div>
 

@@ -116,10 +116,12 @@
             <div id="map" class="w-full h-56 rounded-md"></div>
             </c:if>
             <!-- 버튼 -->
-            <button class="btn-brand py-3 text-base"
-              onclick="requestTrade(${dto.seq}, ${dto.sellerSeq})">
-                판매자에게 구매 요청 하기
-            </button>
+            <c:if test="${dto.status != '완료'}">
+              <button class="btn-brand py-3 text-base"
+                onclick="requestTrade(${dto.seq}, ${dto.sellerSeq})">
+                  판매자에게 구매 요청 하기
+              </button>
+            </c:if>
         </div>
 
     </div>   
