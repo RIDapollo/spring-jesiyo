@@ -55,4 +55,12 @@ public class RegistController {
         int result = dao.checkId(id);
         return String.valueOf(result);
     }
+    
+    @GetMapping("/checkEmail")
+    @ResponseBody
+    public String checkEmail(String email) {
+        // DB에서 해당 이메일 개수를 카운트함 (0 또는 1 이상)
+        int result = dao.checkEmail(email); 
+        return String.valueOf(result);
+    }
 }

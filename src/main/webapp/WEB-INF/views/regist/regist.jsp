@@ -74,13 +74,18 @@
                                class="w-full bg-transparent border-none focus:ring-0 text-slate-700 placeholder:text-slate-300">
                     </div>
                 </div>
-                <div class="form-group">
+				<div class="form-group">
 				    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 ml-2 tracking-widest uppercase">Email</label>
-				    <div class="border-2 border-slate-100 rounded-2xl bg-slate-50 p-0.5 transition-all focus-within:border-[#FF8A3D] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#FF8A3D]/5">
-				        <input type="email" name="email" placeholder="이메일을 입력해주세요" required
-				               class="w-full bg-transparent border-none focus:ring-0 text-slate-700 placeholder:text-slate-300"
-				               style="padding-top: 13px !important; padding-bottom: 13px !important; padding-left: 35px !important; font-size: 15px !important;">
+				    <div class="flex gap-3">
+				        <div class="flex-1 border-2 border-slate-100 rounded-2xl bg-slate-50 p-0.5 transition-all focus-within:border-[#FF8A3D] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#FF8A3D]/5">
+				            <input type="email" name="email" id="email" placeholder="이메일을 입력해주세요" required
+				                   class="w-full bg-transparent border-none focus:ring-0 text-slate-700 placeholder:text-slate-300"
+				                   style="padding-top: 13px !important; padding-bottom: 13px !important; padding-left: 35px !important; font-size: 15px !important;">
+				        </div>
+				        <button type="button" onclick="checkEmail()" 
+				                class="btn-expand bg-slate-800 text-white font-bold rounded-2xl hover:bg-black transition-all active:scale-95">중복확인</button>
 				    </div>
+				    <p id="emailMsg" class="text-[10px] mt-1.5 ml-3 font-medium"></p>
 				</div>
                 <div class="form-group">
                     <label class="block text-[10px] font-bold text-slate-400 mb-1.5 ml-2 tracking-widest">이름</label>
@@ -157,6 +162,9 @@
                 }
             }).open();
         }
+        
+        let isIdChecked = false;
+        let isEmailChecked = false;
 
         function checkId() {
             const id = $('#userId').val();
@@ -168,14 +176,47 @@
                 success: function(res) {
                     if(res == '0') {
                         $('#idMsg').text('사용 가능한 아이디입니다.').css('color', '#10B981');
+                        isIdChecked = true;
                     } else {
                         $('#idMsg').text('이미 사용 중인 아이디입니다.').css('color', '#EF4444');
+                        isIdChecked = false;
                     }
                 }
             });
         }
-
+        
+        function checkEmail() {
+            const email = $('#email').val();
+            if(!email) return alert('이메일을 입력해주세요.');
+            
+            $.ajax({
+                url: '${pageContext.request.contextPath}/member/checkEmail', // 컨트롤러에 해당 매핑 필요
+                type: 'GET',
+                data: { email: email },
+                success: function(res) {
+                    if(res == '0') {
+                        $('#emailMsg').text('사용 가능한 이메일입니다.').css('color', '#10B981');
+                        isEmailChecked = true;
+                    } else {
+                        $('#emailMsg').text('이미 등록된 이메일 주소입니다.').css('color', '#EF4444');
+                        isEmailChecked = false;
+                    }
+                }
+            });
+        }
+        
+        $('#userId').on('change', () => { isIdChecked = false; $('#idMsg').text(''); });
+        $('#email').on('change', () => { isEmailChecked = false; $('#emailMsg').text(''); });
+        
         $('#registForm').submit(function() {
+            if(!isIdChecked) {
+                alert('아이디 중복 확인이 필요합니다.');
+                return false;
+            }
+            if(!isEmailChecked) {
+                alert('이메일 중복 확인이 필요합니다.');
+                return false;
+            }
             if($('#userPw').val() !== $('#userPwCheck').val()) {
                 alert('비밀번호가 일치하지 않습니다.');
                 return false;
