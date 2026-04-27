@@ -304,7 +304,6 @@
     	
     	let roomCode = document.getElementById('joinCode').value;
     	
-    	
     	fetch('http://localhost:8080/jesiyo/chat/enter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -317,8 +316,14 @@
         .then(data => {
             console.log("입장 성공:", data);
             // 예: window.location.href = "/chat/room/" + roomCode;
+         	// 방에 있는 모든 사람에게 멤버 목록 갱신 신호 전송
+            /* if (ws !== null && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ code: 'REFRESH_MEMBERS' }));
+            } */
+            
             closeModal();
             loadRoomList();
+            loadRoomMembers(data);
         })
         .catch(err => {
             console.error("입장 실패:", err);
@@ -345,8 +350,12 @@
         fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId)
             .then(res => res.json())
             .then(room => {
-                document.getElementById('currentRoomName').textContent = room.title;
+                document.getElementById('currentRoomName').innerHTML = 
+                    `\${room.title} <small>\${room.code}</small>`;
             });
+        
+        // 참여자 목록보기
+       	loadRoomMembers(roomId);
 
         // 내 멤버 seq
         fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId + '/member/' + loginUserSeq)
@@ -389,6 +398,13 @@
 
         ws.onmessage = function(evt) {
             const message = JSON.parse(evt.data);
+            
+         	// ✅ 멤버 갱신 신호 처리
+            if (message.code === 'REFRESH_MEMBERS') {
+                loadRoomMembers(roomId);
+                return; // 채팅 렌더링 없이 여기서 끝
+            }
+            
             const area = document.getElementById('messagesArea');
             const div = document.createElement('div');
             div.classList.add('message');
@@ -425,6 +441,32 @@
         ws.send(JSON.stringify(message));
         input.value = '';
     }
+    
+    
+    // 참여자 리스트
+    function loadRoomMembers(roomId) {
+    fetch('http://localhost:8080/jesiyo/chat/room/' + roomId + '/members')
+        .then(res => res.json())
+        .then(members => {
+            const userList = document.getElementById('userList');
+            const userCount = document.getElementById('userCount');
+
+            userCount.textContent = members.length;
+            userList.innerHTML = '';
+
+            members.forEach(member => {
+                const div = document.createElement('div');
+                div.classList.add('user-item');
+                div.innerHTML = `
+                    <div class="avatar">\${String(member.nickname).charAt(0)}</div>
+                    <span class="user-name">\${member.nickname}</span>
+                `;
+                userList.appendChild(div);
+            });
+        })
+        .catch(err => console.error("참여자 목록 조회 실패:", err));
+}
+
 
     </script>
 

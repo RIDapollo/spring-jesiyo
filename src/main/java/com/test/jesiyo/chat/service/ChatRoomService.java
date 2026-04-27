@@ -10,6 +10,7 @@ import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
 import com.test.jesiyo.chat.dto.EnterRoomDto;
 import com.test.jesiyo.chat.repository.ChatRoomDao;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -89,11 +90,21 @@ public class ChatRoomService {
 		
 		dto.setRoomSeq(roomSeq);
 		
-		return chatRoomDao.enterRoom(dto);
+		int result = chatRoomDao.enterRoom(dto);
+		if(result>0) {
+			return chatRoomDao.enterSeq();
+		} else {
+			return 0;
+		}
+		
 	}
 
 	private String checkRoomCode(EnterRoomDto dto) {
 		return chatRoomDao.checkRoomCode(dto);
+	}
+
+	public List<MemberDto> getRoomMembers(String roomId) {
+		return chatRoomDao.getRoomMembers(roomId);
 	}
 	
 }
