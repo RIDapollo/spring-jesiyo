@@ -1,6 +1,8 @@
 package com.test.jesiyo.chat.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -10,13 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
-import com.test.jesiyo.chat.dto.MemberDto;
+import com.test.jesiyo.chat.dto.EnterRoomDto;
 import com.test.jesiyo.chat.service.ChatRoomService;
 import com.test.jesiyo.chat.service.ChatService;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +35,8 @@ public class ChatApiController {
 	// 채팅방 목록 조회 - 세션에서 꺼내기 
 	@GetMapping("/rooms")
 	public ResponseEntity<List<ChatRoomDto>> getRooms(HttpSession session) {
-        MemberDto auth = (MemberDto) session.getAttribute("auth");
-        String seq = auth.getSeq(); // 혹은 auth가 UserDto면 getUserSeq() 등
+        MemberDto user = (MemberDto) session.getAttribute("user");
+        String seq = user.getSeq(); // 혹은 auth가 UserDto면 getUserSeq() 등
         return ResponseEntity.ok(chatRoomService.getChatRoomList(seq));
     }
 	
@@ -71,5 +75,16 @@ public class ChatApiController {
 	    return chatRoomService.getChatRoomSeq(dto);
 	}
 	
-	
+	// 채팅방 입장
+	@PostMapping("/enter")
+	@ResponseBody
+	public int enterRoom(@RequestBody EnterRoomDto dto) {
+	    
+	    // 서비스 로직 호출
+		
+		
+	    return chatRoomService.enterRoom(dto);
+	    
+	}
+
 }

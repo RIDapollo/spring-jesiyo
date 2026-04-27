@@ -298,6 +298,34 @@
             }
         });
     }
+    
+    // 방 입장
+    function joinRoom() {
+    	
+    	let roomCode = document.getElementById('joinCode').value;
+    	
+    	
+    	fetch('http://localhost:8080/jesiyo/chat/enter', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+            	memberSeq: loginUserSeq,
+                roomCode: roomCode
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("입장 성공:", data);
+            // 예: window.location.href = "/chat/room/" + roomCode;
+            closeModal();
+            loadRoomList();
+        })
+        .catch(err => {
+            console.error("입장 실패:", err);
+            alert("입장 실패!");
+        });
+    	
+    }
 
     // 채팅방 클릭 → 입장
     document.getElementById('roomList').addEventListener('click', function(e) {

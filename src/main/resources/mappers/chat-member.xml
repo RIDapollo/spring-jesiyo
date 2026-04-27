@@ -6,10 +6,6 @@
 
 <mapper namespace="chat-member">
 
-	<!-- 임시 -->
-    <select id="temp" parameterType="String" resultType="com.test.jesiyo.chat.dto.MemberDto">
-        select * from member where seq = #{_prameter}
-    </select>
     
     <!-- 채팅방 만든후 방장 처리 -->
     <insert id="addMember" parameterType="chatRoomDto">
