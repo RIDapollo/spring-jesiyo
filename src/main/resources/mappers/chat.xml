@@ -7,7 +7,7 @@
 
     <insert id="addChat" parameterType="chatLogDto">
     	insert into CHAT_LOG (SEQ, CONTENT, REGDATE, TYPE, CHAT_MEMBER_SEQ, CHAT_ROOM_SEQ) 
-    	values (CHAT_LOG_SEQ.nextval, #{content}, default, #{type}, #{chatMemberSeq}, #{chatRoomSeq})
+    	values (CHAT_LOG_SEQ.nextval, #{content}, SYSTIMESTAMP AT TIME ZONE 'Asia/Seoul', #{type}, #{chatMemberSeq}, #{chatRoomSeq})
     </insert>
 
 </mapper>

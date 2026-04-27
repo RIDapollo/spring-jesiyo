@@ -32,7 +32,10 @@
 	</select>
 	
 	<select id="getChatLogs" resultType="chatLogDto">
-		select * from chat_log where chat_room_seq = #{_paramemter} order by seq asc
+		select cl.*, m.NICKNAME from chat_log cl
+            join chat_member cm on cl.CHAT_MEMBER_SEQ = cm.SEQ
+            join member m on m.seq = cm.MEMBER_SEQ
+		where cl.chat_room_seq = #{_parameter} order by cl.seq asc
 	</select>
 
 </mapper>
