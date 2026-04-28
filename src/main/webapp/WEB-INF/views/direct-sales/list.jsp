@@ -140,6 +140,9 @@
   	loadMore();
   	
   	function loadMore() {
+  		
+  		console.log(page);
+  		
   	    if (isLoading || isLast) return;
   	    isLoading = true;
 
@@ -245,6 +248,7 @@
   	    // 3. 리스트 초기화
   	    page = 0;
   	    isLast = false;
+  	  	isLoading = false;
   	    document.querySelector(".grid").innerHTML = "";
   	    
   	  	renderChips();
@@ -262,6 +266,8 @@
 
   	            filterState.filterType = type;
 
+  	          	isLoading = false;
+  	            
   	            // UI active 처리
   	            document.querySelectorAll('.filter-btn').forEach(b => {
                     b.classList.remove('active-filter');
@@ -306,6 +312,8 @@
   	    filterState.filterType = "ALL";
   	    filterState.categorySeq = null;
 
+  	  	isLoading = false;
+  	    
   	    // UI 초기화
   	    document.querySelectorAll('.filter-btn').forEach(b => {
   	        b.classList.remove('active-filter');

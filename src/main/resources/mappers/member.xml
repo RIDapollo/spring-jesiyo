@@ -77,5 +77,51 @@
             token_expiry = NULL 
         WHERE pw_token = #{token}
     </update>
-
+    
+	<select id="getWishList" parameterType="string" resultType="com.test.jesiyo.member.dto.WishDto">
+	    SELECT 
+	        w.seq AS wishSeq,
+	        c.name AS itemName  FROM member_interest w
+	    JOIN category c ON w.category_seq = c.seq WHERE w.member_seq = #{memberSeq}
+	    ORDER BY c.name ASC
+	</select>
+	
+	<select id="getCategoryList" resultType="com.test.jesiyo.category.dto.CategoryDto">
+	    SELECT 
+	        seq, 
+	        name, 
+	        parent_seq AS parentSeq  FROM category 
+	    ORDER BY name ASC
+	</select>
+	
+	<insert id="addInterest" parameterType="map">
+	    INSERT INTO member_interest (
+	        seq, 
+	        member_seq, 
+	        category_seq,  regdate
+	    )
+	    VALUES (
+	        seqMember_interest.nextVal, 
+	        #{memberSeq}, 
+	        #{cateSeq}, 
+	        SYSDATE
+	    )
+	</insert>
+	
+	<delete id="deleteWish" parameterType="string">
+	    DELETE FROM member_interest WHERE seq = #{seq}
+	</delete>
+	
+	<update id="updateMember" parameterType="com.test.jesiyo.member.dto.MemberDto">
+	    UPDATE member 
+	    SET nickname = #{nickname},
+	        zipcode = #{zipcode},
+	        address = #{address},
+	        detail_address = #{detailAddress},
+	        <if test="userPw != null and userPw != ''">
+	        pw = #{userPw},
+	        </if>
+	        profile_img = #{profileImg} -- 파일명만 저장
+	    WHERE seq = #{seq}
+	</update>
 </mapper>

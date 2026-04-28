@@ -1,13 +1,16 @@
 package com.test.jesiyo.member.repository;
 
 import java.util.Map;
+import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.member.dto.MemberDto;
+import com.test.jesiyo.member.dto.WishDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -74,5 +77,25 @@ public class MemberDao {
     public MemberDto getMember(String userId) {
         // XML의 id인 "getMemberById"를 호출하도록 수정
         return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.getMemberById", userId);
+    }
+    
+    public List<WishDto> getWishList(String memberSeq) {
+        return sqlSession.selectList("com.test.jesiyo.member.repository.MemberDao.getWishList", memberSeq);
+    }
+    
+    public int deleteWish(String seq) {
+        return sqlSession.delete("com.test.jesiyo.member.repository.MemberDao.deleteWish", seq);
+    }
+    
+    public List<CategoryDto> getCategoryList() {
+        return sqlSession.selectList("com.test.jesiyo.member.repository.MemberDao.getCategoryList");
+    }
+    
+    public int addInterest(Map<String, String> map) {
+        return sqlSession.insert("com.test.jesiyo.member.repository.MemberDao.addInterest", map);
+    }
+    
+    public int updateMember(MemberDto dto) {
+        return sqlSession.update("com.test.jesiyo.member.repository.MemberDao.updateMember", dto);
     }
 }

@@ -95,13 +95,13 @@
                         <%-- 버튼 그룹 --%>
                         <div class="flex flex-col gap-3">
                             <%-- 프로필 수정 버튼 --%>
-                            <a href="${pageContext.request.contextPath}/member/edit" 
+                            <a href="${pageContext.request.contextPath}/member/checkPw" 
                                class="btn-action w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl text-center hover:bg-slate-200">
                                 프로필 수정
                             </a>
                             <%-- [추가] 포인트 충전 및 환전 버튼 --%>
                             <div class="flex gap-3">
-                                <a href="${pageContext.request.contextPath}/point/charge" 
+                                <a href="${pageContext.request.contextPath}/payments/new" 
                                    class="btn-action flex-1 py-4 bg-[#FF8A3D] text-white font-bold rounded-2xl text-center shadow-lg shadow-orange-200 hover:bg-[#e07530]">
                                     <i class="fas fa-plus-circle mr-2"></i>포인트 충전
                                 </a>
@@ -152,7 +152,7 @@
             <%-- [섹션 3] 하단 상세 메뉴 리스트 --%>
             <div class="bg-white border border-slate-200 rounded-[3rem] shadow-xl shadow-slate-200/40 p-6">
                 <div class="space-y-2">
-                    <a href="#" class="flex items-center justify-between p-6 rounded-3xl hover:bg-slate-50 transition-all group">
+                    <a href="/jesiyo/locations/new" class="flex items-center justify-between p-6 rounded-3xl hover:bg-slate-50 transition-all group">
                         <div class="flex items-center gap-5">
                             <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-[#FF8A3D] group-hover:text-white transition-all">
                                 <i class="fas fa-store"></i>
