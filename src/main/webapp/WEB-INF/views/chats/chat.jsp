@@ -90,6 +90,25 @@
             </div>
 
         </main>
+        
+        
+        <!-- ✅ 경매 오버레이 패널 -->
+        <div id="auctionOverlay" class="auction-overlay" style="display:none;">
+            <div class="auction-overlay-header">
+                <span>🏬 라이브 경매</span>
+                <button class="auction-close-btn" onclick="toggleAuction()">✕</button>
+            </div>
+            <iframe id="auctionFrame"
+                    class="auction-frame"
+                    src=""
+                    frameborder="0"
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+    </div><!-- /.chat-root -->
+        
+        
     </div>
 
     <dialog id="roomModal">
