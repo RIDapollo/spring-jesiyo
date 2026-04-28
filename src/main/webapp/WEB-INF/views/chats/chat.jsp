@@ -533,9 +533,10 @@
 	    if (isVisible) {
 	        overlay.style.display = 'none';
 	    } else {
-	        // 최초 1회만 src 설정
 	        if (!auctionLoaded) {
-	            document.getElementById('auctionFrame').src = 'http://localhost:8080/jesiyo/auction/live';
+	        	/* 헤더 날리기 */
+	            const frame = document.getElementById('auctionFrame');
+	            frame.src = 'http://localhost:8080/jesiyo/auction/live?embed=true';
 	            auctionLoaded = true;
 	        }
 	        overlay.style.display = 'flex';

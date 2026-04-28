@@ -13,7 +13,10 @@
     </style>
 </head>
 <body class="bg-slate-50 relative">
-    <%@ include file="/WEB-INF/views/inc/header.jsp"%>
+
+	<c:if test="${empty param.embed}">
+    	<%@ include file="/WEB-INF/views/inc/header.jsp"%>
+    </c:if>
 
     <div class="page-wrap max-w-6xl mx-auto py-8">
 
