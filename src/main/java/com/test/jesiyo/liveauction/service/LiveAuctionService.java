@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.jesiyo.liveauction.dto.LiveAuctionDto;
 import com.test.jesiyo.liveauction.dto.LiveBidDto;
 import com.test.jesiyo.liveauction.repository.LiveAuctionDao;
@@ -26,6 +28,9 @@ public class LiveAuctionService {
 	// Redis & Redisson 의존성 주입
 	private final RedissonClient redissonClient;
 	private final RedisTemplate<String, Object> redisTemplate;
+	
+	// JSON 변환용 객체 추가
+	private final ObjectMapper objectMapper = new ObjectMapper();
 	
 	// Redis Cache Keys
 	private static final String HIGHEST_BID_KEY_PREFIX = "liveAuction:highestBid:";
@@ -146,7 +151,14 @@ public class LiveAuctionService {
 			redisTemplate.opsForValue().set(highestBidKey, String.valueOf(bidPrice), 2, TimeUnit.HOURS);
 			
 			List<LiveBidDto> latestBids = dao.getLatestLiveBids(auctionSeq);
-			redisTemplate.opsForValue().set(LATEST_BIDS_KEY_PREFIX + auctionSeq, latestBids, 2, TimeUnit.HOURS);
+			
+			try {
+			    String latestBidsJson = objectMapper.writeValueAsString(latestBids);
+			    redisTemplate.opsForValue().set(LATEST_BIDS_KEY_PREFIX + auctionSeq, latestBidsJson, 2, TimeUnit.HOURS);
+			} catch (JsonProcessingException e) {
+			    // 변환 실패 시 로그만 찍고, 굳이 롤백시키지는 않습니다 (DB 저장은 성공했으므로)
+			    e.printStackTrace(); 
+			}
 
 			// 결과 세팅
 			result.put("status", "success");
@@ -192,11 +204,22 @@ public class LiveAuctionService {
 
 	@SuppressWarnings("unchecked")
 	public List<LiveBidDto> getLatestLiveBids(int seq) {
-		Object cachedBids = redisTemplate.opsForValue().get(LATEST_BIDS_KEY_PREFIX + seq);
-		if (cachedBids != null) {
-			return (List<LiveBidDto>) cachedBids;
-		}
-		return dao.getLatestLiveBids(seq);
+		Object cachedBidsStr = redisTemplate.opsForValue().get(LATEST_BIDS_KEY_PREFIX + seq);
+	    
+	    if (cachedBidsStr != null) {
+	        try {
+	            // JSON 문자열을 List<LiveBidDto> 타입으로 복원
+	            return objectMapper.readValue(
+	                cachedBidsStr.toString(), 
+	                objectMapper.getTypeFactory().constructCollectionType(List.class, LiveBidDto.class)
+	            );
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    // 캐시에 없거나 파싱 실패 시 DB에서 직접 조회
+	    return dao.getLatestLiveBids(seq);
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
