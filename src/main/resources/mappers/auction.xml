@@ -79,9 +79,10 @@
     
     <select id="getDetail" parameterType="int" resultType="AuctionDto">
         select 
-        	a.*, c.name as categoryName 
+        	a.*, c.name as categoryName, m.id as sellerName
         from auction a
         LEFT OUTER JOIN category c ON a.category_seq = c.seq
+        INNER JOIN member m ON a.create_member_seq = m.seq
         where a.seq = #{_parameter}
     </select>
     
@@ -196,8 +197,8 @@
 	    ) 
 	    WHERE rnum BETWEEN #{begin} AND #{end}
 	</select>
-
-	<update id="endAuctionEarly" parameterType="map">
+    
+    <update id="endAuctionEarly" parameterType="map">
         UPDATE auction 
         SET status = 1, 
             end_date = SYSDATE, 

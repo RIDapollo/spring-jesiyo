@@ -38,21 +38,19 @@ public class DirectSaleDao {
         return template.delete("directsale.delete", seq);
     }
 
-//	public List<DirectSaleDto> getListByPage(int offset, int pageSize) {
-//		
-//		Map<String, Object> param = new HashMap<>();
-//	    param.put("offset", offset);
-//	    param.put("pageSize", pageSize);
-//		
-//		return template.selectList("directsale.getListByPage", param);
-//	}
-
     public List<DirectSaleDto> search(DirectSaleSearchDto dto, int offset, int pageSize) {
         Map<String, Object> param = new HashMap<>();
         param.put("dto", dto);       // 조건
         param.put("offset", offset);
         param.put("pageSize", pageSize);
         return template.selectList("directsale.search", param);
+    }
+    public List<DirectSaleDto> searchByLocation(DirectSaleSearchDto dto, int offset, int pageSize) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("dto", dto);       // 조건
+    	param.put("offset", offset);
+    	param.put("pageSize", pageSize);
+    	return template.selectList("directsale.searchByLocation", param);
     }
     
 	public DirectSaleDto getDetail(Long seq) {

@@ -101,12 +101,14 @@ public class AuctionService {
 	    
 	    AuctionDto dtoHasHighestBid = dao.getHighestBid(seq);
 	    
+	    //종료된 경매 입찰 막기
 	    if (dtoHasHighestBid != null && dtoHasHighestBid.getStatus() != 0) {
             result.put("status", "fail");
             result.put("msg", "이미 종료된 경매입니다. 입찰할 수 없습니다.");
             return result;
         }
-	    
+
+	    // 최고가보다 높은 금액인지 확인
 	    if (dtoHasHighestBid != null && bidPrice <= dtoHasHighestBid.getHighestBid()) {
 	        result.put("status", "fail");
 	        result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");

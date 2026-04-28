@@ -197,7 +197,7 @@
 						<div class="flex flex-col">
 							<span class="text-xs font-bold text-slate-500 mb-0.5">판매자</span>
 							<span class="text-sm font-bold text-slate-800">회원번호:
-								${dto.createMemberSeq}</span>
+								${dto.sellerName}</span>
 						</div>
 					</div>
 				</div>
@@ -234,15 +234,27 @@
                 </c:if>
             </div>
         </c:if>
-			<div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-				<button type="button" onclick="openModal('autoBidModal')"
-					class="btn bg-slate-800 hover:bg-slate-900 text-white border-0 px-8 font-bold flex-1 md:flex-none shadow-md py-3 rounded-lg">
-					자동 입찰 등록</button>
 
-				<button type="button" onclick="openModal('bidModal')"
-					class="btn bg-brand-500 hover:bg-brand-600 text-white border-0 px-8 font-bold flex-1 md:flex-none shadow-md text-lg py-3 rounded-lg">
-					⚡ 일반 입찰 참여</button>
-			</div>
+			<c:choose>
+                <c:when test="${dto.status == 0}">
+                    <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                        <button type="button" onclick="openModal('autoBidModal')"
+                            class="btn bg-slate-800 hover:bg-slate-900 text-white border-0 px-8 font-bold flex-1 md:flex-none shadow-md py-3 rounded-lg">
+                            자동 입찰 등록</button>
+
+                        <button type="button" onclick="openModal('bidModal')"
+                            class="btn bg-brand-500 hover:bg-brand-600 text-white border-0 px-8 font-bold flex-1 md:flex-none shadow-md text-lg py-3 rounded-lg">
+                            ⚡ 일반 입찰 참여</button>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                        <div class="bg-slate-100 text-slate-500 border border-slate-200 px-8 font-bold flex-1 md:flex-none py-3 rounded-lg text-center cursor-not-allowed">
+                            경매가 종료되어 입찰할 수 없습니다
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
 		</div>
 
 	</div>
@@ -382,6 +394,49 @@
     	setInterval(updateDetailTimer, 1000);
     	updateDetailTimer(); // 로드 즉시 1회 실행
     
+    	// 상세 페이지용 1초 단위 타이머
+    	function updateDetailTimer() {
+    	    const timerEl = document.getElementById('detailCountdown');
+    	    if(!timerEl) return;
+    	    
+    	    const status = parseInt(timerEl.getAttribute('data-status'), 10);
+    	    if (status !== 0) {
+    	        timerEl.innerText = "경매 종료";
+    	        timerEl.className = "text-2xl font-black text-slate-400 tracking-tighter";
+    	        return;
+    	    }
+    
+    	    let endDateStr = timerEl.getAttribute('data-end-time');
+    	    endDateStr = String(endDateStr).replace(/-/g, '/').replace('T', ' '); 
+    	    const endTime = new Date(endDateStr).getTime();
+    	    const now = new Date().getTime();
+    	    const distance = endTime - now;
+    
+    	    if (distance < 0) {
+    	        timerEl.innerText = "마감됨";
+    	        timerEl.className = "text-2xl font-black text-slate-400 tracking-tighter";
+    	        // TODO: 마감 시 화면 리로드나 상태 업데이트 API 호출 로직 추가 가능
+    	        return;
+    	    }
+    
+    	    // 시간, 분, 초 계산
+    	    const hours = Math.floor(distance / (1000 * 60 * 60));
+    	    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    	    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+    	    // 00:00:00 포맷팅
+    	    const displayStr = "⏳ " + 
+    	        String(hours).padStart(2, '0') + ":" + 
+    	        String(minutes).padStart(2, '0') + ":" + 
+    	        String(seconds).padStart(2, '0');
+    
+    	    timerEl.innerText = displayStr;
+    	}
+
+    	// 1초마다 실행
+    	setInterval(updateDetailTimer, 1000);
+    	updateDetailTimer(); // 로드 즉시 1회 실행
+	
 	 	//웹소켓 연결
 	    const wsUri = "ws://" + location.host + "${pageContext.request.contextPath}/bid-ws";
 	    const socket = new WebSocket(wsUri);
@@ -628,6 +683,37 @@
 	            }
 	        } catch (error) {
 	            console.error("실시간 데이터 갱신 실패:", error);
+	        }
+	    }
+	 	
+	    // 즉시 낙찰 처리
+	    async function endAuctionEarly() {
+	        // 1. 현재 입찰자가 있는지 프론트 단에서 1차 검증
+	        if(currentHighestBid === 0 || document.getElementById('bidHistoryList').children.length === 0) {
+	            alert('현재 입찰자가 없어 즉시 낙찰을 진행할 수 없습니다. 취소를 원하시면 경매 삭제를 이용해주세요.');
+	            return;
+	        }
+	        
+	        // 2. 최종 확인
+	        if (!confirm('현재 최고가(' + formatNumber(currentHighestBid) + '원)로 즉시 낙찰 처리하시겠습니까?\n낙찰 시 예치금이 정산되며, 되돌릴 수 없습니다.')) return;
+
+	        try {
+	            const response = await fetch(`${pageContext.request.contextPath}/auction/${dto.seq}/end`, { 
+	                method: 'POST' 
+	            });
+	            const result = await response.json();
+
+	            if (result.status === 'success') {
+	                alert('성공적으로 낙찰 처리되었습니다. 예치금이 정산되었습니다.');
+	                // 웹소켓을 통해 다른 유저들에게도 종료를 알리는 로직 추가 권장
+	                // socket.send(JSON.stringify({ type: 'AUCTION_ENDED', auctionSeq: auctionSeq }));
+	                location.reload(); 
+	            } else {
+	                alert(result.msg);
+	            }
+	        } catch (error) {
+	            console.error('조기 낙찰 오류:', error);
+	            alert('서버와 통신 중 오류가 발생했습니다.');
 	        }
 	    }
 	    
