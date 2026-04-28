@@ -69,10 +69,6 @@
 				    <span id="recommend-links"></span>
 				</div>
 				
-				<div class="chat-input-wrap" id="chatInputWrap">
-				    ...
-				</div>
-				
                 <div class="chat-input-wrap" id="chatInputWrap">
                     <div class="chat-input-box">
                         <button class="chat-input-btn" title="파일 첨부">
@@ -409,10 +405,36 @@
         ws.onmessage = function(evt) {
             const message = JSON.parse(evt.data);
             
-         	// ✅ 멤버 갱신 신호 처리
+         	// 멤버 갱신 신호 처리
             if (message.code === 'REFRESH_MEMBERS') {
                 loadRoomMembers(roomId);
                 return; // 채팅 렌더링 없이 여기서 끝
+            }
+         	
+         	// 추천 메시지 처리
+            if (message.code === 'RECOMMEND') {
+                const auctionLinks = message.auctions.map(a =>
+                    `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
+                );
+                const tradeLinks = message.trades.map(t =>
+                    `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
+                );
+
+                const allLinks = [...auctionLinks, ...tradeLinks].join(", ");
+                const banner = document.getElementById('recommend-banner');
+                document.getElementById('recommend-links').innerHTML = allLinks;
+
+                // 배너 표시
+                banner.style.display = 'block';
+                banner.style.opacity = '1';
+
+                // 2.5초 후 fade out → 3초 후 완전히 숨김
+                setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+                setTimeout(() => { 
+                    banner.style.display = 'none';
+                    banner.style.opacity = '1'; // 다음 추천을 위해 초기화
+                }, 3000);
+                return;
             }
             
             const area = document.getElementById('messagesArea');
