@@ -311,55 +311,36 @@
         // 4. 비동기 입찰 현황 갱신 로직
         // ==========================================
         async function fetchLiveBids() {
-        	// 1. 방송 중일 때만 갱신
             if (liveStatus !== 1) return; 
-            
             try {
                 const response = await fetch('/jesiyo/auction/live/api/latest/' + auctionSeq);
                 const data = await response.json();
                 
-                // 2. 최고가 갱신
+                // 최고가 갱신
                 if (data.dtoHasHighestBid && data.dtoHasHighestBid.highestBid != null) {
                     currentHighestBid = data.dtoHasHighestBid.highestBid;
                 } else {
-                    currentHighestBid = ${dto.bidOpenPrice}; // JSP 변수: 입찰이 없으면 시작가 유지
+                    currentHighestBid = ${dto.bidOpenPrice}; // 입찰 내역이 없으면 시작가를 그대로 유지
                 }
                 
                 const formattedHighest = formatNumber(currentHighestBid);
                 document.getElementById('liveHighestBid').innerText = formattedHighest + '원';
-                
-                // 모달창이 열려있을 경우를 위한 업데이트
-                const modalHighest = document.getElementById('modalHighestBidDisplay');
-                if (modalHighest) modalHighest.innerText = formattedHighest;
+                document.getElementById('modalHighestBid').innerText = formattedHighest;
 
-                // 3. 입찰 로그(현황) 갱신
+                // 입찰 로그 갱신
                 const logList = document.getElementById('liveBidLogList');
-                logList.innerHTML = ''; // 기존 목록 초기화
+                logList.innerHTML = '';
                 
-                // 데이터가 존재할 경우에만 forEach 실행
-                if (data.latestBids && data.latestBids.length > 0) {
-                    data.latestBids.forEach((bid, index) => {
-                        // 가장 최근(0번째) 입찰에만 깜빡임 효과 부여
-                        const isNew = (index === 0); 
-                        const highlightClass = isNew ? 'bg-rose-50 animate-pulse' : 'hover:bg-slate-50';
-                        
-                        const li = document.createElement('li');
-                        li.className = `flex items-start justify-between border-b border-slate-100 pb-2 pt-2 px-2 rounded transition-colors ${highlightClass}`;
-                        
-                        // [주의] 백틱 안에서 JS 변수를 쓸 때는 반드시 역슬래시(\)를 붙여야 합니다.
-                        li.innerHTML = `
-                            <span class="font-bold text-slate-700">\${bid.userId}님</span>
-                            <span class="text-rose-600 font-bold">\${formatNumber(bid.bidPrice)}원</span>
-                        `;
-                        logList.appendChild(li);
-                    });
-                } else {
-                    logList.innerHTML = '<li class="text-center text-xs text-slate-400 py-2">최근 입찰 내역이 없습니다.</li>';
-                }
-                
-            } catch (error) { 
-                console.error("입찰 현황 갱신 중 에러 발생:", error); 
-            }
+                data.latestBids.forEach(bid => {
+                    const li = document.createElement('li');
+                    li.className = "flex items-start justify-between border-b border-slate-100 pb-1";
+                    li.innerHTML = `
+                        <span class="font-bold text-slate-700">\${bid.userId}님</span>
+                        <span class="text-rose-600 font-bold">\${formatNumber(bid.bidPrice)}원</span>
+                    `;
+                    logList.appendChild(li);
+                });
+            } catch (error) { console.error(error); }
         }
 
         // ==========================================
