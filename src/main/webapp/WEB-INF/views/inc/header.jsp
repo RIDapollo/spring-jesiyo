@@ -124,7 +124,7 @@
 		            <sec:authentication property="principal.memberDto.name" />님
 		        </span>
 		        <a href="#" class="auth-link">알림</a>
-		        <a href="#" class="auth-link">마이페이지</a>
+		        <a href="${pageContext.request.contextPath}/member/mypage" class="auth-link">마이페이지</a>
 		        <a href="${pageContext.request.contextPath}/member/logout" class="logout-btn">로그아웃</a>
 		    </sec:authorize>
 		</div>

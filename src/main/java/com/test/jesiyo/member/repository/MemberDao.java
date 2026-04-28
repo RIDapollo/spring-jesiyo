@@ -70,4 +70,9 @@ public class MemberDao {
     public int resetPassword(Map<String, String> map) {
         return sqlSession.update("com.test.jesiyo.member.repository.MemberDao.resetPassword", map);
     }
+    
+    public MemberDto getMember(String userId) {
+        // XML의 id인 "getMemberById"를 호출하도록 수정
+        return sqlSession.selectOne("com.test.jesiyo.member.repository.MemberDao.getMemberById", userId);
+    }
 }
