@@ -91,43 +91,94 @@ public class AuctionService {
 		return latestBids;
 	}
 	
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> placeBid(Map<String, Object> paramMap) {
 		
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		
+		// 1. 파라미터 파싱
 		int seq = Integer.parseInt(String.valueOf(paramMap.get("seq")));
-	    int bidPrice = Integer.parseInt(String.valueOf(paramMap.get("bidPrice")));
-	    
-	    AuctionDto dtoHasHighestBid = dao.getHighestBid(seq);
-	    
-	    //종료된 경매 입찰 막기
-	    if (dtoHasHighestBid != null && dtoHasHighestBid.getStatus() != 0) {
-            result.put("status", "fail");
-            result.put("msg", "이미 종료된 경매입니다. 입찰할 수 없습니다.");
-            return result;
-        }
+		int bidPrice = Integer.parseInt(String.valueOf(paramMap.get("bidPrice")));
+		int memberSeq = Integer.parseInt(String.valueOf(paramMap.get("memberSeq"))); 
+		
+		AuctionDto dtoHasHighestBid = dao.getHighestBid(seq);
+		
+		// 2. 경매 존재 여부 및 종료 상태 검증
+		if (dtoHasHighestBid == null) {
+			result.put("status", "fail");
+			result.put("msg", "존재하지 않는 경매입니다.");
+			return result;
+		}
+		if (dtoHasHighestBid.getStatus() != 0) {
+			result.put("status", "fail");
+			result.put("msg", "이미 종료된 경매입니다. 입찰할 수 없습니다.");
+			return result;
+		}
 
-	    // 최고가보다 높은 금액인지 확인
-	    if (dtoHasHighestBid != null && bidPrice <= dtoHasHighestBid.getHighestBid()) {
-	        result.put("status", "fail");
-	        result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
-	        return result;
-	    }
+		// 3. 입찰 금액 유효성 검증
+		Long highestBid = dtoHasHighestBid.getHighestBid();
+		Integer highestBidMemberSeq = dtoHasHighestBid.getHighestBidMemberSeq(); // 이전 최고 입찰자 회원번호
+		
+		if (highestBid == null || highestBid == 0) {
+			if (bidPrice < dtoHasHighestBid.getBidOpenPrice()) {
+				result.put("status", "fail");
+				result.put("msg", "첫 입찰은 시작 기준가(" + dtoHasHighestBid.getBidOpenPrice() + "원) 이상이어야 합니다.");
+				return result;
+			}
+		} else {
+			if (bidPrice <= highestBid) {
+				result.put("status", "fail");
+				result.put("msg", "현재 최고가(" + highestBid + "원)보다 높은 금액만 입찰 가능합니다.");
+				return result;
+			}
+		}
+
+		// 4. 가용 예치금 실시간 검증 (동일인 연속 입찰 보정)
+		long availablePoint = dao.getAvailablePoint(memberSeq);
+		
+		// 내가 최고가 입찰자인 상태에서 금액을 더 올리는 경우, 
+		// 기존에 묶인 내 돈(highestBid)은 어차피 풀릴 돈이므로 가용 예치금에 더해줍니다.
+		if (highestBidMemberSeq != null && highestBidMemberSeq == memberSeq) {
+			availablePoint += highestBid;
+		}
+
+		if (availablePoint < bidPrice) {
+			result.put("status", "fail");
+			result.put("msg", "가용 예치금이 부족합니다. (현재 가용액: " + availablePoint + "원)");
+			return result;
+		}
+
+		// 5. 이전 최고 입찰자가 존재한다면: "먼저" 락 해제 및 패찰 처리
+		if (highestBid != null && highestBid > 0) {
+			Map<String, Object> unlockMap = new HashMap<>();
+			unlockMap.put("previousMemberSeq", highestBidMemberSeq); 
+			unlockMap.put("auctionSeq", seq);
 			
-		dao.cancelPreviousBid(paramMap); //이전 입찰 status 1로 변경
+			// 이전 입찰자의 point_lock 상태 변경 (status: 0 -> 1)
+			dao.unlockPointLock(unlockMap);
+		}
+			
+		// 6. 이전 입찰 내역 무효화 (status 1로 변경)
+		dao.cancelPreviousBid(paramMap); 
 		
+		// 7. [순서 변경] 신규 입찰자의 예치금 락(Lock) "나중에" 생성
+		// 먼저 1로 푼 다음에 0으로 Insert 해야, 동일인일 때 새롭게 넣은 락이 풀리는 현상을 막을 수 있습니다.
+		paramMap.put("auctionSeq", seq); 
+		int lockResult = dao.insertPointLock(paramMap);
+		if (lockResult <= 0) {
+			throw new RuntimeException("예치금 잠금 처리에 실패했습니다. (Rollback)");
+		}
+		
+		// 8. 새로운 입찰 내역 Insert
 		int insertResult = dao.bid(paramMap);
-		
 		if (insertResult <= 0) {
-	        result.put("status", "fail");
-	        result.put("msg", "입찰 처리에 실패했습니다.");
-	        return result;
-	    }
+			throw new RuntimeException("입찰 기록 저장 중 오류가 발생했습니다. (Rollback)");
+		}
 				
+		// 9. 성공 결과 반환
 		result.put("status", "success");
-		result.put("latestBids", dao.getLatestBids(seq)); //최근 목록 5개
-		result.put("dtoHasHighestBid", dao.getHighestBid(seq)); //최고가를 포함한 auctionDto객체
+		result.put("latestBids", dao.getLatestBids(seq));
+		result.put("dtoHasHighestBid", dao.getHighestBid(seq)); 
 			
 		return result;
 	}

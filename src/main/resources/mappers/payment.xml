@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="payment">
+
+	<insert id="add" parameterType="map">
+	    <selectKey keyProperty="seq" resultType="long" order="BEFORE">
+	        SELECT payment_seq.NEXTVAL FROM dual
+	    </selectKey>
+	
+	    INSERT INTO payment (
+	        seq,
+	        member_seq,
+	        amount,
+	        status,
+	        charge_id,
+	        created_at
+	    )
+	    VALUES (
+	        #{seq},
+	        #{memberSeq},
+	        #{amount},
+	        'READY',
+	        NULL,
+	        SYSDATE
+	    )
+	</insert>
+
+	<update id="updateChargeId" parameterType="map">
+	    UPDATE payment
+	    SET charge_id = #{chargeId}
+	    WHERE seq = #{seq}
+	</update>
+
+	<update id="updateStatus" parameterType="map">
+	    UPDATE payment
+	    SET 
+	    	status = #{status}
+	    WHERE charge_id = #{orderId}
+	</update>
+
+	<update id="addPointByOrderId" parameterType="string">
+	    UPDATE member m
+	    SET m.point = m.point + (
+	        SELECT p.amount
+	        FROM payment p
+	        WHERE p.charge_id = #{orderId}
+	          AND p.status = 'DONE'
+	    )
+	    WHERE m.seq = (
+	        SELECT p.member_seq
+	        FROM payment p
+	        WHERE p.charge_id = #{orderId}
+	          AND p.status = 'DONE'
+	    )
+	</update>
+
+</mapper>

@@ -113,4 +113,19 @@ public class AuctionDao {
 	    template.update("auction.addSellerPoint", map);
 	}
 	
+	// 가용 예치금 실시간 조회 (총 예치금 - 묶인 금액)
+	public long getAvailablePoint(int memberSeq) {
+	    return template.selectOne("auction.getAvailablePoint", memberSeq);
+	}
+
+	// 신규 입찰자의 예치금 잠금(Lock) 등록
+	public int insertPointLock(Map<String, Object> map) {
+		return template.insert("auction.insertPointLock", map);
+	}
+
+	// 이전 최고 입찰자의 예치금 잠금 해제 (패찰 처리)
+	public int unlockPointLock(Map<String, Object> map) {
+		return template.update("auction.unlockPointLock", map);
+	}
+	
 }

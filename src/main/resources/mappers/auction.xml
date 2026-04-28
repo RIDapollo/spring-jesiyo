@@ -87,12 +87,23 @@
     </select>
     
     <select id="getHighestBid" parameterType="int" resultType="AuctionDto">
-        select a.*,
-           (select max(bid_price)
-            from bid_history b
-            where b.auction_seq = a.seq and b.status = 0) as highestBid
-        from auction a
-        where a.seq = #{_parameter}
+        SELECT 
+            a.*,
+            h.highestBid,
+            h.member_seq AS highestBidMemberSeq
+        FROM auction a
+        LEFT JOIN (
+            SELECT * FROM (
+                SELECT 
+                    auction_seq,
+                    bid_price AS highestBid,
+                    member_seq
+                FROM bid_history
+                WHERE auction_seq = #{_parameter} AND status = 0
+                ORDER BY bid_price DESC, bid_time ASC
+            ) WHERE ROWNUM = 1
+        ) h ON a.seq = h.auction_seq
+        WHERE a.seq = #{_parameter}
     </select>
     
     <insert id="bid" parameterType="map">
@@ -242,6 +253,32 @@
         UPDATE member
         SET point = point + #{bidPrice}
         WHERE seq = #{sellerSeq}
+    </update>
+    
+    <select id="getAvailablePoint" parameterType="int" resultType="long">
+        SELECT NVL(MAX(m.point - (
+            SELECT NVL(SUM(amount), 0) 
+            FROM point_lock 
+            WHERE member_seq = #{memberSeq} AND status = 0
+        )), 0)
+        FROM member m
+        WHERE m.seq = #{memberSeq}
+    </select>
+    
+    <insert id="insertPointLock" parameterType="map">
+        INSERT INTO point_lock (
+            seq, member_seq, amount, status, auction_seq
+        ) VALUES (
+            point_lock_seq.nextval, #{memberSeq}, #{bidPrice}, 0, #{auctionSeq}
+        )
+    </insert>
+    
+    <update id="unlockPointLock" parameterType="map">
+        UPDATE point_lock
+        SET status = 1
+        WHERE auction_seq = #{auctionSeq}
+          AND member_seq = #{previousMemberSeq}
+          AND status = 0
     </update>
 
 </mapper>
