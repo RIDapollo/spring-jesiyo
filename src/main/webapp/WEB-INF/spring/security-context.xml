@@ -29,6 +29,12 @@
             invalidate-session="true" />
             
         <csrf disabled="true"/>
+        
+        <!-- iframe을 위한 시큐리티 설정 -->
+        <headers>
+	        <frame-options policy="SAMEORIGIN" />
+	    </headers>
+        
     </http>
 
     <authentication-manager>
