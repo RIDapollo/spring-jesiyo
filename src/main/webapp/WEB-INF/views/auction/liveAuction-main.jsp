@@ -179,6 +179,21 @@
 
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script>
+	 	//  부모 채팅에서 온 명령어 수신
+	    window.addEventListener('message', function(event) {
+	        // 같은 origin 검증 (localhost:8080)
+	        if (event.origin !== window.location.origin) return;
+	        
+	        const data = event.data;
+	        if (data.type === 'AUCTION_COMMAND') {
+	            console.log('부모 명령 수신:', data.action);
+	            
+	            if (data.action === 'quickBid') {
+	                quickBid(); // 기존 빠른 입찰 함수 직접 호출
+	            }
+	        }
+	    }, false);
+    
         // 1. 기본 정보 세팅
         const auctionSeq = ${dto.seq};
         const isLoggedIn = ${not empty user}; 

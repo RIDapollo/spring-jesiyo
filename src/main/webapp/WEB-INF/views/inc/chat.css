@@ -668,15 +668,20 @@
 
 /* 추천 배너 css */
 #recommend-banner {
-    background-color: #fff8e1;
-    border: 1px solid #ffc107;
-    border-radius: 8px;
-    padding: 8px 14px;
-    margin: 0 12px 6px 12px;
-    font-size: 13px;
-    color: #333;
-    opacity: 1;
-    transition: opacity 0.5s ease;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#banner-icon {
+    font-size: 1.1rem;
+    min-width: 1.5rem;
 }
 
 #recommend-banner a {
@@ -735,3 +740,4 @@
     border: none;
     zoom: 0.7;
 }
+
