@@ -111,4 +111,17 @@
 	<delete id="deleteWish" parameterType="string">
 	    DELETE FROM member_interest WHERE seq = #{seq}
 	</delete>
+	
+	<update id="updateMember" parameterType="com.test.jesiyo.member.dto.MemberDto">
+	    UPDATE member 
+	    SET nickname = #{nickname},
+	        zipcode = #{zipcode},
+	        address = #{address},
+	        detail_address = #{detailAddress},
+	        <if test="userPw != null and userPw != ''">
+	        pw = #{userPw},
+	        </if>
+	        profile_img = #{profileImg} -- 파일명만 저장
+	    WHERE seq = #{seq}
+	</update>
 </mapper>

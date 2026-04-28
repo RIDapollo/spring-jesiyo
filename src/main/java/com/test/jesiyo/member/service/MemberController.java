@@ -1,24 +1,28 @@
 package com.test.jesiyo.member.service;
 
+import java.io.File;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller; // 추가
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping; // 추가
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.member.dto.MemberDto;
-import com.test.jesiyo.member.repository.MemberDao;
 import com.test.jesiyo.member.dto.WishDto;
+import com.test.jesiyo.member.repository.MemberDao;
 
 @Controller // 1. 스프링이 컨트롤러임을 인식하도록 추가
 @RequestMapping("/member") // 2. 공통 경로 설정
@@ -26,6 +30,9 @@ public class MemberController {
 	
     @Autowired // 3. 필드 주입은 변수 바로 위에!
     private MemberDao dao;
+    
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder; // 암호화 확인용
 
     // 4. @GetMapping은 실행될 '메서드' 바로 위에 작성해야 합니다.
     @GetMapping("/mypage")
@@ -115,5 +122,81 @@ public class MemberController {
         dao.addInterest(map);
         // [수정] 리다이렉트 경로에 /member 추가
         return "redirect:/member/wishlist";
+    }
+    
+    @GetMapping("/checkPw")
+    public String checkPwForm() {
+        return "mypage/checkPw"; // WEB-INF/views/member/checkPw.jsp
+    }
+
+    // 2. 비밀번호 일치 여부 확인 처리 (POST)
+    @PostMapping("/checkPw")
+    public String checkPwProc(Principal principal, @RequestParam String userPw, Model model) {
+        String userId = principal.getName();
+        MemberDto member = dao.getMember(userId); // 기존 getMemberById 활용 가능 [cite: 911, 920]
+
+        // 입력한 비밀번호와 DB의 암호화된 비밀번호 비교 [cite: 658]
+        if (passwordEncoder.matches(userPw, member.getUserPw())) {
+            // 일치하면 실제 수정 페이지로 이동
+            return "redirect:/member/editProfile"; 
+        } else {
+            // 불일치 시 에러 메시지와 함께 재시도
+            model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+            return "mypage/checkPw";
+        }
+    }
+    
+    // 3. 실제 프로필 수정 페이지 (비밀번호 확인 통과 시 진입)
+    @GetMapping("/editProfile")
+    public String editProfileForm(Principal principal, Model model) {
+        String userId = principal.getName();
+        model.addAttribute("member", dao.getMember(userId));
+        return "mypage/editProfile";
+    }
+    @PostMapping("/editProfile")
+    public String editProfileProc(Principal principal, 
+                                MemberDto updateDto, 
+                                @RequestParam(value="profileImgFile", required=false) MultipartFile file) {
+        
+        String userId = principal.getName();
+        MemberDto existingMember = dao.getMember(userId);
+        
+        // 1. 비밀번호 처리: 입력값이 있을 때만 암호화하여 수정 [cite: 1138, 1162]
+        if (updateDto.getUserPw() != null && !updateDto.getUserPw().isEmpty()) {
+            updateDto.setUserPw(passwordEncoder.encode(updateDto.getUserPw()));
+        } else {
+            updateDto.setUserPw(existingMember.getUserPw());
+        }
+
+        // 2. 이미지 업로드 처리
+        String uploadPath = "C:/dev/upload/profile";
+        if (file != null && !file.isEmpty()) {
+            try {
+                File folder = new File(uploadPath);
+                if (!folder.exists()) folder.mkdirs();
+
+                // UUID를 이용한 고유한 파일명 생성 
+                String originalName = file.getOriginalFilename();
+                String ext = originalName.substring(originalName.lastIndexOf("."));
+                String savedName = UUID.randomUUID().toString() + ext;
+
+                // 로컬 디스크에 파일 저장
+                file.transferTo(new File(uploadPath + "/" + savedName));
+
+                // DB 객체에는 파일명(savedName)만 저장
+                updateDto.setProfileImg(savedName);
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            // 이미지를 새로 올리지 않았다면 기존 파일명 유지
+            updateDto.setProfileImg(existingMember.getProfileImg());
+        }
+
+        updateDto.setSeq(existingMember.getSeq());
+        dao.updateMember(updateDto);
+
+        return "redirect:/member/mypage";
     }
 }
