@@ -25,7 +25,6 @@ public class RedisSubscriber {
     // RedisConfig의 MessageListenerAdapter가 이 메서드를 호출함
     // Redis에서 받은 메시지(payload)는 문자열(JSON)이라고 가정
     public void onMessage(String message) {
-        
         // JSON 문자열을 ChatLogDto로 변환
         ChatLogDto dto = gson.fromJson(message, ChatLogDto.class);
 

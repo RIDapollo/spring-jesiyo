@@ -67,10 +67,10 @@ public class ChatRedisConfig {
     // Redis Pub/Sub 메시지를 실제로 수신하는 컨테이너
     // 어떤 listener가 어떤 topic을 구독할지 등록
 	@Bean(name = "chatRedisMessageListenerContainer")
-    public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter,
-            ChannelTopic chatTopic) {
+	public RedisMessageListenerContainer redisMessageListenerContainer(
+	        @Qualifier("chatRedisConnectionFactory") RedisConnectionFactory connectionFactory,
+	        @Qualifier("chatRedisListenerAdapter") MessageListenerAdapter listenerAdapter,
+	        @Qualifier("chatTopic") ChannelTopic chatTopic) {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
