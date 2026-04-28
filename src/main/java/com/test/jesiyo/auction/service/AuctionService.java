@@ -100,6 +100,15 @@ public class AuctionService {
 	    int bidPrice = Integer.parseInt(String.valueOf(paramMap.get("bidPrice")));
 	    
 	    AuctionDto dtoHasHighestBid = dao.getHighestBid(seq);
+	    
+	    //종료된 경매 입찰 막기
+	    if (dtoHasHighestBid != null && dtoHasHighestBid.getStatus() != 0) {
+            result.put("status", "fail");
+            result.put("msg", "이미 종료된 경매입니다. 입찰할 수 없습니다.");
+            return result;
+        }
+	    
+	    // 최고가보다 높은 금액인지 확인
 	    if (dtoHasHighestBid != null && bidPrice <= dtoHasHighestBid.getHighestBid()) {
 	        result.put("status", "fail");
 	        result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
@@ -154,6 +163,47 @@ public class AuctionService {
 		return dao.getMyBidList(map);
 	}
 	
-	
+	@Transactional
+	public Map<String, Object> endAuctionEarlyWithPoint(Map<String, Object> paramMap) {
+	    Map<String, Object> result = new HashMap<>();
+	    
+	    try {
+	        // 1. 경매 상태 변경 (status: 0 -> 1, winner_seq 지정, 종료시간 갱신)
+	        // paramMap에는 seq(경매번호), memberSeq(판매자번호)가 포함되어야 함
+	        int updateResult = dao.endAuctionEarly(paramMap);
+	        
+	        if (updateResult > 0) {
+	            // 2. 낙찰 정보 상세 조회 (최종 낙찰가, 낙찰자 번호, 판매자 번호)
+	            int auctionSeq = Integer.parseInt(String.valueOf(paramMap.get("seq")));
+	            Map<String, Object> winInfo = dao.getAuctionWinnerInfo(auctionSeq);
+	            
+	            if (winInfo != null) {
+	                // 파라미터 재구성 (winnerSeq, sellerSeq, bidPrice 등)
+	                winInfo.put("auctionSeq", auctionSeq);
+	                
+	                // 3. 낙찰자의 포인트 락 상태 변경 (status: 0 -> 2 [정산완료])
+	                dao.updatePointLockToUsed(winInfo);
+	                
+	                // 4. 낙찰자의 실 보유 포인트 차감 (member 테이블)
+	                dao.deductWinnerPoint(winInfo);
+	                
+	                // 5. 판매자의 실 보유 포인트 증가 (대금 지급)
+	                dao.addSellerPoint(winInfo);
+	                
+	                result.put("status", "success");
+	            }
+	        } else {
+	            result.put("status", "fail");
+	            result.put("msg", "입찰자가 없거나 낙찰 처리 권한이 없습니다.");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("status", "error");
+	        result.put("msg", "정산 처리 중 오류가 발생했습니다.");
+	        throw new RuntimeException(e); // 트랜잭션 롤백 트리거
+	    }
+	    
+	    return result;
+	}	
 }
 
