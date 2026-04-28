@@ -65,7 +65,8 @@ public class DirectSaleService {
 
             LocationDto location = locationService
                     .selectMainLocationByMember(dto.getMemberSeq());
-
+            
+            dto.setMemberDong(location.getDong());
             dto.setMemberLat(location.getLat());
 	        dto.setMemberLng(location.getLng());
 	        dto.setDistanceKm(3);
