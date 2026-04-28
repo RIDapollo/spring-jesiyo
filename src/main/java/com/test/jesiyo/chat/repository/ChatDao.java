@@ -1,10 +1,11 @@
 package com.test.jesiyo.chat.repository;
 
 import org.mybatis.spring.SqlSessionTemplate;
+
 import org.springframework.stereotype.Repository;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
-import com.test.jesiyo.chat.dto.MemberDto;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
