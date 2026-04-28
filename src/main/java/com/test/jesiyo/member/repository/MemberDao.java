@@ -80,8 +80,6 @@ public class MemberDao {
     }
     
     public List<WishDto> getWishList(String memberSeq) {
-        // "네임스페이스.아이디" 형식으로 호출합니다.
-        // 앞서 에러 로그에 나타난 경로인 com.test.jesiyo.member.repository.MemberDao를 사용합니다.
         return sqlSession.selectList("com.test.jesiyo.member.repository.MemberDao.getWishList", memberSeq);
     }
     
@@ -90,11 +88,14 @@ public class MemberDao {
     }
     
     public List<CategoryDto> getCategoryList() {
-        // namespace는 이전 에러 로그에 나온 com.test.jesiyo.member.repository.MemberDao를 기준으로 작성합니다.
         return sqlSession.selectList("com.test.jesiyo.member.repository.MemberDao.getCategoryList");
     }
     
     public int addInterest(Map<String, String> map) {
         return sqlSession.insert("com.test.jesiyo.member.repository.MemberDao.addInterest", map);
+    }
+    
+    public int updateMember(MemberDto dto) {
+        return sqlSession.update("com.test.jesiyo.member.repository.MemberDao.updateMember", dto);
     }
 }

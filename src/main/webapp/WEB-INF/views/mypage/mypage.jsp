@@ -95,7 +95,7 @@
                         <%-- 버튼 그룹 --%>
                         <div class="flex flex-col gap-3">
                             <%-- 프로필 수정 버튼 --%>
-                            <a href="${pageContext.request.contextPath}/member/edit" 
+                            <a href="${pageContext.request.contextPath}/member/checkPw" 
                                class="btn-action w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl text-center hover:bg-slate-200">
                                 프로필 수정
                             </a>
