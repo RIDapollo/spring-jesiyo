@@ -58,7 +58,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         dto.setChatRoomSeq(roomId);
         dto.setType("1");
        
-        System.out.println(dto.toString());
         // DB 저장
         chatService.addChat(dto);
 
@@ -68,6 +67,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 s.sendMessage(new TextMessage(payload));
             }
         }
+        
+        // 채팅 친 사람 세션(session)만 추천 서비스로 넘기기
+        chatService.triggerRecommend(dto, session);
         
     }
     

@@ -45,5 +45,13 @@
 	    from category
 	</select>
 	
+	<select id="findMatchedCategories" parameterType="String" resultType="cDto">
+    SELECT
+        SEQ,
+        NAME
+	FROM CATEGORY
+	WHERE INSTR(#{_parameter}, NAME) > 0
+	</select>
+	
 	
 </mapper>

@@ -664,4 +664,23 @@
     word-break: break-word;
     white-space: pre-wrap;
 }
+
+/* 추천 배너 css */
+#recommend-banner {
+    background-color: #fff8e1;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin: 0 12px 6px 12px;
+    font-size: 13px;
+    color: #333;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+#recommend-banner a {
+    color: #e65c00;
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 0 3px;
 }

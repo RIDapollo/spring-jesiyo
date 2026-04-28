@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="auction-recommend">
+	
+	<select id="findTop2ByCategorySeqOrderByRegDateDesc" resultType="AuctionDto">
+		SELECT * FROM auction
+		WHERE category_seq = #{_parameter} AND status = 0
+		ORDER BY seq DESC
+		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY
+	</select>
+
+</mapper>

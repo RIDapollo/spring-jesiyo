@@ -66,3 +66,24 @@ where cl.chat_room_seq = 17 order by cl.seq asc;
 select cm.*, m.NICKNAME from chat_member cm
          join member m on m.seq = cm.MEMBER_SEQ
          where chat_room_seq = 2;
+
+select * from CATEGORY;
+
+SELECT
+        SEQ,
+        NAME
+FROM CATEGORY
+WHERE INSTR('아 헤드폰 사고싶다.', NAME) > 0;
+
+
+SELECT * FROM auction
+WHERE category_seq = 1 AND status = 0
+ORDER BY seq DESC
+OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
+
+select * from CATEGORY;
+
+SELECT * FROM direct_sale
+		WHERE category_seq = 46 AND status = '판매중'
+		ORDER BY seq DESC
+		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
