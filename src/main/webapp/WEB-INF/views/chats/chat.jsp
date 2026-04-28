@@ -137,8 +137,10 @@
     </dialog>
 
     <script>
+    const BASE_URL = '${pageContext.request.contextPath}';  // "/jesiyo"
     const loginUserSeq = ${sessionScope.user.seq};
     let ws = null;
+    const WS_PROTOCOL = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     let mySeq = null;
     const nickname = '${sessionScope.user.nickname}';
     let auctionLoaded = false;
@@ -157,7 +159,7 @@
     // 채팅방 목록 불러오기
     function loadRoomList() {
         const roomListContainer = document.getElementById('roomList');
-        fetch('http://localhost:8080/jesiyo/chat/rooms')
+        fetch(BASE_URL + '/chat/rooms')
             .then(res => res.json())
             .then(list => {
                 roomListContainer.innerHTML = '';
@@ -228,7 +230,7 @@
 
     // 카테고리 대분류
     function loadCategoryL1() {
-        fetch('http://localhost:8080/jesiyo/api/roots')
+        fetch(BASE_URL + '/api/roots')
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('roomCategoryL1');
@@ -247,7 +249,7 @@
         resetSelect('roomCategoryL2');
         resetSelect('roomCategoryL3');
         if (!l1Seq || l1Seq === 'null') return;
-        fetch('http://localhost:8080/jesiyo/api/categories/' + l1Seq + '/children')
+        fetch(BASE_URL + '/api/categories/' + l1Seq + '/children')
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('roomCategoryL2');
@@ -265,7 +267,7 @@
         const l2Seq = this.value;
         resetSelect('roomCategoryL3');
         if (!l2Seq || l2Seq === 'null') return;
-        fetch('http://localhost:8080/jesiyo/api/categories/' + l2Seq + '/children')
+        fetch(BASE_URL + '/api/categories/' + l2Seq + '/children')
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('roomCategoryL3');
@@ -306,7 +308,7 @@
             categorySeq:  categorySeq,
             memberSeq:    loginUserSeq
         };
-        fetch('http://localhost:8080/jesiyo/chat/rooms', {
+        fetch(BASE_URL + '/chat/rooms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dto)
@@ -326,7 +328,7 @@
     	
     	let roomCode = document.getElementById('joinCode').value;
     	
-    	fetch('http://localhost:8080/jesiyo/chat/enter', {
+    	fetch(BASE_URL + '/chat/enter', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -369,7 +371,7 @@
         if (ws !== null && ws.readyState === WebSocket.OPEN) ws.close();
 
         // 방 정보
-        fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId)
+        fetch(BASE_URL + '/chat/rooms/' + roomId)
             .then(res => res.json())
             .then(room => {
                 document.getElementById('currentRoomName').innerHTML = 
@@ -380,7 +382,7 @@
        	loadRoomMembers(roomId);
 
         // 내 멤버 seq
-        fetch('http://localhost:8080/jesiyo/chat/rooms/' + roomId + '/member/' + loginUserSeq)
+        fetch(BASE_URL + '/chat/rooms/' + roomId + '/member/' + loginUserSeq)
             .then(res => res.json())
             .then(data => {
                 mySeq = data;
@@ -388,7 +390,7 @@
         
 
         // 채팅 로그
-        fetch('http://localhost:8080/jesiyo/chat/rooms/logs/' + roomId)
+        fetch(BASE_URL + '/chat/rooms/logs/' + roomId)
             .then(res => res.json())
             .then(logs => {
                 const area = document.getElementById('messagesArea');
@@ -412,7 +414,7 @@
             });
 
         // 소켓 연결
-        ws = new WebSocket('ws://localhost:8080/jesiyo/chat/ws/' + roomId);
+        ws = new WebSocket(WS_PROTOCOL + window.location.host + BASE_URL + '/chat/ws/' + roomId);
 
         ws.onopen = function() {
             console.log('소켓 연결됨 - roomId: ' + roomId);
@@ -440,13 +442,13 @@
 			    let html = '';
 			    if (message.auctions && message.auctions.length > 0) {
 			        const auctionLinks = message.auctions.map(a =>
-			            `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
+			            `<a href="\${BASE_URL}/auction/\${a.seq}" target="_blank">\${a.name}</a>`
 			        ).join(' ');
 			        html += `<span>경매: \${auctionLinks}</span>`;
 			    }
 			    if (message.trades && message.trades.length > 0) {
 			        const tradeLinks = message.trades.map(t =>
-			            `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
+			            `<a href="\${BASE_URL}/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
 			        ).join(' ');
 			        html += `<span>중고거래: \${tradeLinks}</span>`;
 			    }
@@ -530,7 +532,7 @@
             frame.contentWindow.postMessage({
                 type: 'AUCTION_COMMAND',
                 action: 'quickBid'
-            }, '*'); // 같은 origin이므로 * 안전 [web:7]
+            }, window.location.origin); // 같은 origin이므로 * 안전 [web:7]
             
             // 사용자 피드백 (다른 사람한테는 안 보임)
             showTempMessage('⚡ 빠른 입찰 명령 전송됨!', 'success');
@@ -579,7 +581,7 @@
     
     // 참여자 리스트
     function loadRoomMembers(roomId) {
-    fetch('http://localhost:8080/jesiyo/chat/room/' + roomId + '/members')
+    fetch(BASE_URL + '/chat/room/' + roomId + '/members')
         .then(res => res.json())
         .then(members => {
             const userList = document.getElementById('userList');
@@ -612,7 +614,7 @@
 	        if (!auctionLoaded) {
 	        	/* 헤더 날리기 */
 	            const frame = document.getElementById('auctionFrame');
-	            frame.src = 'http://localhost:8080/jesiyo/auction/live?embed=true';
+	            frame.src = BASE_URL + '/auction/live?embed=true';
 	            auctionLoaded = true;
 	        }
 	        overlay.style.display = 'flex';
