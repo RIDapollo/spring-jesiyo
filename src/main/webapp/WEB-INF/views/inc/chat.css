@@ -690,17 +690,18 @@
 /* 경매 오버레이 */
 .auction-overlay {
     position: absolute;
-    top: 0;
+    top: 3rem;           /* chat-header 높이(48px = 3rem) 아래부터 시작 */
     left: 0;
-    right: 0;
-    /* 채팅 입력창 높이(약 64px)만큼 바닥을 비워 입력창이 항상 보이게 */
-    bottom: 64px;
+    /* right를 user-panel 너비(14rem)만큼 비워줌 */
+    right: 14rem;
+    bottom: 40%;          
     background: #1e1f22;
     z-index: 50;
     display: flex;
     flex-direction: column;
-    border-radius: 4px;
     overflow: hidden;
+    border-radius: 8px;
+    /* width, height 퍼센트 값은 제거 */
 }
 
 .auction-overlay-header {
