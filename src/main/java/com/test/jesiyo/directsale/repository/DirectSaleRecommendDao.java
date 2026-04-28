@@ -16,7 +16,7 @@ public class DirectSaleRecommendDao {
 	private final SqlSessionTemplate template;
 
 	public List<DirectSaleDto> findTop2ByCategorySeqOrderByRegDateDesc(Long seq) {
-		return template.selectList("auction-recommend.findTop2ByCategorySeqOrderByRegDateDesc", seq);
+		return template.selectList("directsale-recommend.findTop2ByCategorySeqOrderByRegDateDesc", seq);
 	}
 
 }

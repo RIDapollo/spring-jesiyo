@@ -56,6 +56,10 @@ public class ChatRecommendAspect {
         // ex) '헤드폰 사고싶다" → 카테고리 '헤드폰' 매칭
         List<CategoryDto> matched = categoryDao.findMatchedCategories(content);
 
+        // 매칭된 카테고리 주석
+        System.out.println("매칭된 카테고리 수: " + matched.size());
+        matched.forEach(c -> System.out.println("매칭 카테고리: " + c.getName()));
+        
         // 매칭된 카테고리 없으면 추천 없이 종료
         if (matched.isEmpty()) return;
 
@@ -68,6 +72,12 @@ public class ChatRecommendAspect {
             // 매칭된 카테고리의 중고거래 최신 2건 조회
             List<DirectSaleDto> trades = directSaleRecommendDao
                 .findTop2ByCategorySeqOrderByRegDateDesc(category.getSeq());
+            
+            
+            // 로그 확인용
+            System.out.println("카테고리 seq: " + category.getSeq());
+            System.out.println("경매 수: " + auctions.size());
+            System.out.println("중고거래 수: " + trades.size());
 
             // 경매, 중고거래 둘 다 비어있으면 다음 카테고리로 넘어감
             if (auctions.isEmpty() && trades.isEmpty()) continue;
