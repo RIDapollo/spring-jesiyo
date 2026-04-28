@@ -45,17 +45,35 @@ public class LiveAuctionService {
 		
 		return dao.getDetail(seq);
 	}
-
+	
+	//redis 적용
 	public LiveAuctionDto getHighestBid(int seq) {
 		
+		// 1) Redis에서 최고가를 먼저 꺼내봅니다.
+		Object cachedHighestStr = redisTemplate.opsForValue().get(HIGHEST_BID_KEY_PREFIX + seq);
+		
+		if (cachedHighestStr != null) {
+			// 2) Redis에 값이 있다면, DB에 가지 않고 임시 DTO를 만들어 바로 리턴합니다.
+			LiveAuctionDto dto = new LiveAuctionDto();
+			dto.setHighestBid(Long.parseLong(cachedHighestStr.toString()));
+			return dto;
+		}
+		
+		// 3) Redis에 값이 없을 때(서버 초기화 직후 등)만 오라클 DB를 조회합니다.
 		return dao.getHighestBid(seq);
-	}
+	}	
+	
+//	public LiveAuctionDto getHighestBid(int seq) {
+//		
+//		return dao.getHighestBid(seq);
+//	}
 
 	public LiveBidDto getMyBid(Map<String, Object> map) {
 		
 		return dao.getMyBid(map);
 	}
-
+	
+	//redis 적용버전
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> placeLiveBid(Map<String, Object> paramMap) {
 		
@@ -180,6 +198,73 @@ public class LiveAuctionService {
 		}
 	}
 	
+//	@Transactional(rollbackFor = Exception.class)
+//	public Map<String, Object> placeLiveBid(Map<String, Object> paramMap) {
+//	    
+//	    Map<String, Object> result = new HashMap<>();
+//	    
+//	    int auctionSeq = Integer.parseInt(String.valueOf(paramMap.get("seq")));
+//	    long bidPrice = Long.parseLong(String.valueOf(paramMap.get("bidPrice")));
+//	    int memberSeq = Integer.parseInt(String.valueOf(paramMap.get("memberSeq")));
+//
+//	    // ==========================================
+//	    // [순수 DB 로직 시작] 락 없이 바로 DB 조회 및 쓰기
+//	    // ==========================================
+//	    
+//	    // 1. DB 기준 최고가 확인
+//	    LiveAuctionDto dtohasHighestBid = dao.getHighestBid(auctionSeq);
+//	    Long highestBid = null;
+//	    Integer highestBidMemberSeq = null;
+//	    
+//	    if (dtohasHighestBid != null && dtohasHighestBid.getHighestBid() != null) {
+//	        highestBid = dtohasHighestBid.getHighestBid();
+//	        highestBidMemberSeq = dtohasHighestBid.getHighestBidMemberSeq();
+//	    }
+//
+//	    if (highestBid != null && bidPrice <= highestBid) {
+//	        result.put("status", "fail");
+//	        result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
+//	        return result;
+//	    }
+//
+//	    // 2. 가용 예치금 실시간 검증 (동일인 연속 입찰 보정 포함)
+//	    long availablePoint = dao.getAvailablePoint(memberSeq);
+//	    if (highestBidMemberSeq != null && highestBidMemberSeq == memberSeq) {
+//	        availablePoint += highestBid;
+//	    }
+//
+//	    if (availablePoint < bidPrice) {
+//	        result.put("status", "fail");
+//	        result.put("msg", "가용 예치금이 부족합니다. (현재 가용액: " + availablePoint + "원)");
+//	        return result;
+//	    }
+//
+//	    // 3. 이전 락 해제
+//	    if (highestBid != null && highestBid > 0) {
+//	        Map<String, Object> unlockMap = new HashMap<>();
+//	        unlockMap.put("previousMemberSeq", highestBidMemberSeq);
+//	        unlockMap.put("auctionSeq", auctionSeq); 
+//	        dao.unlockPointLock(unlockMap);
+//	        dao.cancelPreviousLiveBid(paramMap); 
+//	    }
+//
+//	    // 4. 신규 락 생성
+//	    paramMap.put("auctionSeq", auctionSeq); 
+//	    int lockResult = dao.insertPointLock(paramMap);
+//	    if (lockResult <= 0) throw new RuntimeException("예치금 잠금 처리에 실패했습니다.");
+//
+//	    // 5. 신규 입찰 기록 Insert
+//	    int insertResult = dao.liveBid(paramMap);
+//	    if (insertResult <= 0) throw new RuntimeException("입찰 기록 저장 중 오류가 발생했습니다.");
+//
+//	    // 결과 세팅 (DB에서 직접 최신 내역 조회)
+//	    result.put("status", "success");
+//	    result.put("latestBids", dao.getLatestLiveBids(auctionSeq)); 
+//	    result.put("dtoHasHighestBid", dao.getHighestBid(auctionSeq)); 
+//
+//	    return result;
+//	}
+	
 	@Transactional
 	public Map<String, Object> liveBid(Map<String, Object> map) {
 		
@@ -202,6 +287,7 @@ public class LiveAuctionService {
 	    return result;
 	}
 
+	//redis 적용버전
 	@SuppressWarnings("unchecked")
 	public List<LiveBidDto> getLatestLiveBids(int seq) {
 		Object cachedBidsStr = redisTemplate.opsForValue().get(LATEST_BIDS_KEY_PREFIX + seq);
@@ -221,6 +307,11 @@ public class LiveAuctionService {
 	    // 캐시에 없거나 파싱 실패 시 DB에서 직접 조회
 	    return dao.getLatestLiveBids(seq);
 	}
+	
+//	public List<LiveBidDto> getLatestLiveBids(int seq) {
+//		
+//	    return dao.getLatestLiveBids(seq); // 무조건 DB SELECT 실행
+//	}
 	
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> completeLiveAuction(Map<String, Object> map) {
