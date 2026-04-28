@@ -2,12 +2,13 @@ package com.test.jesiyo.chat.service;
 
 import java.util.List;
 
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
-import com.test.jesiyo.chat.dto.MemberDto;
+import com.test.jesiyo.member.dto.MemberDto;
 import com.test.jesiyo.chat.repository.ChatDao;
 
 import lombok.RequiredArgsConstructor;
