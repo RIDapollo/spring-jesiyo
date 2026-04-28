@@ -49,18 +49,20 @@
 			<div class="w-full lg:w-1/2 flex flex-col gap-4">
 
 				<div class="grid grid-cols-2 gap-4">
-					<div
-						class="bg-white border border-brand-200 rounded-xl p-5 shadow-sm flex flex-col justify-center">
-						<span class="block text-sm font-bold text-slate-500 mb-1">현재
-							최고 입찰가</span>
-						<div class="text-3xl font-black text-brand-600 tracking-tight">
-							<span id="displayHighestBid"><fmt:formatNumber
-									value="${dtoHasHighestBid.highestBid}" pattern="#,###" /></span><span
-								class="text-lg font-bold text-slate-500 ml-1">원</span>
-						</div>
-						<p class="text-xs text-slate-400 mt-2 font-medium">시작 기준가:
-							${dto.bidOpenPrice}원</p>
-					</div>
+					<c:set var="displayPrice" value="${(not empty dtoHasHighestBid and dtoHasHighestBid.highestBid > 0) ? dtoHasHighestBid.highestBid : dto.bidOpenPrice}" />
+
+                    <div class="bg-white border border-brand-200 rounded-xl p-5 shadow-sm flex flex-col justify-center">
+                        <span class="block text-sm font-bold text-slate-500 mb-1">
+                            <c:choose>
+                                <c:when test="${not empty dtoHasHighestBid and dtoHasHighestBid.highestBid > 0}">현재 최고 입찰가</c:when>
+                                <c:otherwise>시작 기준가</c:otherwise>
+                            </c:choose>
+                        </span>
+                        <div class="text-3xl font-black text-brand-600 tracking-tight">
+                            <span id="displayHighestBid"><fmt:formatNumber value="${displayPrice}" pattern="#,###" /></span><span class="text-lg font-bold text-slate-500 ml-1">원</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 font-medium">시작 기준가: <fmt:formatNumber value="${dto.bidOpenPrice}" pattern="#,###" />원</p>
+                    </div>
 
 					<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col items-center justify-center text-center">
                         <span class="block text-sm font-bold text-slate-500 mb-1">남은 시간</span>
@@ -212,7 +214,7 @@
 				<h3 class="text-lg font-bold text-slate-800">상품 상세 설명</h3>
 			</div>
 			<div
-				class="p-6 md:p-8 text-slate-600 text-base leading-relaxed whitespace-pre-wrap min-h-[250px]">
+				class="p-6 md:p-8 text-slate-600 text-base leading-relaxed min-h-[250px]">
 				${dto.description}</div>
 		</div>
 
@@ -274,15 +276,17 @@
 				</button>
 			</div>
 
-			<div
-				class="bg-brand-50 border border-brand-100 rounded-xl p-4 text-center mb-6">
-				<span class="block text-sm font-semibold text-brand-600 mb-1">현재
-					최고가</span>
-				<div class="text-2xl font-black text-brand-700">
-					<span id="modalHighestBidDisplay"><fmt:formatNumber
-							value="${dtoHasHighestBid.highestBid}" pattern="#,###" /></span>원
-				</div>
-			</div>
+			<div class="bg-brand-50 border border-brand-100 rounded-xl p-4 text-center mb-6">
+                <span class="block text-sm font-semibold text-brand-600 mb-1">
+                    <c:choose>
+                        <c:when test="${not empty dtoHasHighestBid and dtoHasHighestBid.highestBid > 0}">현재 최고가</c:when>
+                        <c:otherwise>시작 기준가</c:otherwise>
+                    </c:choose>
+                </span>
+                <div class="text-2xl font-black text-brand-700">
+                    <span id="modalHighestBidDisplay"><fmt:formatNumber value="${displayPrice}" pattern="#,###" /></span>원
+                </div>
+            </div>
 
 			<div class="mb-6">
 				<label for="bidPrice"
@@ -463,6 +467,9 @@
 	    };
     
 	    const auctionSeq = parseInt("${dto.seq}", 10);
+	    
+	    const bidOpenPrice = parseInt("${dto.bidOpenPrice}", 10) || 0; // 시작 기준가 변수 추가
+	    
 	    // JS에서 비교 및 갱신을 위해 현재 최고가 상태를 변수로 저장
 	    let currentHighestBid = parseInt("${dtoHasHighestBid.highestBid}", 10) || 0;
 	    
@@ -510,9 +517,17 @@
 	            return;
 	        }
 	
-	        if (bidPriceInput <= currentHighestBid) {
-	            showError('현재 최고가(' + formatNumber(currentHighestBid) + '원)보다 높은 금액이어야 합니다.');
-	            return;
+	        // 첫 입찰인지 아닌지에 따라 검사 로직 분리
+	        if (currentHighestBid === 0) {
+	            if (bidPriceInput < bidOpenPrice) {
+	                showError('첫 입찰은 시작 기준가(' + formatNumber(bidOpenPrice) + '원) 이상이어야 합니다.');
+	                return;
+	            }
+	        } else {
+	            if (bidPriceInput <= currentHighestBid) {
+	                showError('현재 최고가(' + formatNumber(currentHighestBid) + '원)보다 높은 금액이어야 합니다.');
+	                return;
+	            }
 	        }
 	
 	        // 에러 상태 해제
@@ -580,12 +595,15 @@
 	
 	    // 화면(UI) 데이터 업데이트 함수
 	    function updateAuctionDataUI(newHighestBid, bidList) {
-	        currentHighestBid = newHighestBid;
+	    	currentHighestBid = newHighestBid || 0;
+	    	
+	    	// 화면에 표시할 금액 (입찰이 없으면 시작 기준가)
+	        const displayValue = currentHighestBid > 0 ? currentHighestBid : bidOpenPrice;
 	        
 	        // 본문 및 모달 내 최고가 텍스트 갱신
-	        document.getElementById('displayHighestBid').innerText = formatNumber(newHighestBid);
-	        document.getElementById('modalHighestBidDisplay').innerText = formatNumber(newHighestBid);
-	
+	        document.getElementById('displayHighestBid').innerText = formatNumber(displayValue);
+	        document.getElementById('modalHighestBidDisplay').innerText = formatNumber(displayValue);
+	        
 	        // 입찰 목록 갱신 (서버에서 받은 최근 5개 목록)
 	        if (bidList && bidList.length > 0) {
 	            const historyList = document.getElementById('bidHistoryList');
