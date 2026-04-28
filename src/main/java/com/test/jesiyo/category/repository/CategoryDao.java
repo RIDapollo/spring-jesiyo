@@ -1,6 +1,7 @@
 package com.test.jesiyo.category.repository;
 
 import java.util.List;
+import java.util.Locale.Category;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,5 +43,9 @@ public class CategoryDao {
 	
 	public List<CategoryDto> findAll() {
 		return template.selectList("category.findAll");
+	}
+
+	public List<CategoryDto> findMatchedCategories(String content) {
+		return template.selectList("category.findMatchedCategories", content);
 	}
 }

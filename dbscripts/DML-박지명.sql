@@ -66,3 +66,11 @@ where cl.chat_room_seq = 17 order by cl.seq asc;
 select cm.*, m.NICKNAME from chat_member cm
          join member m on m.seq = cm.MEMBER_SEQ
          where chat_room_seq = 2;
+
+select * from CATEGORY;
+
+SELECT
+        SEQ,
+        NAME
+FROM CATEGORY
+WHERE INSTR('아 헤드폰 사고싶다.', NAME) > 0;

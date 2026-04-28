@@ -30,8 +30,7 @@ public class ChatService {
 	}
 
 	public void triggerRecommend(ChatLogDto dto, WebSocketSession session) {
-		
-		
+		// 채팅 추천 기능 AOP가 가로챔
 		
 	}
 
