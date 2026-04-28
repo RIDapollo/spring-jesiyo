@@ -62,7 +62,13 @@
                         <div class="user-list" id="userList"></div>
                     </aside>
                 </div>
-
+				
+				<!-- 추천 배너 (채팅 입력창 위) -->
+				<div id="recommend-banner" style="display:none;">
+				    <span>🛍️ 추천 제품이 있습니다! </span>
+				    <span id="recommend-links"></span>
+				</div>
+				
                 <div class="chat-input-wrap" id="chatInputWrap">
                     <div class="chat-input-box">
                         <button class="chat-input-btn" title="파일 첨부">
@@ -399,11 +405,47 @@
         ws.onmessage = function(evt) {
             const message = JSON.parse(evt.data);
             
-         	// ✅ 멤버 갱신 신호 처리
+         	// 멤버 갱신 신호 처리
             if (message.code === 'REFRESH_MEMBERS') {
                 loadRoomMembers(roomId);
                 return; // 채팅 렌더링 없이 여기서 끝
             }
+         	
+         	// 추천 메시지 처리
+           	if (message.code === 'RECOMMEND') {
+			    const banner = document.getElementById('recommend-banner');
+			    const linksEl = document.getElementById('recommend-links');
+			
+			    let html = '';
+			
+			    if (message.auctions && message.auctions.length > 0) {
+			        const auctionLinks = message.auctions.map(a =>
+			            `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
+			        ).join(' ');
+			        html += `<span>경매 : \${auctionLinks}</span>`;
+			    }
+			
+			    if (message.trades && message.trades.length > 0) {
+			        const tradeLinks = message.trades.map(t =>
+			            `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
+			        ).join(' ');
+			        html += `<span>중고거래 : \${tradeLinks}</span>`;
+			    }
+			
+			    if (!html) html = '<span>추천 항목이 없습니다.</span>';
+			
+			    linksEl.innerHTML = html;
+			    banner.style.display = 'block';
+			    banner.style.opacity = '1';
+			
+			    setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+			    setTimeout(() => {
+			        banner.style.display = 'none';
+			        banner.style.opacity = '1';
+			    }, 3000);
+			    return;
+			}
+         	
             
             const area = document.getElementById('messagesArea');
             const div = document.createElement('div');
