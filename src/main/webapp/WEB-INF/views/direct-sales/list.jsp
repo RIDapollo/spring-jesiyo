@@ -336,8 +336,10 @@
   	    });
 
   	    // ALL 버튼 다시 활성화
-  	    document.querySelector('[data-type="ALL"]')
-  	        .classList.add('active-filter');
+		const allBtn = document.querySelector('[data-type="ALL"]');
+        if (allBtn) {
+            allBtn.classList.add('active-filter');
+        }
 
   	    // 리스트 초기화
   	    page = 0;
