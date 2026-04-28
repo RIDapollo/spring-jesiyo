@@ -89,7 +89,5 @@
 	            <prop key="mail.debug">true</prop> </props>
 	    </property>
 	</bean>
-    
-    <context:component-scan base-package="com.test.jesiyo.config" />
    	
 </beans>
