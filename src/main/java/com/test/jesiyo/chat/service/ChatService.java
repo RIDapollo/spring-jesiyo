@@ -3,6 +3,7 @@ package com.test.jesiyo.chat.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.test.jesiyo.chat.dto.ChatLogDto;
 import com.test.jesiyo.chat.dto.ChatRoomDto;
@@ -25,6 +26,12 @@ public class ChatService {
 	public void addChat(ChatLogDto dto) {
 
 		int resultChat = chatDao.addChat(dto);
+		
+	}
+
+	public void triggerRecommend(ChatLogDto dto, WebSocketSession session) {
+		
+		
 		
 	}
 

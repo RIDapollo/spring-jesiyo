@@ -69,6 +69,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }
         }
         
+        // 채팅 친 사람 세션(session)만 추천 서비스로 넘기기
+        chatService.triggerRecommend(dto, session);
+        
     }
     
     @Override
