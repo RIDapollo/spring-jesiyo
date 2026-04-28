@@ -13,7 +13,7 @@ public class LocationController {
 		return "/locations/mapTest";
 	}
 	
-	@GetMapping("/location/new")
+	@GetMapping("/locations/new")
 	public String mapAddr() {
 		
 		return "/locations/member-location";

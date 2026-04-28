@@ -47,7 +47,6 @@ public class LocationDao {
     }
     
     public LocationDto selectMainLocationByMember(Long memberSeq) {
-    	System.out.println(memberSeq);
     	return template.selectOne("location.selectMainLocationByMember", memberSeq);
     }
 }
