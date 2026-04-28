@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.test.jesiyo.directsale.util.TimeUtil;
 import com.test.jesiyo.trade.dto.TradeDto;
+import com.test.jesiyo.trade.dto.TradeReviewDto;
 import com.test.jesiyo.trade.repository.TradeDao;
 
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,9 @@ public class TradeService {
 		}
 		
 		return 0;
+	}
+
+	public int addReview(TradeReviewDto dto) {
+		return dao.addReview(dto);
 	}
 }

@@ -278,63 +278,39 @@ public class AuctionController {
 		return "auction/auction-myBidList";
 	}
 	
-	// 나의 경매 취소 (내 경매 목록 화면용)
-//		@PostMapping(value = "/auction/cancel/{seq}")
-//		@ResponseBody
-//		public Map<String, Object> cancelMyAuction(@PathVariable("seq") int seq, HttpSession session) {
-//			
-//			Map<String, Object> result = new HashMap<>();
-//			MemberDto mdto = (MemberDto) session.getAttribute("user");
-//			
-//			if (mdto == null) {
-//				result.put("status", "fail");
-//				result.put("msg", "로그인이 필요합니다.");
-//				return result;
-//			}
-//			
-//			Map<String, Object> paramMap = new HashMap<>();
-//			paramMap.put("seq", seq);
-//			paramMap.put("memberSeq", mdto.getSeq());
-//			
-//			// 기존에 만드신 cancelAuctionIfHasNoBids 메서드 활용 또는
-//			// 패널티 부과 로직이 포함된 새로운 취소 로직 호출
-//			int delResult = service.cancelMyAuctionWithPenalty(paramMap); 
-//			
-//			if (delResult > 0) {
-//				result.put("status", "success");
-//			} else {
-//				result.put("status", "fail");
-//				result.put("msg", "경매 종료 1시간 전이거나 이미 낙찰된 경매는 취소할 수 없습니다.");
-//			}
-//			
-//			return result;
-//		}
-
-		// 나의 입찰 취소 (내 입찰 목록 화면용)
-//		@PostMapping(value = "/auction/cancelBid/{bidSeq}")
-//		@ResponseBody
-//		public Map<String, Object> cancelMyBid(@PathVariable("bidSeq") int bidSeq, HttpSession session) {
-//			
-//			Map<String, Object> result = new HashMap<>();
-//			MemberDto mdto = (MemberDto) session.getAttribute("user");
-//			
-//			if (mdto == null) {
-//				result.put("status", "fail");
-//				result.put("msg", "로그인이 필요합니다.");
-//				return result;
-//			}
-//			
-//			// 입찰 취소 로직 (서비스에서 최고가 입찰자인 경우 취소 불가 등의 검증 필요)
-//			int cancelResult = service.cancelBid(bidSeq, mdto.getSeq());
-//			
-//			if (cancelResult > 0) {
-//				result.put("status", "success");
-//			} else {
-//				result.put("status", "fail");
-//				result.put("msg", "최고가 입찰 중이거나 이미 종료된 경매의 입찰은 취소할 수 없습니다.");
-//			}
-//			
-//			return result;
-//		}
+	// 일반 경매 즉시 낙찰 (조기 종료 및 포인트 정산)
+	@PostMapping(value = "/auction/{seq}/end")
+	@ResponseBody
+	public Map<String, Object> endAuctionEarly(@PathVariable("seq") int seq, HttpSession session) {
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		// 1. 로그인 세션 확인
+		MemberDto mdto = (MemberDto) session.getAttribute("user");
+		if (mdto == null) {
+			result.put("status", "fail");
+			result.put("msg", "세션이 만료되었습니다. 다시 로그인해주세요.");
+			return result;
+		}
+		
+		// 2. 서비스 계층으로 넘길 파라미터 세팅
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("seq", seq);
+		paramMap.put("memberSeq", mdto.getSeq()); // 쿼리에서 판매자 본인인지 검증하기 위해 필요
+		
+		try {
+			// 3. 트랜잭션이 적용된 비즈니스 로직 호출
+			// 서비스 단에서 성공/실패 여부에 따라 status와 msg를 담아 반환하도록 설계됨
+			result = service.endAuctionEarlyWithPoint(paramMap);
+			
+		} catch (Exception e) {
+			// 서비스 단에서 트랜잭션 롤백을 위해 발생시킨 예외를 캐치
+			e.printStackTrace();
+			result.put("status", "error");
+			result.put("msg", "포인트 정산 중 서버 오류가 발생했습니다. 관리자에게 문의하세요.");
+		}
+		
+		return result;
+	}
 	
 }

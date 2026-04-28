@@ -22,5 +22,26 @@
 		from location
 		where dong = #{dong}
 	</select>
+	
+	<!-- 기존 동네 삭제 (회원) -->
+    <delete id="deleteMemberLocation" parameterType="string">
+        DELETE FROM member_location
+        WHERE member_seq = #{memberSeq}
+    </delete>
 
+    <!-- 새로운 동네 등록 (회원) -->
+    <insert id="insertMemberLocation" parameterType="map">
+        INSERT INTO member_location (seq, member_seq, location_seq)
+        VALUES (member_location_seq.nextval, #{memberSeq}, #{locationSeq})
+    </insert>
+
+	<select id="selectMainLocationByMember" parameterType="long" resultType="com.test.jesiyo.location.dto.LocationDto">
+		select *
+		from location l
+		where l.seq = (
+			select ml.location_seq
+			from member_location ml
+			where ml.member_seq = #{value}
+		)
+	</select>
 </mapper>

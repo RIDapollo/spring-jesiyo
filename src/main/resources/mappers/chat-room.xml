@@ -47,6 +47,21 @@
 		insert into chat_member (seq, LAST_READ_MESSAGE, ALARM, STATUS, MEMBER_SEQ, CHAT_ROOM_SEQ)
 		values (CHAT_MEMBER_SEQ.nextval, null, DEFAULT, DEFAULT, #{memberSeq}, #{roomSeq})
 	</insert>
+	
+	
+	<select id="getRoomMembers" parameterType="String" resultType="chatMemberDto">
+		select cm.*, m.NICKNAME from chat_member cm
+         join member m on m.seq = cm.MEMBER_SEQ
+         where chat_room_seq = #{_parameter} 
+         order by cm.seq
+	</select>
+	
+	<select id="enterSeq" resultType="int">
+		SELECT chat_room_seq 
+		FROM chat_member 
+		ORDER BY seq DESC 
+		FETCH FIRST 1 ROWS ONLY
+	</select>
 
 
 </mapper>

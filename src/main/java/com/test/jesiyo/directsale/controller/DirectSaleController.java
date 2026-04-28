@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,7 +19,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
+import com.test.jesiyo.directsale.dto.DirectSaleSearchDto;
 import com.test.jesiyo.directsale.service.DirectSaleService;
+import com.test.jesiyo.location.dto.LocationDto;
+import com.test.jesiyo.location.service.LocationService;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,18 +33,43 @@ public class DirectSaleController {
 
 	private final DirectSaleService directSaleService;
 	private final CategoryService categoryService;
+	private final LocationService locationService;
 	
 	@GetMapping("/direct-sales")
-    public String list(Model model) {
+	public String list(DirectSaleSearchDto dto, Model model,
+						HttpSession session) {
 
-		int page = 0;
-	    int pageSize = 12;
-		
-        List<DirectSaleDto> list = directSaleService.getListByPage(page);
-        model.addAttribute("list", list);
-        
-        return "/direct-sales/list";
-    }
+	    int page = 0;
+
+	    // 카테고리 트리는 항상 필요
+	    List<CategoryDto> categoryTree = categoryService.getCategoryTree();
+	    
+	    boolean hasLocationFilter = false;
+	    
+	    // 회원 정보 SearchDto 에 넣어주기
+	    MemberDto loginMember = (MemberDto) session.getAttribute("user");
+	    if (loginMember != null) {
+	    	dto.setMemberSeq(Long.parseLong(loginMember.getSeq()));
+	    	
+	    	LocationDto location = locationService
+	                .selectMainLocationByMember(dto.getMemberSeq());
+
+	        hasLocationFilter = (location != null);
+	        model.addAttribute("hasLocationFilter", hasLocationFilter);
+	    }
+
+	    // 초기 데이터 (필터 적용된 상태)
+	    dto.setPage(page);
+	    List<DirectSaleDto> list = directSaleService.search(dto);
+
+	    model.addAttribute("categoryTree", categoryTree);
+	    model.addAttribute("list", list);
+
+	    // 프론트에서도 쓰게 넘김
+	    model.addAttribute("initFilter", dto);
+
+	    return "/direct-sales/list";
+	}
 	
 	@GetMapping("/direct-sales/{seq}")
     public String detail(@PathVariable("seq") Long seq, Model model) {

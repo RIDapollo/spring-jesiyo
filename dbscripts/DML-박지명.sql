@@ -60,3 +60,9 @@ select cl.*, m.NICKNAME from chat_log cl
             join chat_member cm on cl.CHAT_MEMBER_SEQ = cm.SEQ
             join member m on m.seq = cm.MEMBER_SEQ
 where cl.chat_room_seq = 17 order by cl.seq asc;
+
+
+
+select cm.*, m.NICKNAME from chat_member cm
+         join member m on m.seq = cm.MEMBER_SEQ
+         where chat_room_seq = 2;

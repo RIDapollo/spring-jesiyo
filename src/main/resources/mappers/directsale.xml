@@ -136,4 +136,76 @@
 	    WHERE seq = #{seq}
 	</update>
 	
+	<select id="search" resultType="DirectSaleDto">
+	 	SELECT
+	        ds.seq, ds.name, ds.product_name AS productName,
+	        ds.price, ds.image_url AS imageUrl, ds.status,
+	        tl.dong, tl.lat, tl.lng, m.name AS sellerName, ds.created_at AS createdAt
+	    FROM direct_sale ds
+	    JOIN member m
+	        ON ds.seller_seq = m.seq
+	    LEFT JOIN trade_location tl
+	        ON ds.trade_location_seq = tl.seq
+
+	    WHERE ds.status != '삭제'
+		
+		<if test="dto.categorySeq != null">
+		  AND ds.category_seq = #{dto.categorySeq}
+		</if>
+		
+		<if test="dto.minPrice != null">
+		  AND ds.price <![CDATA[>=]]> #{dto.minPrice}
+		</if>
+		<if test="dto.maxPrice != null">
+		  AND ds.price <![CDATA[<=]]> #{dto.maxPrice}
+		</if>
+		
+		ORDER BY ds.seq DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="searchByLocation" resultType="DirectSaleDto">
+	 	SELECT
+	        ds.seq, ds.name, ds.product_name AS productName,
+	        ds.price, ds.image_url AS imageUrl, ds.status,
+	        tl.dong, tl.lat, tl.lng, m.name AS sellerName, ds.created_at AS createdAt
+	    FROM direct_sale ds
+	    JOIN member m
+	        ON ds.seller_seq = m.seq
+	    JOIN trade_location tl
+	        ON ds.trade_location_seq = tl.seq
+
+	    WHERE ds.status != '삭제'
+	    	AND ds.seller_seq != #{dto.memberSeq}
+		
+		<if test="dto.categorySeq != null">
+		  AND ds.category_seq = #{dto.categorySeq}
+		</if>
+		
+		<if test="filterType == 'DONG'">
+		  AND tl.dong = #{memberDong}
+		</if>
+		<if test="filterType == 'DISTANCE'">
+		  AND (
+		      6371 * acos(
+		          cos(radians(#{memberLat}))
+		          * cos(radians(tl.lat))
+		          * cos(radians(tl.lng) - radians(#{memberLng}))
+		          + sin(radians(#{memberLat}))
+		          * sin(radians(tl.lat))
+		      )
+		  ) <![CDATA[<=]]> #{distanceKm}
+		</if>
+		
+		<if test="dto.minPrice != null">
+		  AND ds.price <![CDATA[>=]]> #{dto.minPrice}
+		</if>
+		<if test="dto.maxPrice != null">
+		  AND ds.price <![CDATA[<=]]> #{dto.maxPrice}
+		</if>
+		
+		ORDER BY ds.seq DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
 </mapper>

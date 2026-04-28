@@ -39,10 +39,37 @@
 	</select>
 	
 	<select id="getHighestBid" parameterType="int" resultType="LiveAuctionDto">
-	    SELECT MAX(bid_price) as highestBid
-	    FROM live_bid_history  WHERE live_auction_seq = #{seq} 
-	      AND status = 0
-	</select>
+        SELECT 
+            l.seq,
+            l.name,
+            l.bid_open_price AS bidOpenPrice,
+            l.image,
+            l.description,
+            l.create_member_seq AS createMemberSeq,
+            l.category_seq AS categorySeq,
+            c.name AS categoryName,
+            m_seller.id AS sellerId,
+            h.highestBid,
+            h.member_seq AS highestBidMemberSeq,
+            m_bidder.id AS highestBidUserId
+        FROM live_auction l
+        LEFT JOIN category c ON l.category_seq = c.seq
+        INNER JOIN member m_seller ON l.create_member_seq = m_seller.seq
+        LEFT JOIN (
+            SELECT * FROM (
+                SELECT 
+                    live_auction_seq,
+                    bid_price AS highestBid,
+                    member_seq,
+                    bid_time
+                FROM live_bid_history
+                WHERE live_auction_seq = #{seq} AND status = 0
+                ORDER BY bid_price DESC, bid_time ASC
+            ) WHERE ROWNUM = 1
+        ) h ON l.seq = h.live_auction_seq
+        LEFT JOIN member m_bidder ON h.member_seq = m_bidder.seq
+        WHERE l.seq = #{seq}
+    </select>
 
 	<select id="getMyBid" parameterType="map" resultType="LiveBidDto">
 	    SELECT * FROM (
@@ -94,6 +121,68 @@
         UPDATE live_auction
         SET winner_seq = #{winnerSeq}, 
             status = 2 WHERE seq = #{auctionSeq}
+    </update>
+    
+    <select id="getAvailablePoint" parameterType="int" resultType="long">
+        SELECT m.point - NVL((
+            SELECT SUM(amount) 
+            FROM point_lock 
+            WHERE member_seq = m.seq AND status = 0
+        ), 0)
+        FROM member m
+        WHERE m.seq = #{memberSeq}
+    </select>
+    
+    <insert id="insertPointLock" parameterType="map">
+        INSERT INTO point_lock (
+            seq, member_seq, amount, status, live_auction_seq
+        ) VALUES (
+            point_lock_seq.nextval, #{memberSeq}, #{bidPrice}, 0, #{auctionSeq}
+        )
+    </insert>
+    
+    <update id="unlockPointLock" parameterType="map">
+        UPDATE point_lock
+        SET status = 1
+        WHERE live_auction_seq = #{auctionSeq}
+          AND member_seq = #{previousMemberSeq}
+          AND status = 0
+    </update>
+    
+    <update id="updatePointLockToUsed" parameterType="map">
+        UPDATE point_lock
+        SET status = 2
+        WHERE live_auction_seq = #{auctionSeq}
+          AND member_seq = #{winnerSeq}
+          AND status = 0
+    </update>
+    
+    <update id="deductMemberPoint" parameterType="map">
+        UPDATE member
+        SET point = point - #{bidPrice}
+        WHERE seq = #{winnerSeq}
+    </update>
+    
+    <delete id="deleteLiveBidHistoryForReset" parameterType="int">
+        DELETE FROM live_bid_history
+        WHERE live_auction_seq = #{auctionSeq}
+    </delete>
+    
+    <delete id="deletePointLockForReset" parameterType="int">
+        DELETE FROM point_lock
+        WHERE live_auction_seq = #{auctionSeq}
+    </delete>
+    
+    <update id="updateScheduleToLive" parameterType="int">
+        UPDATE live_auction_schedule
+        SET broadcast_status = 1
+        WHERE seq = #{scheduleSeq}
+    </update>
+    
+    <update id="resetLiveAuctionStatus" parameterType="int">
+        UPDATE live_auction
+        SET status = 0, winner_seq = NULL
+        WHERE seq = #{auctionSeq}
     </update>
     
 </mapper>

@@ -41,7 +41,20 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         // JSON → Dto
         Gson gson = new Gson();
         JsonObject json = gson.fromJson(payload, JsonObject.class);
+        String code = json.get("code").getAsString();
         ChatLogDto dto = gson.fromJson(payload, ChatLogDto.class);
+        
+        //REFRESH_MEMBERS 신호 → DB 저장 없이 브로드캐스트만
+        if ("REFRESH_MEMBERS".equals(code)) {
+            for (WebSocketSession s : sessionManager.getSessions(roomId)) {
+                if (s.isOpen()) {
+                    s.sendMessage(new TextMessage(payload));
+                }
+            }
+            return; // 여기서 끝, DB 저장 안 함
+        }
+        
+        
         dto.setChatRoomSeq(roomId);
         dto.setType("1");
        
@@ -57,12 +70,16 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
         
     }
-
+    
     @Override
     public void afterConnectionClosed(WebSocketSession session,
             org.springframework.web.socket.CloseStatus status) throws Exception {
     	String roomId = getRoomId(session);
         sessionManager.removeSession(roomId, session);
         System.out.println("퇴장 - roomId: " + roomId + " / sessionId: " + session.getId());
+    }
+    
+    public ChatRoomSessionManager getSessionManager() {
+        return sessionManager;
     }
 }

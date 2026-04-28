@@ -15,9 +15,10 @@ public class MemberDto {
     private String detailAddress;
     private String email;
     private String permission;
-    private int point;
     private String profileImg;
     private int usedCount;
     private int auctionCount;
     private int wishCount;
+    private String point;
+    
 }

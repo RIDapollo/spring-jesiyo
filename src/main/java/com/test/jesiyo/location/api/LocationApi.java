@@ -1,5 +1,7 @@
 package com.test.jesiyo.location.api;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,7 @@ import com.test.jesiyo.location.dto.LocationDto;
 import com.test.jesiyo.location.dto.TradeLocationDto;
 import com.test.jesiyo.location.service.LocationService;
 import com.test.jesiyo.location.service.TradeLocationService;
+import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,14 +26,16 @@ public class LocationApi {
 	
 	// 새로운 동네면 동네 DB저장, 있는 곳이면 조회만
 	// 조회 후 회원정보에 동네정보 저장
-	@PostMapping("/location/member")
-	public ResponseEntity<LocationDto> setMemberLocation(@RequestBody LocationDto dto) {
+	@PostMapping("/member/location")
+	public ResponseEntity<LocationDto> setMemberLocation(@RequestBody LocationDto dto, HttpSession session) {
 
-		LocationDto result = locationService.addOrGet(dto);
-		// TODO 나중에 memberSeq 를 PathVariable로 받아서 처리해야 함!
-//		memberService.updateLocation(memberSeq, dto.getSeq());
+		MemberDto loginMember = (MemberDto) session.getAttribute("user");
 		
-		return ResponseEntity.ok(result);
+		LocationDto location = locationService.addOrGet(dto);
+		// 기존 동네 정보 있으면 삭제후 선택한 것 insert
+		locationService.updateMemberLocation(loginMember.getSeq(), location.getSeq());
+		
+		return ResponseEntity.ok(location);
 	}
 	
 	@PostMapping("/trade-locations")

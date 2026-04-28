@@ -29,4 +29,5 @@ public class AuctionDto {
     private int myBidPrice;    // 내가 입찰한 금액과 매핑
     private String categoryName;
     private int bidSeq;
+    
 }

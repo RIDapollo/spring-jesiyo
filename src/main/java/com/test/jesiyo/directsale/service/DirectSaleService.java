@@ -6,8 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
+import com.test.jesiyo.directsale.dto.DirectSaleSearchDto;
 import com.test.jesiyo.directsale.repository.DirectSaleDao;
 import com.test.jesiyo.directsale.util.TimeUtil;
+import com.test.jesiyo.location.dto.LocationDto;
+import com.test.jesiyo.location.service.LocationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +20,7 @@ public class DirectSaleService {
 
 	private final DirectSaleDao dao;
 	private final CategoryService categoryService;
+	private final LocationService locationService;
 	
 	// 페이징 처리 시 한번에 보여줄 도메인 수
     private static final int PAGE_SIZE = 12;
@@ -45,17 +49,34 @@ public class DirectSaleService {
         return dao.update(dto);
     }
     
-    public List<DirectSaleDto> getListByPage(int page) {
-    	int offset = page * PAGE_SIZE;
-        
-    	// 페이징처리한 중고거래 목록 가져오기
-    	List<DirectSaleDto> list = dao.getListByPage(offset, PAGE_SIZE);
+    public List<DirectSaleDto> search(DirectSaleSearchDto dto) {
 
-        // 중고거래 등록 시간과 현재 시간 차이 구하기
-		list.forEach(
-			item -> item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
-		);
-        
+        int offset = dto.getPage() * PAGE_SIZE;
+
+        List<DirectSaleDto> list;
+
+        // 1. 전체 조회
+        if ("ALL".equals(dto.getFilterType()) || dto.getFilterType() == null) {
+            list = dao.search(dto, offset, PAGE_SIZE);
+        }
+
+        // 2. 위치 기반 (DONG or DISTANCE 둘 다 여기)
+        else {
+
+            LocationDto location = locationService
+                    .selectMainLocationByMember(dto.getMemberSeq());
+
+            dto.setMemberLat(location.getLat());
+	        dto.setMemberLng(location.getLng());
+	        dto.setDistanceKm(3);
+            
+            list = dao.searchByLocation(dto, offset, PAGE_SIZE);
+        }
+
+        list.forEach(item ->
+            item.setTimeAgo(TimeUtil.timeAgo(item.getCreatedAt()))
+        );
+
         return list;
     }
 

@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.test.jesiyo.trade.dto.TradeDto;
+import com.test.jesiyo.trade.dto.TradeReviewDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,10 @@ public class TradeDao {
 	
 	public int updateDirectStatus(Long tradeSeq) {
 		return template.update("trade.updateDirectStatus", tradeSeq);	
+	}
+
+	public int addReview(TradeReviewDto dto) {
+		return template.insert("trade.addReview", dto);
 	}
 	
 }

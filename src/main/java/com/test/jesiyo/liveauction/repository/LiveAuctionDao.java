@@ -63,4 +63,54 @@ public class LiveAuctionDao {
 		return template.update("liveAuction.updateLiveAuctionWinner", map);
 	}
 
+	public LiveBidDto getCurrentHighestBidInfo(int auctionSeq) {
+		
+		return template.selectOne("liveAuction.getCurrentHighestBidInfo", auctionSeq);
+	}
+
+	public int updatePointLockToUsed(Map<String, Object> map) {
+		
+		return template.update("liveAuction.updatePointLockToUsed", map);
+	}
+
+	public int deductMemberPoint(Map<String, Object> map) {
+		
+		return template.update("liveAuction.deductMemberPoint", map);
+	}
+
+	public void unlockPointLock(Map<String, Object> unlockMap) {
+		
+		template.update("liveAuction.unlockPointLock", unlockMap);
+	}
+
+	public int insertPointLock(Map<String, Object> paramMap) {
+		
+		return template.insert("liveAuction.insertPointLock", paramMap);
+	}
+
+	public long getAvailablePoint(int memberSeq) {
+		
+		return template.selectOne("liveAuction.getAvailablePoint", memberSeq);
+	}
+
+	public void deleteLiveBidHistoryForReset(int auctionSeq) {
+		
+		template.delete("liveAuction.deleteLiveBidHistoryForReset", auctionSeq);
+	}
+
+	public void deletePointLockForReset(int auctionSeq) {
+		
+		template.delete("liveAuction.deletePointLockForReset", auctionSeq);
+	}
+
+	public void updateScheduleToLive(int scheduleSeq) {
+		
+		template.delete("liveAuction.updateScheduleToLive", scheduleSeq);
+	}
+
+	public void resetLiveAuctionStatus(int auctionSeq) {
+		
+		template.delete("liveAuction.resetLiveAuctionStatus", auctionSeq);
+	}
+
 }

@@ -11,5 +11,6 @@ public class ChatMemberDto {
 	private String status;
 	private String memberSeq;
 	private String chatRoomSeq;
+	private String nickname;
 
 }

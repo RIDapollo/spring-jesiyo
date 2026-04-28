@@ -93,4 +93,24 @@ public class AuctionDao {
 		return template.selectList("auction.getMyBidList", map);
 	}
 	
+	public int endAuctionEarly(Map<String, Object> map) {
+	    return template.update("auction.endAuctionEarly", map);
+	}
+
+	public Map<String, Object> getAuctionWinnerInfo(int seq) {
+	    return template.selectOne("auction.getAuctionWinnerInfo", seq);
+	}
+
+	public void updatePointLockToUsed(Map<String, Object> map) {
+	    template.update("auction.updatePointLockToUsed", map);
+	}
+
+	public void deductWinnerPoint(Map<String, Object> map) {
+	    template.update("auction.deductWinnerPoint", map);
+	}
+
+	public void addSellerPoint(Map<String, Object> map) {
+	    template.update("auction.addSellerPoint", map);
+	}
+	
 }
