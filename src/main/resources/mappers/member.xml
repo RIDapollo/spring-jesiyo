@@ -5,23 +5,28 @@
 
 <mapper namespace="com.test.jesiyo.member.repository.MemberDao">
 
-    <select id="getMemberById" parameterType="String" resultType="com.test.jesiyo.member.dto.MemberDto">
-        SELECT 
-            seq,
-            ID AS userId, 
-            PW AS userPw,
-            name,
-            birth,
-            nickname,
-            zipcode,
-            address,
-            detail_address AS detailAddress,
-            email_address AS email,  
-            permission
-        FROM member 
-        WHERE ID = #{userId} AND status = 0
-    </select>
-    
+	<select id="getMemberById" parameterType="String" resultType="com.test.jesiyo.member.dto.MemberDto">
+	    SELECT 
+	        m.seq,
+	        m.ID AS userId, 
+	        m.PW AS userPw,
+	        m.name,
+	        m.birth,
+	        m.nickname,
+	        m.zipcode,
+	        m.address,
+	        m.detail_address AS detailAddress,
+	        m.email_address AS email,
+	        m.permission,
+	        m.profile_img AS profileImg,
+	        (SELECT COUNT(*) FROM direct_sale WHERE seller_seq = m.seq) AS usedCount,
+	        (SELECT COUNT(*) FROM auction WHERE create_member_seq = m.seq) AS auctionCount,
+	        (SELECT COUNT(*) FROM member_interest WHERE member_seq = m.seq) AS wishCount,
+	        (m.point - (SELECT NVL(SUM(amount), 0) FROM point_lock WHERE member_seq = m.seq)) AS point
+	    FROM member m
+	    WHERE m.ID = #{userId} AND m.status = 0
+	</select>
+
     <insert id="regist" parameterType="com.test.jesiyo.member.dto.MemberDto">
         INSERT INTO member (
             seq, 
