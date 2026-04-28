@@ -107,7 +107,7 @@ public class AuctionService {
             result.put("msg", "이미 종료된 경매입니다. 입찰할 수 없습니다.");
             return result;
         }
-	    
+
 	    // 최고가보다 높은 금액인지 확인
 	    if (dtoHasHighestBid != null && bidPrice <= dtoHasHighestBid.getHighestBid()) {
 	        result.put("status", "fail");
@@ -204,6 +204,7 @@ public class AuctionService {
 	    }
 	    
 	    return result;
-	}	
+	}
+	
 }
 
