@@ -456,7 +456,7 @@
 			    banner.style.display = 'block';
 			    banner.style.opacity = '1';
 			
-			    setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+			    setTimeout(() => { banner.style.opacity = '0'; }, 2999);
 			    setTimeout(() => {
 			        banner.style.display = 'none';
 			        banner.style.opacity = '1';
@@ -567,7 +567,7 @@
 	    banner.style.display = 'block';
 	    banner.style.opacity = '1';
 	    
-	    setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+	    setTimeout(() => { banner.style.opacity = '0'; }, 2999);
 	    setTimeout(() => {
 	        banner.style.display = 'none';
 	        banner.style.opacity = '1';
