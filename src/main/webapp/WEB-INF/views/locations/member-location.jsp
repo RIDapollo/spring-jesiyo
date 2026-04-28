@@ -19,6 +19,14 @@
           bottom: 15px;
           z-index: 10;
       }
+      .map-center-marker {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -60%);
+        z-index: 10;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body class="bg-slate-50">
@@ -40,8 +48,14 @@
             여기로 동네 정하기
           </button>
         </div>
+        
+        <img alt="Marker Image"
+          src="/jesiyo/resources/image/marker.png"
+          class="size-[208px] map-center-marker">
       </div>
     </main>
+
+    
   
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=43be306c3c777621437a473e15f4d3c5&libraries=services"></script>
   	<script>

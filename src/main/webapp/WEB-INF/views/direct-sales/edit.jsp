@@ -26,6 +26,14 @@
         bottom:15px;
         z-index:10;
     }
+    .map-center-marker {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -60%);
+        z-index: 10;
+        pointer-events: none;
+    }
     </style>
   </head>
   <body class="bg-slate-50">
@@ -147,6 +155,10 @@
                     class="btn-sub map-btn">
                 여기로 위치 설정
             </button>
+            
+            <img alt="Marker Image"
+              src="/jesiyo/resources/image/marker.png"
+              class="size-[208px] map-center-marker">
         </div>
 
         <input type="hidden" name="tradeLocationSeq" id="tradeLocationSeq"

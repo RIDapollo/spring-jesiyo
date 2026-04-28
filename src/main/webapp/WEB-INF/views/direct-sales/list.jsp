@@ -9,9 +9,18 @@
     <title>JeSiYo</title>
     <%@ include file="/WEB-INF/views/inc/asset.jsp" %>
     <style type="text/tailwindcss">
-    .active-filter {
-      @apply bg-brand-500 text-white;
-    }
+    	.active-filter {
+      		@apply bg-brand-500 text-white;
+   		 }
+		.menu li > *:not(ul):not(.menu-title):not(details):active,
+		.menu li > *:not(ul):not(.menu-title):not(details).active,
+		.menu li > details > summary:active {
+ 			 @apply bg-transparent text-brand-500
+  			[@media(hover:hover)]:text-brand-500;
+		}
+		.menu summary::after {
+  			display: none;
+		}
     </style>
     <style>
         .filter-chip {
@@ -37,45 +46,46 @@
 
   <!-- 왼쪽 카테고리 -->
   <aside class="w-64 pr-6 sticky top-24 h-fit">
+  <div class="flex items-center justify-between m-2 text-sm text-slate-500">
+    <div id="filter-status" class="text-base text-slate-900 font-semibold">
+        필터
+    </div>
+    <!-- 초기화 버튼 -->
+    <button id="filter-reset"
+      class="text-slate-500 hover:underline hover:text-slate-600 cursor-pointer">
+      초기화
+    </button>
+  </div>
+  
   <c:if test="${not empty sessionScope.user and hasLocationFilter}">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-2">
     <!-- 왼쪽: 필터 버튼 -->
     <div class="flex gap-2 w-full">
       <button class="filter-btn flex-1 px-3 py-1 rounded text-sm
                      bg-slate-200 text-slate-700 hover:bg-slate-300 transition
-                     active-filter"
+                     active-filter cursor-pointer"
               data-type="ALL">
         전체
       </button>
       <button class="filter-btn flex-1 px-3 py-1 rounded text-sm
-                     bg-slate-200 text-slate-700 hover:bg-slate-300 transition"
+                     bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer"
               data-type="DONG">
         내 동네
       </button>
       <button class="filter-btn flex-1 px-3 py-1 rounded text-xs
-                     bg-slate-200 text-slate-700 hover:bg-slate-300 transition"
+                     bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer"
               data-type="DISTANCE">
         3km 이내
       </button>
     </div>
   </div>
   </c:if>
-  <div class="flex items-center justify-between mt-2 text-xs text-slate-500">
-  <div id="filter-status" class="text-xs text-slate-500">
-      전체
-  </div>
-    <!-- 초기화 버튼 -->
-    <button id="filter-reset"
-            class="text-brand-600 hover:underline">
-        초기화
-    </button>
-  </div>
   <ul class="menu bg-slate-100 w-full text-sm">
   <!-- 대분류 -->
   <c:forEach var="c1" items="${categoryTree}">
     <li>
       <details>
-        <summary class="">${c1.name}</summary>
+        <summary class="!focus:outline-none !focus-visible:outline-none">${c1.name}</summary>
         <ul>
           <%-- 중분류 --%>
           <c:forEach var="c2" items="${c1.children}">
@@ -106,7 +116,7 @@
   <!-- 오른쪽 상품 리스트 -->
   <div class="flex-1 pl-6">
   
-    <div class="mt-3 flex flex-wrap gap-2" id="filter-chips"></div>
+    <div class="mt-5 ms-5 flex flex-wrap gap-2 min-h-[26px]" id="filter-chips"></div>
   
     <div class="page-wrap max-w-3xl !pt-2">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -134,6 +144,7 @@
   	
   	const filterState = {
 	    categorySeq: null,
+	    categoryName: null,
 	    filterType: "ALL"
 	};
   	
@@ -240,6 +251,7 @@
 
   	    // 1. 상태 저장
   	    filterState.categorySeq = seq;
+  	  	filterState.categoryName = el.textContent.trim();
   	    // 2. UI 처리
   	    document.querySelectorAll('.category-link').forEach(a => {
   	        a.classList.remove('text-brand-600', 'font-bold');
@@ -303,7 +315,6 @@
   	    if (filterState.categorySeq) {
   	        text += " · 카테고리 선택됨";
   	    }
-  	    document.getElementById("filter-status").innerText = text;
   	}
   	
   	document.getElementById("filter-reset").addEventListener("click", () => {
@@ -311,6 +322,7 @@
   	    // 상태 초기화
   	    filterState.filterType = "ALL";
   	    filterState.categorySeq = null;
+  	    filterState.categoryName = null;
 
   	  	isLoading = false;
   	    
@@ -359,11 +371,11 @@
   	    if (filterState.categorySeq) {
   	        wrap.innerHTML += `
   	            <div class="filter-chip" data-type="category">
-  	                카테고리 ✕
+  	                \${filterState.categoryName} ✕
   	            </div>
   	        `;
   	    }
-  		wrap.style.display = wrap.innerHTML.trim() === "" ? "none" : "flex";
+  		wrap.style.display = wrap.innerHTML.trim() === "" ? "" : "flex";
   	}
   	
   	document.addEventListener("click", function (e) {
