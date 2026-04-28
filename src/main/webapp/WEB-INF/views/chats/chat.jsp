@@ -38,9 +38,23 @@
                 <span id="currentRoomDesc"
                       style="color: #72767d; font-size: 0.75rem; font-weight: 400; margin-left: 0.5rem;"></span>
                 <div class="header-actions">
-                    <button class="header-tab-btn">🏬경매</button>
+                    <button class="header-tab-btn" onclick="toggleAuction()">🏬경매</button>
                 </div>
             </div>
+            
+            <!-- ✅ 경매 오버레이 패널 -->
+	        <div id="auctionOverlay" class="auction-overlay" style="display:none;">
+	            <div class="auction-overlay-header">
+	                <span>🏬 라이브 경매</span>
+	                <button class="auction-close-btn" onclick="toggleAuction()">✕</button>
+	            </div>
+	            <iframe id="auctionFrame"
+	                    class="auction-frame"
+	                    src=""
+	                    frameborder="0"
+	                    allowfullscreen>
+	            </iframe>
+	        </div>
 
             <div class="empty-state" id="emptyState">
                 <div class="empty-icon">💬</div>
@@ -90,6 +104,7 @@
             </div>
 
         </main>
+        
     </div>
 
     <dialog id="roomModal">
@@ -126,6 +141,7 @@
     let ws = null;
     let mySeq = null;
     const nickname = '${sessionScope.user.nickname}';
+    let auctionLoaded = false;
 
     // ✅ DOMContentLoaded 하나로 통합
     document.addEventListener('DOMContentLoaded', function() {
@@ -507,7 +523,24 @@
             });
         })
         .catch(err => console.error("참여자 목록 조회 실패:", err));
-}
+	}
+    
+    // 경매 탭
+    function toggleAuction() {
+	    const overlay = document.getElementById('auctionOverlay');
+	    const isVisible = overlay.style.display !== 'none';
+	
+	    if (isVisible) {
+	        overlay.style.display = 'none';
+	    } else {
+	        // 최초 1회만 src 설정
+	        if (!auctionLoaded) {
+	            document.getElementById('auctionFrame').src = 'http://localhost:8080/jesiyo/auction/live';
+	            auctionLoaded = true;
+	        }
+	        overlay.style.display = 'flex';
+	    }
+	}
 
 
     </script>
