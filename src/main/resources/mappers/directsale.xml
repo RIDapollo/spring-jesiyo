@@ -182,19 +182,21 @@
 		  AND ds.category_seq = #{dto.categorySeq}
 		</if>
 		
-		<if test="filterType == 'DONG'">
-		  AND tl.dong = #{memberDong}
+		<if test="dto.filterType.equals('DONG')">
+		  AND tl.dong = #{dto.memberDong}
 		</if>
-		<if test="filterType == 'DISTANCE'">
+		<if test="'DISTANCE'.equals(dto.filterType)">
 		  AND (
-		      6371 * acos(
-		          cos(radians(#{memberLat}))
-		          * cos(radians(tl.lat))
-		          * cos(radians(tl.lng) - radians(#{memberLng}))
-		          + sin(radians(#{memberLat}))
-		          * sin(radians(tl.lat))
-		      )
-		  ) <![CDATA[<=]]> #{distanceKm}
+		    6371 * ACOS(
+		      LEAST(1, GREATEST(-1,
+		        COS(#{dto.memberLat} * (ACOS(-1) / 180))
+		        * COS(tl.lat * (ACOS(-1) / 180))
+		        * COS((tl.lng - #{dto.memberLng}) * (ACOS(-1) / 180))
+		        + SIN(#{dto.memberLat} * (ACOS(-1) / 180))
+		        * SIN(tl.lat * (ACOS(-1) / 180))
+		      ))
+		    )
+		  ) <![CDATA[<=]]> #{dto.distanceKm}
 		</if>
 		
 		<if test="dto.minPrice != null">

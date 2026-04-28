@@ -29,13 +29,19 @@ public class DirectSaleApi {
 	@PostMapping("/direct-sales")
 	public List<DirectSaleDto> getList(@RequestBody DirectSaleSearchDto dto, HttpSession session) {
 		
+		if (dto.getPage() == 0 || dto.getPage() < 0) {
+	        dto.setPage(0);
+	    }
+		
 		MemberDto loginMember = (MemberDto) session.getAttribute("user");
 
 	    if (loginMember != null) {
 	        dto.setMemberSeq(Long.parseLong(loginMember.getSeq()));
 	    }
 		
-	    return service.search(dto);
+	    List<DirectSaleDto> list = service.search(dto);
+	    
+	    return list;
 	}
 	
     // 삭제 (실제 DELETE가 아니라 status 변경)
