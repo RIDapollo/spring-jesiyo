@@ -197,19 +197,50 @@
 	    WHERE rnum BETWEEN #{begin} AND #{end}
 	</select>
 
-	<!-- <update id="cancelMyAuctionWithPenalty" parameterType="map">
+	<update id="endAuctionEarly" parameterType="map">
         UPDATE auction 
-        SET status = '4' 
+        SET status = 1, 
+            end_date = SYSDATE, 
+            winner_seq = (
+                SELECT member_seq FROM (
+                    SELECT member_seq FROM bid_history 
+                    WHERE auction_seq = #{seq} AND status = 0 
+                    ORDER BY bid_price DESC, bid_time ASC
+                ) WHERE ROWNUM = 1
+            )
         WHERE seq = #{seq} 
           AND create_member_seq = #{memberSeq}
-          AND (end_date - SYSDATE) * 24 > 1 
+          AND status = 0
+          AND EXISTS (SELECT 1 FROM bid_history WHERE auction_seq = #{seq} AND status = 0)
     </update>
-
-    <update id="cancelBid" parameterType="map">
-        UPDATE bid_history 
-        SET status = 1 
-        WHERE seq = #{bidSeq} 
-          AND member_seq = #{memberSeq}
-    </update> -->
+    
+    <select id="getAuctionWinnerInfo" parameterType="int" resultType="map">
+        SELECT 
+            winner_seq as "winnerSeq",
+            create_member_seq as "sellerSeq",
+            (SELECT max(bid_price) FROM bid_history WHERE auction_seq = a.seq AND status = 0) as "bidPrice"
+        FROM auction a
+        WHERE seq = #{_parameter}
+    </select>
+    
+    <update id="updatePointLockToUsed" parameterType="map">
+        UPDATE point_lock
+        SET status = 2
+        WHERE auction_seq = #{auctionSeq}
+          AND member_seq = #{winnerSeq}
+          AND status = 0
+    </update>
+    
+    <update id="deductWinnerPoint" parameterType="map">
+        UPDATE member
+        SET point = point - #{bidPrice}
+        WHERE seq = #{winnerSeq}
+    </update>
+    
+    <update id="addSellerPoint" parameterType="map">
+        UPDATE member
+        SET point = point + #{bidPrice}
+        WHERE seq = #{sellerSeq}
+    </update>
 
 </mapper>
