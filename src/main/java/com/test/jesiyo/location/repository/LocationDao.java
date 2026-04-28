@@ -45,4 +45,9 @@ public class LocationDao {
 
         return template.insert("location.insertMemberLocation", param);
     }
+    
+    public LocationDto selectMainLocationByMember(Long memberSeq) {
+    	System.out.println(memberSeq);
+    	return template.selectOne("location.selectMainLocationByMember", memberSeq);
+    }
 }

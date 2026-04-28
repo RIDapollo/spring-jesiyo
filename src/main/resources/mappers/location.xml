@@ -35,4 +35,13 @@
         VALUES (member_location_seq.nextval, #{memberSeq}, #{locationSeq})
     </insert>
 
+	<select id="selectMainLocationByMember" parameterType="long" resultType="com.test.jesiyo.location.dto.LocationDto">
+		select *
+		from location l
+		where l.seq = (
+			select ml.location_seq
+			from member_location ml
+			where ml.member_seq = #{value}
+		)
+	</select>
 </mapper>
