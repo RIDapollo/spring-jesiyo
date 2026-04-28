@@ -81,20 +81,31 @@
 	<select id="getWishList" parameterType="string" resultType="com.test.jesiyo.member.dto.WishDto">
 	    SELECT 
 	        w.seq AS wishSeq,
-	        c.name AS itemName
-	    FROM member_interest w
-	    JOIN category c ON w.cate_seq = c.seq
-	    WHERE w.member_seq = #{memberSeq}
+	        c.name AS itemName  FROM member_interest w
+	    JOIN category c ON w.category_seq = c.seq WHERE w.member_seq = #{memberSeq}
 	    ORDER BY c.name ASC
 	</select>
 	
-	<select id="getCategoryList" resultType="com.test.jesiyo.member.dto.CategoryDto">
-	    SELECT seq, name FROM category ORDER BY name ASC
+	<select id="getCategoryList" resultType="com.test.jesiyo.category.dto.CategoryDto">
+	    SELECT 
+	        seq, 
+	        name, 
+	        parent_seq AS parentSeq  FROM category 
+	    ORDER BY name ASC
 	</select>
 	
 	<insert id="addInterest" parameterType="map">
-	    INSERT INTO member_interest (seq, member_seq, cate_seq, regdate)
-	    VALUES (seqMemberInterest.nextVal, #{memberSeq}, #{cateSeq}, SYSDATE)
+	    INSERT INTO member_interest (
+	        seq, 
+	        member_seq, 
+	        category_seq,  regdate
+	    )
+	    VALUES (
+	        seqMember_interest.nextVal, 
+	        #{memberSeq}, 
+	        #{cateSeq}, 
+	        SYSDATE
+	    )
 	</insert>
 	
 	<delete id="deleteWish" parameterType="string">

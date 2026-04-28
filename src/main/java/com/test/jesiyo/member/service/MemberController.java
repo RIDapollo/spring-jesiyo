@@ -1,6 +1,7 @@
 package com.test.jesiyo.member.service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping; // 추가
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.jesiyo.category.dto.CategoryDto;
 import com.test.jesiyo.member.dto.MemberDto;
 import com.test.jesiyo.member.repository.MemberDao;
@@ -44,37 +46,61 @@ public class MemberController {
     @GetMapping("/wishlist")
     public String wishlist(Principal principal, Model model) {
         String userId = principal.getName();
-        
-        // 사용자의 seq를 포함한 회원 정보를 가져옵니다.
         MemberDto member = dao.getMember(userId);
         
-        // 관심 목록 조회 (중고거래/경매 테이블과 조인된 데이터)
         List<WishDto> wishList = dao.getWishList(member.getSeq());
         
         model.addAttribute("wishList", wishList);
-        return "member/wishlist";
+        return "wishlist/wishlist";
     }
     
     @GetMapping("/deleteWish")
     public String deleteWish(@RequestParam String seq) {
-        // 관심 목록 삭제 처리
         dao.deleteWish(seq);
-        return "redirect:/member/wishlist";
+        // [수정] 리다이렉트 경로에 /member 추가
+        return "redirect:/member/wishlist"; 
     }
 
     @GetMapping("/addWish")
     public String addWishForm(Principal principal, Model model) {
-        String userId = principal.getName();
-        MemberDto member = dao.getMember(userId);
-        
-        // 전체 카테고리 목록 가져오기
+        // 1. DB에서 모든 카테고리를 평면 리스트로 가져옵니다 (대/중/소 전체).
         List<CategoryDto> allCategories = dao.getCategoryList();
-        // 현재 사용자가 이미 등록한 관심 목록 가져오기 (중복 방지용)
-        List<WishDto> currentInterests = dao.getWishList(member.getSeq());
         
-        model.addAttribute("allCategories", allCategories);
-        model.addAttribute("currentInterests", currentInterests);
-        return "member/addWish";
+        // 2. 빠른 검색을 위한 Map과 최상위 대분류를 담을 리스트를 준비합니다.
+        Map<Long, CategoryDto> categoryMap = new HashMap<>();
+        List<CategoryDto> rootCategories = new ArrayList<>();
+
+        // 3. 먼저 모든 데이터를 Map에 담아 인덱싱합니다.
+        for (CategoryDto dto : allCategories) {
+            categoryMap.put(dto.getSeq(), dto);
+            // parentSeq가 0인 것만 대분류 리스트에 따로 모읍니다.
+            if (dto.getParentSeq() == 0) {
+                rootCategories.add(dto); 
+            }
+        }
+
+        // 4. [핵심] 자식 항목(중/소분류)을 찾아 부모 객체의 children 리스트에 직접 넣어줍니다.
+        for (CategoryDto dto : allCategories) {
+            if (dto.getParentSeq() != 0) {
+                CategoryDto parent = categoryMap.get((long)dto.getParentSeq());
+                if (parent != null) {
+                    // 부모 객체 내부의 children 리스트에 자기 자신을 추가합니다.
+                    parent.getChildren().add(dto);
+                }
+            }
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // JSP의 c:forEach에는 대분류만 담긴 rootCategories를 보냅니다. [cite: 425]
+            model.addAttribute("categoryList", rootCategories); 
+            // 자바스크립트용 JSON도 계층 구조가 완성된 데이터를 변환하여 보냅니다. [cite: 374, 432]
+            model.addAttribute("categoryJson", mapper.writeValueAsString(rootCategories));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return "wishlist/addWish";
     }
     
     @PostMapping("/addWish")
@@ -87,6 +113,7 @@ public class MemberController {
         map.put("cateSeq", cateSeq);
         
         dao.addInterest(map);
+        // [수정] 리다이렉트 경로에 /member 추가
         return "redirect:/member/wishlist";
     }
 }
