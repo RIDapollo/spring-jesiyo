@@ -14,6 +14,9 @@
         <intercept-url pattern="/resources/**" access="permitAll" />
         
         <intercept-url pattern="/member/mypage" access="hasRole('ROLE_USER')" />
+        
+        <intercept-url pattern="/direct-sales/*/edit" access="isAuthenticated()" />
+        <intercept-url pattern="/direct-sales" method="POST" access="isAuthenticated()" />
 
         <form-login 
             login-page="/member/login" 
