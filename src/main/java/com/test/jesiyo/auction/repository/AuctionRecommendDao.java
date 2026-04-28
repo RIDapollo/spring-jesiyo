@@ -16,7 +16,7 @@ public class AuctionRecommendDao {
 	private final SqlSessionTemplate template;
 
 	public List<AuctionDto> findTop2ByCategorySeqOrderByRegDateDesc(Long seq) {
-		return null;
+		return template.selectList("auction-recommend.findTop2ByCategorySeqOrderByRegDateDesc", seq);
 	}
 
 }

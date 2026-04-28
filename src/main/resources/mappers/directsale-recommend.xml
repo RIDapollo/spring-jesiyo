@@ -3,13 +3,13 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="auction-recommend">
+<mapper namespace="directsale-recommend">
 	
 	<select id="findTop2ByCategorySeqOrderByRegDateDesc">
-		SELECT * FROM auction
-		WHERE category_seq = #{_parameter} AND status = 0
+		SELECT * FROM direct_sale
+		WHERE category_seq = #{_parameter} AND status = '판매중'
 		ORDER BY seq DESC
-		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
+		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY
 	</select>
 
 </mapper>

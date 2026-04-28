@@ -62,7 +62,17 @@
                         <div class="user-list" id="userList"></div>
                     </aside>
                 </div>
-
+				
+				<!-- 추천 배너 (채팅 입력창 위) -->
+				<div id="recommend-banner" style="display:none;">
+				    <span>🛍️ 추천 제품이 있습니다! </span>
+				    <span id="recommend-links"></span>
+				</div>
+				
+				<div class="chat-input-wrap" id="chatInputWrap">
+				    ...
+				</div>
+				
                 <div class="chat-input-wrap" id="chatInputWrap">
                     <div class="chat-input-box">
                         <button class="chat-input-btn" title="파일 첨부">

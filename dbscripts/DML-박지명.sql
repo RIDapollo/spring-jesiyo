@@ -74,3 +74,16 @@ SELECT
         NAME
 FROM CATEGORY
 WHERE INSTR('아 헤드폰 사고싶다.', NAME) > 0;
+
+
+SELECT * FROM auction
+WHERE category_seq = 1 AND status = 0
+ORDER BY seq DESC
+OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
+
+
+
+SELECT * FROM direct_sale
+		WHERE category_seq = 46 AND status = '판매중'
+		ORDER BY seq DESC
+		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
