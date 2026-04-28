@@ -81,7 +81,7 @@ WHERE category_seq = 1 AND status = 0
 ORDER BY seq DESC
 OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
 
-
+select * from CATEGORY;
 
 SELECT * FROM direct_sale
 		WHERE category_seq = 46 AND status = '판매중'

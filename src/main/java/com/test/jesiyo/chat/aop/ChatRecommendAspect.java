@@ -42,6 +42,12 @@ public class ChatRecommendAspect {
         // 포인트컷 메서드의 인자 추출
         ChatLogDto dto = (ChatLogDto) jp.getArgs()[0];
         WebSocketSession session = (WebSocketSession) jp.getArgs()[1];
+        
+        
+        // 진입 확인용 지워
+        System.out.println("=== AOP 진입 확인 ===");
+        System.out.println("채팅 내용: " + dto.getContent());
+        System.out.println("세션 열림: " + session.isOpen());
 
         // 채팅 내용 추출
         String content = dto.getContent();
