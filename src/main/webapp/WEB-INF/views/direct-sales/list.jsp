@@ -37,7 +37,7 @@
 
   <!-- 왼쪽 카테고리 -->
   <aside class="w-64 pr-6 sticky top-24 h-fit">
-  <c:if test="${not empty sessionScope.user}">
+  <c:if test="${not empty sessionScope.user and hasLocationFilter}">
     <div class="flex justify-between items-center mb-4">
     <!-- 왼쪽: 필터 버튼 -->
     <div class="flex gap-2 w-full">
@@ -110,37 +110,7 @@
   
     <div class="page-wrap max-w-3xl !pt-2">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <c:forEach var="item" items="${list}">
-        <article class="item-card"
-            onclick="location.href='/jesiyo/direct-sales/${item.seq}'">
-            <div class="item-img-wrap relative">
-              <!-- 상태 배지 (좌측 상단 고정) -->
-              <c:if test="${item.status == '완료'}">
-                  <span class="absolute top-2 left-2 z-10 status-badge badge-sold">
-                      판매완료
-                  </span>
-              </c:if>
-              <!-- 이미지 -->
-              <img src="/jesiyo${item.imageUrl}" alt="상품" class="item-img">
-            </div>
-            <!-- 정보 -->
-            <div class="item-info">
-              <!-- 제목 -->
-              <h3 class="item-title">
-                  ${item.name}
-              </h3>
-              <!-- 가격 -->
-              <div class="item-price">
-                  ${item.price}원
-              </div>
-              <!-- 동네 + 추가정보 -->
-              <div class="item-meta">
-                  ${not empty item.dong ? item.dong.concat(' · ') : ''}
-                  ${item.timeAgo}
-              </div>
-            </div>
-          </article>
-        </c:forEach>
+      
       </div>
     
     </div>
@@ -166,6 +136,8 @@
 	    categorySeq: null,
 	    filterType: "ALL"
 	};
+  	
+  	loadMore();
   	
   	function loadMore() {
   	    if (isLoading || isLast) return;

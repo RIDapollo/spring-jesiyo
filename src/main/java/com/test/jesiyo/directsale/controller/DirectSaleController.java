@@ -21,6 +21,8 @@ import com.test.jesiyo.category.service.CategoryService;
 import com.test.jesiyo.directsale.dto.DirectSaleDto;
 import com.test.jesiyo.directsale.dto.DirectSaleSearchDto;
 import com.test.jesiyo.directsale.service.DirectSaleService;
+import com.test.jesiyo.location.dto.LocationDto;
+import com.test.jesiyo.location.service.LocationService;
 import com.test.jesiyo.member.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class DirectSaleController {
 
 	private final DirectSaleService directSaleService;
 	private final CategoryService categoryService;
+	private final LocationService locationService;
 	
 	@GetMapping("/direct-sales")
 	public String list(DirectSaleSearchDto dto, Model model,
@@ -41,10 +44,18 @@ public class DirectSaleController {
 	    // 카테고리 트리는 항상 필요
 	    List<CategoryDto> categoryTree = categoryService.getCategoryTree();
 	    
+	    boolean hasLocationFilter = false;
+	    
 	    // 회원 정보 SearchDto 에 넣어주기
 	    MemberDto loginMember = (MemberDto) session.getAttribute("user");
 	    if (loginMember != null) {
 	    	dto.setMemberSeq(Long.parseLong(loginMember.getSeq()));
+	    	
+	    	LocationDto location = locationService
+	                .selectMainLocationByMember(dto.getMemberSeq());
+
+	        hasLocationFilter = (location != null);
+	        model.addAttribute("hasLocationFilter", hasLocationFilter);
 	    }
 
 	    // 초기 데이터 (필터 적용된 상태)
