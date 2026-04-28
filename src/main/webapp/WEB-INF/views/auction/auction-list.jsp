@@ -89,38 +89,62 @@
                             </div>
                             <div class="mt-0 md:mt-4">
                                 <c:choose>
-								    <%-- 1. 내가 입찰에 참여한 기록이 있는 경우 (myBidPrice가 세팅되어 있고 0보다 클 때) --%>
-								    <c:when test="${not empty dto.myBidPrice and dto.myBidPrice > 0}">
-								        <c:choose>
-								            <c:when test="${dto.myBidPrice >= dto.highestBid}">
-								                <span class="inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-sm font-bold text-amber-600">
-								                    🏆 최고가 입찰 중
-								                </span>
-								            </c:when>
-								            <c:otherwise>
-								                <span class="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-sm font-bold text-slate-500">
-								                    🔵 패찰 (재입찰 필요)
-								                </span>
-								            </c:otherwise>
-								        </c:choose>
-								    </c:when>
-								    
-								    <%-- 2. 내가 입찰에 참여하지 않은 경우 (기존 로직) --%>
-								    <c:otherwise>
-								        <c:choose>
-								            <c:when test="${dto.status == 0}">
-								                <span class="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-sm font-bold text-brand-600">
-								                    입찰 가능
-								                </span>
-								            </c:when>
-								            <c:otherwise>
-								                <span class="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-sm font-bold text-slate-500">
-								                    종료됨
-								                </span>
-								            </c:otherwise>
-								        </c:choose>
-								    </c:otherwise>
-								</c:choose>
+                                    <%-- 1. 경매가 '진행 중'인 경우 (status == 0) --%>
+                                    <c:when test="${dto.status == 0}">
+                                        <c:choose>
+                                            <%-- 내가 입찰에 참여한 경우 --%>
+                                            <c:when test="${not empty dto.myBidPrice and dto.myBidPrice > 0}">
+                                                <c:choose>
+                                                    <c:when test="${dto.myBidPrice >= dto.highestBid}">
+                                                        <span class="inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-sm font-bold text-amber-600">
+                                                            🏆 최고가 입찰 중
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-sm font-bold text-blue-600">
+                                                            🔵 패찰 (재입찰 필요)
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <%-- 내가 입찰하지 않은 경우 --%>
+                                            <c:otherwise>
+                                                <span class="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-sm font-bold text-brand-600">
+                                                    입찰 가능
+                                                </span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:when>
+                                
+                                    <%-- 2. 경매가 '종료'된 경우 (status != 0) --%>
+                                    <c:otherwise>
+                                        <c:choose>
+                                            <%-- 내가 입찰에 참여했던 경우 --%>
+                                            <c:when test="${not empty dto.myBidPrice and dto.myBidPrice > 0}">
+                                                <c:choose>
+                                                    <%-- status가 1(낙찰)이고 내 금액이 최고가였을 경우 = 내가 낙찰받음 --%>
+                                                    <c:when test="${dto.status == 1 and dto.myBidPrice >= dto.highestBid}">
+                                                        <span class="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-300 px-3 py-1 text-sm font-bold text-emerald-600">
+                                                            🎉 낙찰 성공
+                                                        </span>
+                                                    </c:when>
+                                                    <%-- 그 외(다른 사람이 낙찰받았거나, 유찰/취소된 경우) --%>
+                                                    <c:otherwise>
+                                                        <span class="inline-flex items-center rounded-full bg-slate-100 border border-slate-300 px-3 py-1 text-sm font-bold text-slate-500">
+                                                            😭 패찰 확정
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <%-- 내가 입찰에 참여하지 않았던 경우 --%>
+                                            <c:otherwise>
+                                                <span class="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-sm font-bold text-slate-500">
+                                                    경매 종료
+                                                </span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </article>
