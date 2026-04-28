@@ -11,7 +11,7 @@ public class AuctionDto {
 
 	private int seq;
 	private String name;
-	private int bidOpenPrice; 
+	private long bidOpenPrice; 
 	private String image;
 	private String endDate;
 	private String description;
@@ -22,12 +22,15 @@ public class AuctionDto {
 	private int createMemberSeq;
 	private int categorySeq;
 	
-	private int highestBid;
+	private long highestBid;
 	
 	private int auctionSeq;    // a.seq as auctionSeq 와 매핑
     private String sellerName; // m.id as sellerName 와 매핑
-    private int myBidPrice;    // 내가 입찰한 금액과 매핑
+    private long myBidPrice;    // 내가 입찰한 금액과 매핑
     private String categoryName;
     private int bidSeq;
+    
+    private int highestBidMemberSeq;   // 최고 입찰자 번호
+    private String highestBidUserId;
     
 }

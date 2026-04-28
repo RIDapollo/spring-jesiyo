@@ -39,71 +39,81 @@ public class LiveAuctionService {
 		return dao.getMyBid(map);
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> placeLiveBid(Map<String, Object> paramMap) {
 		
-Map<String, Object> result = new HashMap<>();
-        
-        // 1. 파라미터 파싱
-        int auctionSeq = Integer.parseInt(String.valueOf(paramMap.get("seq"))); // 라이브 경매 식별자
-        long bidPrice = Long.parseLong(String.valueOf(paramMap.get("bidPrice")));
-        int memberSeq = Integer.parseInt(String.valueOf(paramMap.get("memberSeq")));
+		Map<String, Object> result = new HashMap<>();
+		
+		// 1. 파라미터 파싱
+		int auctionSeq = Integer.parseInt(String.valueOf(paramMap.get("seq"))); // 라이브 경매 식별자
+		long bidPrice = Long.parseLong(String.valueOf(paramMap.get("bidPrice")));
+		int memberSeq = Integer.parseInt(String.valueOf(paramMap.get("memberSeq")));
 
-        // 2. 가용 예치금 실시간 검증
-        // 쿼리: 총 예치금 - (point_lock에서 status=0 인 금액의 총합)
-        long availablePoint = dao.getAvailablePoint(memberSeq);
-        if (availablePoint < bidPrice) {
-            result.put("status", "fail");
-            result.put("msg", "가용 예치금이 부족합니다. (현재 가용액: " + availablePoint + "원)");
-            return result;
-        }
+		// 2. 현재 최고가 입찰 내역 확인 (미리 가져오기)
+		LiveAuctionDto dtohasHighestBid = dao.getHighestBid(auctionSeq);
+		Long highestBid = null;
+		Integer highestBidMemberSeq = null;
+		
+		if (dtohasHighestBid != null && dtohasHighestBid.getHighestBid() != null) {
+			highestBid = dtohasHighestBid.getHighestBid();
+			highestBidMemberSeq = dtohasHighestBid.getHighestBidMemberSeq();
+		}
 
-        // 3. 현재 최고가 입찰 내역 확인
-        // 쿼리: live_bid_history에서 해당 경매의 status=0 인 단일 내역 조회
-        LiveAuctionDto dtohasHighestBid = dao.getHighestBid(auctionSeq);
-        if (dtohasHighestBid != null && dtohasHighestBid.getHighestBid() != null && bidPrice <= dtohasHighestBid.getHighestBid()) {
-            result.put("status", "fail");
-            result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
-            return result;
-        }
+		if (highestBid != null && bidPrice <= highestBid) {
+			result.put("status", "fail");
+			result.put("msg", "현재 최고가보다 높은 금액만 입찰 가능합니다.");
+			return result;
+		}
 
-        // 4. 신규 입찰자의 예치금 락(Lock) 생성
-        // 파라미터 매핑을 위해 auctionSeq 명시 (Mapper의 #{auctionSeq}와 매칭)
-        paramMap.put("auctionSeq", auctionSeq); 
-        int lockResult = dao.insertPointLock(paramMap);
-        if (lockResult <= 0) {
-            result.put("status", "fail");
-            result.put("msg", "예치금 잠금 처리에 실패했습니다.");
-            return result; // 부분 실패 시 트랜잭션 롤백을 위해 RuntimeException을 던져도 무방합니다.
-        }
+		// 3. 가용 예치금 실시간 검증 (동일인 연속 입찰 보정)
+		long availablePoint = dao.getAvailablePoint(memberSeq);
+		
+		// 내가 최고가 입찰자인 상태에서 더 높은 금액으로 갱신하는 경우, 
+		// 기존에 묶여있던 내 돈은 어차피 풀릴 예정이므로 가용 예치금에 합산해줍니다.
+		if (highestBidMemberSeq != null && highestBidMemberSeq == memberSeq) {
+			availablePoint += highestBid;
+		}
 
-        // 5. 이전 최고 입찰자가 존재한다면: 락 해제 및 패찰 처리
-        if (dtohasHighestBid != null && dtohasHighestBid.getHighestBid() != null) {
-            Map<String, Object> unlockMap = new HashMap<>();
-            unlockMap.put("previousMemberSeq", dtohasHighestBid.getHighestBidMemberSeq());
-            unlockMap.put("auctionSeq", auctionSeq); // 배타적 관계 컬럼 타겟팅용
-            
-            // 5-1. 이전 입찰자의 point_lock 상태 변경 (status: 0 -> 1)
-            dao.unlockPointLock(unlockMap);
-            
-            // 5-2. 이전 입찰 내역 무효화 (status: 0 -> 1)
-            paramMap.put("previousBidSeq", dtohasHighestBid.getSeq());
-            dao.cancelPreviousLiveBid(paramMap); 
-        }
+		if (availablePoint < bidPrice) {
+			result.put("status", "fail");
+			result.put("msg", "가용 예치금이 부족합니다. (현재 가용액: " + availablePoint + "원)");
+			return result;
+		}
 
-        // 6. 새로운 입찰 내역 Insert
-        int insertResult = dao.liveBid(paramMap);
-        if (insertResult <= 0) {
-            // DB 기록 실패 시 전체 과정을 강제 롤백시키기 위해 예외 발생
-            throw new RuntimeException("입찰 기록 저장 중 오류가 발생했습니다. (Rollback)");
-        }
+		// 4. 이전 최고 입찰자가 존재한다면: "먼저" 락 해제 및 패찰 처리
+		if (highestBid != null && highestBid > 0) {
+			Map<String, Object> unlockMap = new HashMap<>();
+			unlockMap.put("previousMemberSeq", highestBidMemberSeq);
+			unlockMap.put("auctionSeq", auctionSeq); // 배타적 관계 컬럼 타겟팅용
+			
+			// 4-1. 이전 입찰자의 point_lock 상태 변경 (status: 0 -> 1)
+			dao.unlockPointLock(unlockMap);
+			
+			// 4-2. 이전 입찰 내역 무효화 (status: 0 -> 1)
+			// paramMap에는 이미 "seq"라는 키로 auctionSeq가 들어있으므로 그대로 넘깁니다.
+			dao.cancelPreviousLiveBid(paramMap); 
+		}
 
-        // 7. 성공 결과 반환 (프론트엔드 UI 갱신용 데이터 세팅)
-        result.put("status", "success");
-        result.put("latestBids", dao.getLatestLiveBids(auctionSeq)); 
-        result.put("dtoHasHighestBid", dao.getHighestBid(auctionSeq)); 
+		// 5. 신규 입찰자의 예치금 락(Lock) "나중에" 생성
+		paramMap.put("auctionSeq", auctionSeq); 
+		int lockResult = dao.insertPointLock(paramMap);
+		if (lockResult <= 0) {
+			// 부분 실패 시 트랜잭션 롤백을 위해 강제 예외 발생
+			throw new RuntimeException("예치금 잠금 처리에 실패했습니다. (Rollback)");
+		}
 
-        return result;
+		// 6. 새로운 입찰 내역 Insert
+		int insertResult = dao.liveBid(paramMap);
+		if (insertResult <= 0) {
+			throw new RuntimeException("입찰 기록 저장 중 오류가 발생했습니다. (Rollback)");
+		}
+
+		// 7. 성공 결과 반환 (프론트엔드 UI 갱신용 데이터 세팅)
+		result.put("status", "success");
+		result.put("latestBids", dao.getLatestLiveBids(auctionSeq)); 
+		result.put("dtoHasHighestBid", dao.getHighestBid(auctionSeq)); 
+
+		return result;
 	}
 	
 	@Transactional
