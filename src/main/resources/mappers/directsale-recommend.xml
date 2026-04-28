@@ -5,7 +5,7 @@
 
 <mapper namespace="directsale-recommend">
 	
-	<select id="findTop2ByCategorySeqOrderByRegDateDesc">
+	<select id="findTop2ByCategorySeqOrderByRegDateDesc" resultType="DirectSaleDto">
 		SELECT * FROM direct_sale
 		WHERE category_seq = #{_parameter} AND status = '판매중'
 		ORDER BY seq DESC

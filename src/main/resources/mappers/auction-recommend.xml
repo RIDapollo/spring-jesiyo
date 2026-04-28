@@ -5,11 +5,11 @@
 
 <mapper namespace="auction-recommend">
 	
-	<select id="findTop2ByCategorySeqOrderByRegDateDesc">
+	<select id="findTop2ByCategorySeqOrderByRegDateDesc" resultType="AuctionDto">
 		SELECT * FROM auction
 		WHERE category_seq = #{_parameter} AND status = 0
 		ORDER BY seq DESC
-		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
+		OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY
 	</select>
 
 </mapper>

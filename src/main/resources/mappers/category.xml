@@ -50,7 +50,7 @@
         SEQ,
         NAME
 	FROM CATEGORY
-	WHERE INSTR(#{_parameter}, NAME) > 0;
+	WHERE INSTR(#{_parameter}, NAME) > 0
 	</select>
 	
 	
