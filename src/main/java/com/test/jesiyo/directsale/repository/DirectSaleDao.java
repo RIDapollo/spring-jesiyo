@@ -50,6 +50,7 @@ public class DirectSaleDao {
     	param.put("dto", dto);       // 조건
     	param.put("offset", offset);
     	param.put("pageSize", pageSize);
+ 
     	return template.selectList("directsale.searchByLocation", param);
     }
     
