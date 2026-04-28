@@ -58,7 +58,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         dto.setChatRoomSeq(roomId);
         dto.setType("1");
        
-        System.out.println(dto.toString());
         // DB 저장
         chatService.addChat(dto);
 

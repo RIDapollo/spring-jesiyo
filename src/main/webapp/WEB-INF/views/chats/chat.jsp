@@ -412,30 +412,40 @@
             }
          	
          	// 추천 메시지 처리
-            if (message.code === 'RECOMMEND') {
-                const auctionLinks = message.auctions.map(a =>
-                    `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
-                );
-                const tradeLinks = message.trades.map(t =>
-                    `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
-                );
-
-                const allLinks = [...auctionLinks, ...tradeLinks].join(", ");
-                const banner = document.getElementById('recommend-banner');
-                document.getElementById('recommend-links').innerHTML = allLinks;
-
-                // 배너 표시
-                banner.style.display = 'block';
-                banner.style.opacity = '1';
-
-                // 2.5초 후 fade out → 3초 후 완전히 숨김
-                setTimeout(() => { banner.style.opacity = '0'; }, 2500);
-                setTimeout(() => { 
-                    banner.style.display = 'none';
-                    banner.style.opacity = '1'; // 다음 추천을 위해 초기화
-                }, 3000);
-                return;
-            }
+           	if (message.code === 'RECOMMEND') {
+			    const banner = document.getElementById('recommend-banner');
+			    const linksEl = document.getElementById('recommend-links');
+			
+			    let html = '';
+			
+			    if (message.auctions && message.auctions.length > 0) {
+			        const auctionLinks = message.auctions.map(a =>
+			            `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
+			        ).join(' ');
+			        html += `<span>경매 : \${auctionLinks}</span>`;
+			    }
+			
+			    if (message.trades && message.trades.length > 0) {
+			        const tradeLinks = message.trades.map(t =>
+			            `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
+			        ).join(' ');
+			        html += `<span>중고거래 : \${tradeLinks}</span>`;
+			    }
+			
+			    if (!html) html = '<span>추천 항목이 없습니다.</span>';
+			
+			    linksEl.innerHTML = html;
+			    banner.style.display = 'block';
+			    banner.style.opacity = '1';
+			
+			    setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+			    setTimeout(() => {
+			        banner.style.display = 'none';
+			        banner.style.opacity = '1';
+			    }, 3000);
+			    return;
+			}
+         	
             
             const area = document.getElementById('messagesArea');
             const div = document.createElement('div');

@@ -45,9 +45,9 @@ public class ChatRecommendAspect {
         
         
         // 진입 확인용 지워
-        System.out.println("=== AOP 진입 확인 ===");
-        System.out.println("채팅 내용: " + dto.getContent());
-        System.out.println("세션 열림: " + session.isOpen());
+//        System.out.println("=== AOP 진입 확인 ===");
+//        System.out.println("채팅 내용: " + dto.getContent());
+//        System.out.println("세션 열림: " + session.isOpen());
 
         // 채팅 내용 추출
         String content = dto.getContent();
@@ -75,9 +75,9 @@ public class ChatRecommendAspect {
             
             
             // 로그 확인용
-            System.out.println("카테고리 seq: " + category.getSeq());
-            System.out.println("경매 수: " + auctions.size());
-            System.out.println("중고거래 수: " + trades.size());
+//            System.out.println("카테고리 seq: " + category.getSeq());
+//            System.out.println("경매 수: " + auctions.size());
+//            System.out.println("중고거래 수: " + trades.size());
 
             // 경매, 중고거래 둘 다 비어있으면 다음 카테고리로 넘어감
             if (auctions.isEmpty() && trades.isEmpty()) continue;
