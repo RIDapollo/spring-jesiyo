@@ -79,7 +79,7 @@
 				
 				<!-- 추천 배너 (채팅 입력창 위) -->
 				<div id="recommend-banner" style="display:none;">
-				    <span>🛍️ 추천 제품이 있습니다! </span>
+				    <span id="banner-icon"></span>
 				    <span id="recommend-links"></span>
 				</div>
 				
@@ -428,26 +428,28 @@
             }
          	
          	// 추천 메시지 처리
-           	if (message.code === 'RECOMMEND') {
+           	// 추천 메시지 처리 (기존 코드 수정)
+			if (message.code === 'RECOMMEND') {
 			    const banner = document.getElementById('recommend-banner');
+			    const iconEl = document.getElementById('banner-icon');
 			    const linksEl = document.getElementById('recommend-links');
 			
+			    iconEl.textContent = '🛍️';
+			    iconEl.style.color = '#3b82f6';
+			    
 			    let html = '';
-			
 			    if (message.auctions && message.auctions.length > 0) {
 			        const auctionLinks = message.auctions.map(a =>
 			            `<a href="/jesiyo/auction/\${a.seq}" target="_blank">\${a.name}</a>`
 			        ).join(' ');
-			        html += `<span>경매 : \${auctionLinks}</span>`;
+			        html += `<span>경매: \${auctionLinks}</span>`;
 			    }
-			
 			    if (message.trades && message.trades.length > 0) {
 			        const tradeLinks = message.trades.map(t =>
 			            `<a href="/jesiyo/direct-sales/\${t.seq}" target="_blank">\${t.name}</a>`
 			        ).join(' ');
-			        html += `<span>중고거래 : \${tradeLinks}</span>`;
+			        html += `<span>중고거래: \${tradeLinks}</span>`;
 			    }
-			
 			    if (!html) html = '<span>추천 항목이 없습니다.</span>';
 			
 			    linksEl.innerHTML = html;
@@ -458,6 +460,8 @@
 			    setTimeout(() => {
 			        banner.style.display = 'none';
 			        banner.style.opacity = '1';
+			        iconEl.textContent = '';
+			        linksEl.innerHTML = '';
 			    }, 3000);
 			    return;
 			}
@@ -489,6 +493,15 @@
         const input = document.getElementById('messageInput');
         const content = input.value.trim();
         if (content === '' || ws === null || ws.readyState !== WebSocket.OPEN) return;
+        
+        // @로 시작하는 명령어 체크
+        if (content.startsWith('@')) {
+            handleCommand(content);
+            input.value = '';
+            return; // 서버에 보내지 않고 여기서 끝
+        }
+        
+        // 일반 채팅만 서버로 전송 (기존 로직)
         const message = {
             code: '3',
             sender: nickname,
@@ -499,6 +512,69 @@
         ws.send(JSON.stringify(message));
         input.value = '';
     }
+    
+    
+ 	// 채팅으로 경매 참여
+    function handleCommand(content) {
+        // 경매 오버레이가 열려있는지 체크
+        const overlay = document.getElementById('auctionOverlay');
+        const frame = document.getElementById('auctionFrame');
+        if (overlay.style.display === 'none' || !frame.contentWindow) {
+            // 명령어 피드백 (화면에만 보이게)
+            showTempMessage('⚠️ 경매 탭을 먼저 열어주세요.', 'warning');
+            return;
+        }
+
+        // @quick → 빠른 입찰
+        if (content === '@quick') {
+            frame.contentWindow.postMessage({
+                type: 'AUCTION_COMMAND',
+                action: 'quickBid'
+            }, '*'); // 같은 origin이므로 * 안전 [web:7]
+            
+            // 사용자 피드백 (다른 사람한테는 안 보임)
+            showTempMessage('⚡ 빠른 입찰 명령 전송됨!', 'success');
+            return;
+        }
+
+        // 다른 명령어들도 여기에 추가 가능
+        showTempMessage('❓ 알 수 없는 명령어입니다.', 'info');
+    }
+
+ 	// 추천 배너로 명령어 피드백 재활용
+    function showTempMessage(text, type = 'info') {
+	    const banner = document.getElementById('recommend-banner');
+	    const iconEl = document.getElementById('banner-icon');
+	    const linksEl = document.getElementById('recommend-links');
+	    
+	    // 아이콘 + 색상 설정
+	    let icon, color;
+	    if (type === 'success') {
+	        icon = '⚡';
+	        color = '#10b981';
+	    } else if (type === 'warning') {
+	        icon = '⚠️';
+	        color = '#f59e0b';
+	    } else {
+	        icon = 'ℹ️';
+	        color = '#3b82f6';
+	    }
+	    
+	    iconEl.textContent = icon;
+	    iconEl.style.color = color;
+	    linksEl.innerHTML = `<span style="color: \${color};">\${text}</span>`;
+	    
+	    banner.style.display = 'block';
+	    banner.style.opacity = '1';
+	    
+	    setTimeout(() => { banner.style.opacity = '0'; }, 2500);
+	    setTimeout(() => {
+	        banner.style.display = 'none';
+	        banner.style.opacity = '1';
+	        iconEl.textContent = '';
+	        linksEl.innerHTML = '';
+	    }, 3000);
+	}
     
     
     // 참여자 리스트
@@ -533,9 +609,10 @@
 	    if (isVisible) {
 	        overlay.style.display = 'none';
 	    } else {
-	        // 최초 1회만 src 설정
 	        if (!auctionLoaded) {
-	            document.getElementById('auctionFrame').src = 'http://localhost:8080/jesiyo/auction/live';
+	        	/* 헤더 날리기 */
+	            const frame = document.getElementById('auctionFrame');
+	            frame.src = 'http://localhost:8080/jesiyo/auction/live?embed=true';
 	            auctionLoaded = true;
 	        }
 	        overlay.style.display = 'flex';
