@@ -14,7 +14,7 @@ export default function () {
     // 3. 입찰 API에 보낼 JSON 데이터 (예: 5번 경매방에 10만원 입찰 시도)
     const payload = JSON.stringify({
         auctionSeq: 21,
-        bidPrice: 1000160000
+        bidPrice: 1000010000
     });
 
     // 4. HTTP 헤더 설정
@@ -22,7 +22,7 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
             // [필수] 브라우저에서 복사한 본인의 JSESSIONID를 여기에 붙여넣으세요!
-            'Cookie': 'JSESSIONID=2F21A59433C9FCDAF0ECF88B2EFC67D6' 
+            'Cookie': 'JSESSIONID=E17AA62B5CB3FD23BDAD4CF813B2A0C2' 
         },
     };
 
