@@ -210,4 +210,27 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
+	<select id="getRecentTrades" parameterType="int" resultType="com.test.jesiyo.directsale.dto.DirectSaleDto">
+	    SELECT * FROM (
+	        SELECT 
+	            d.seq, 
+	            d.product_name AS title,      
+	            d.price, 
+	            d.image_url AS thumbnail,    
+	            l.dong AS address,            
+	            d.created_at AS regdate,      
+	            -- 작성 시간 가공 (CREATED_AT 기준)
+	            CASE 
+	                WHEN sysdate - d.created_at &lt; 1/24/60 THEN '방금 전'
+	                WHEN sysdate - d.created_at &lt; 1/24 THEN ROUND((sysdate - d.created_at) * 24 * 60) || '분 전'
+	                WHEN sysdate - d.created_at &lt; 1 THEN ROUND((sysdate - d.created_at) * 24) || '시간 전'
+	                ELSE TO_CHAR(d.created_at, 'MM"월" DD"일"')
+	            END AS timeInfo
+	        FROM direct_sale d
+	        INNER JOIN trade_location l ON d.trade_location_seq = l.seq 
+	        WHERE d.status = '판매중'              
+	        ORDER BY d.created_at DESC
+	    ) WHERE rownum &lt;= #{count}
+	</select>
+	
 </mapper>

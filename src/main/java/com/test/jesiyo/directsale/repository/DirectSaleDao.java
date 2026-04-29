@@ -61,4 +61,8 @@ public class DirectSaleDao {
 	public int deleteByStatus(Long seq) {
 		return template.delete("directsale.deleteByStatus", seq);
 	}
+	public List<DirectSaleDto> getRecentTrades(int count) {
+        return template.selectList("directsale.getRecentTrades", count);
+    }
+	
 }

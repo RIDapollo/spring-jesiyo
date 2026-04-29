@@ -128,4 +128,8 @@ public class AuctionDao {
 		return template.update("auction.unlockPointLock", map);
 	}
 	
+	//최근 경매 내역 목록
+	public List<AuctionDto> getRecentAuctions(int count) {
+        return template.selectList("auction.getRecentAuctions", count);
+    }
 }
