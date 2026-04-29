@@ -673,7 +673,7 @@
 	        if (result.status === 'success') {
 	            alert('삭제되었습니다.');
 	            // 서버에서 success를 받으면 브라우저가 직접 페이지를 이동시킵니다 (클라이언트 사이드 리다이렉트)
-	            location.href = '/auction'; 
+	            location.href = '/jesiyo/auction'; 
 	        } else {
 	            alert(result.msg); // 컨트롤러가 보내준 실패 메시지 출력
 	        }
