@@ -119,7 +119,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			    
 			    <%-- 1. 중고거래 내역 (구 판매 내역) --%>
-			    <div onclick="location.href='${pageContext.request.contextPath}/member/usedHistory'" 
+			    <div onclick="location.href='${pageContext.request.contextPath}/trades/list'" 
 			         class="menu-card bg-white border border-slate-200 rounded-[2.5rem] shadow-lg shadow-slate-200/30 p-8 text-center cursor-pointer">
 			        <div class="w-16 h-16 bg-orange-50 text-[#FF8A3D] rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
 			            <i class="fas fa-handshake"></i> <%-- 중고거래 느낌의 아이콘으로 변경 --%>
