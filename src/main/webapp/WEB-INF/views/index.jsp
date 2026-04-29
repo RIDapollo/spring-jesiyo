@@ -37,7 +37,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
                 <c:forEach items="${recentTrades}" var="trade">
                     <%-- DTO 필드 반영: trade.seq --%>
-                    <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/trades/view?seq=${trade.seq}'">
+                    <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/direct-sales/${trade.seq}'">
                         <div class="relative w-full aspect-square mb-4 overflow-hidden rounded-[1.5rem] bg-slate-100 border border-slate-100 shadow-sm">
                             <%-- DTO 필드 반영: trade.imageUrl --%>
                             <img src="${not empty trade.imageUrl ? trade.imageUrl : '/resources/img/no-image.png'}" 
@@ -83,7 +83,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
                 <c:forEach items="${recentAuctions}" var="auction">
                     <%-- DTO 필드 반영: auction.seq --%>
-                    <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/auction/view?seq=${auction.seq}'">
+                    <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/auction/${auction.seq}'">
                         <div class="relative w-full aspect-square mb-4 overflow-hidden rounded-[1.5rem] bg-slate-900 border border-slate-100 shadow-sm">
                             <%-- DTO 필드 반영: auction.image --%>
                             <img src="${not empty auction.image ? auction.image : '/resources/img/no-image.png'}" 
