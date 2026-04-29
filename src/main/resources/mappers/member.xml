@@ -82,6 +82,7 @@
 	<select id="getWishList" parameterType="string" resultType="com.test.jesiyo.member.dto.WishDto">
 	    SELECT 
 	        w.seq AS wishSeq,
+	        w.category_seq AS cateSeq,
 	        c.name AS itemName  FROM member_interest w
 	    JOIN category c ON w.category_seq = c.seq WHERE w.member_seq = #{memberSeq}
 	    ORDER BY c.name ASC
