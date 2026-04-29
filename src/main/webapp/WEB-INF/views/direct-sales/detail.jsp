@@ -160,33 +160,7 @@
         document.getElementById('map').appendChild(overlay);
     });
     
-    document.querySelector(".btn-danger").addEventListener("click", function () {
-
-        const seq = this.dataset.seq;
-
-        if (!confirm("정말 삭제하시겠습니까?")) {
-            return;
-        }
-
-        fetch(`/jesiyo/api/direct-sales/\${seq}`, {
-            method: "DELETE"
-        })
-        .then(res => {
-            if (res.ok) {
-                alert("삭제되었습니다.");
-                window.location.href = "/jesiyo/direct-sales"; // 성공시 목록으로 이동
-            } else if (res.status === 404) {
-                alert("이미 삭제되었거나 존재하지 않는 데이터입니다.");
-            } else {
-                alert("삭제 실패");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("서버 오류");
-        });
-
-    });
+    
     
     </script>
     </c:if>
@@ -222,5 +196,35 @@
             console.error(err);
         });
     }</script>
+    
+    <script>
+        document.querySelector(".btn-danger").addEventListener("click", function () {
+    
+            const seq = this.dataset.seq;
+    
+            if (!confirm("정말 삭제하시겠습니까?")) {
+                return;
+            }
+    
+            fetch(`/jesiyo/api/direct-sales/\${seq}`, {
+                method: "DELETE"
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert("삭제되었습니다.");
+                    window.location.href = "/jesiyo/direct-sales"; // 성공시 목록으로 이동
+                } else if (res.status === 404) {
+                    alert("이미 삭제되었거나 존재하지 않는 데이터입니다.");
+                } else {
+                    alert("삭제 실패");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("서버 오류");
+            });
+    
+        });
+    </script>
   </body>
 </html>

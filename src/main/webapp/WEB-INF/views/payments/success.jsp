@@ -46,7 +46,7 @@
   }, 1000);
   // 이동 함수
   function moveNow() {
-      location.href = "/jesiyo/mypage"; // 원하는 URL로 변경
+      location.href = "/jesiyo/member/mypage"; // 원하는 URL로 변경
   }
   </script>
 

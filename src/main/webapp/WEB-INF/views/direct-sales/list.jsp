@@ -138,16 +138,25 @@
     
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
   	<script>
+  	const initFilter = {
+	    categorySeq: ${initFilter.categorySeq != null ? initFilter.categorySeq : "null"},
+	    categoryName: "${initFilter.categoryName != null ? initFilter.categoryName : ''}",
+	    filterType: "${initFilter.filterType != null ? initFilter.filterType : 'ALL'}"
+	};
+  	
   	let page = 0;
   	let isLoading = false;
   	let isLast = false;
   	
   	const filterState = {
-	    categorySeq: null,
-	    categoryName: null,
-	    filterType: "ALL"
+		categorySeq: initFilter.categorySeq || null,
+    	categoryName: initFilter.categoryName || null,
+    	filterType: initFilter.filterType || "ALL"
 	};
   	
+  	if (filterState.categorySeq || filterState.filterType !== "ALL") {
+  	    renderChips();
+  	}
   	loadMore();
   	
   	function loadMore() {
@@ -291,8 +300,9 @@
   	            isLast = false;
   	            document.querySelector(".grid").innerHTML = "";
 
+  	            // 이름 보정함수 추가
+				syncCategoryName();  	            
   	          	renderChips();
-  	          	
   	            loadMore();
   	        });
   	    });
@@ -414,6 +424,17 @@
   	  	updateFilterStatus();
   	    loadMore();
   	});
+  	
+  	// 카테고리 이름 보정 함수
+  	function syncCategoryName() {
+  	    if (!filterState.categorySeq) return;
+
+  	    const el = document.querySelector(`[data-seq="${filterState.categorySeq}"]`);
+
+  	    if (el) {
+  	        filterState.categoryName = el.textContent.trim();
+  	    }
+  	}
   	</script>   
   </body>
 </html>
