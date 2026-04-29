@@ -40,9 +40,7 @@
                     <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/direct-sales/${trade.seq}'">
                         <div class="relative w-full aspect-square mb-4 overflow-hidden rounded-[1.5rem] bg-slate-100 border border-slate-100 shadow-sm">
                             <%-- DTO 필드 반영: trade.imageUrl --%>
-                            <img src="${not empty trade.imageUrl ? trade.imageUrl : '/resources/img/no-image.png'}" 
-                                 alt="상품이미지" 
-                                 class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
+                            <img src="${pageContext.request.contextPath}${trade.imageUrl}" class="item-img">
                         </div>
                         <div class="px-1">
                             <%-- DTO 필드 반영: trade.productName --%>
@@ -86,7 +84,7 @@
                     <article class="item-card cursor-pointer group" onclick="location.href='${pageContext.request.contextPath}/auction/${auction.seq}'">
                         <div class="relative w-full aspect-square mb-4 overflow-hidden rounded-[1.5rem] bg-slate-900 border border-slate-100 shadow-sm">
                             <%-- DTO 필드 반영: auction.image --%>
-                            <img src="${not empty auction.image ? auction.image : '/resources/img/no-image.png'}" 
+                            <img src="${pageContext.request.contextPath}/upload/${auction.image}" alt="상품 이미지"
                                  class="object-cover w-full h-full group-hover:scale-110 opacity-90 group-hover:opacity-100 transition-all duration-500">
                             <div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm">
                                 <i class="fas fa-gavel mr-1"></i> LIVE
@@ -96,10 +94,10 @@
                             <%-- DTO 필드 반영: auction.name --%>
                             <h3 class="text-base text-slate-800 font-bold truncate mb-1 group-hover:text-[#FF8A3D] transition-colors">${auction.name}</h3>
                             <div class="flex flex-col">
-                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">현재 입찰가</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">시작 기준가</span>
                                 <div class="text-lg font-black text-red-500 mb-1">
                                     <%-- DTO 필드 반영: auction.highestBid --%>
-                                    <fmt:formatNumber value="${auction.highestBid > 0 ? auction.highestBid : auction.bidOpenPrice}" pattern="#,###" />원
+                                    <fmt:formatNumber value="${auction.bidOpenPrice}" pattern="#,###" />원
                                 </div>
                             </div>
                             <div class="text-[11px] text-slate-400 font-bold flex items-center gap-1">

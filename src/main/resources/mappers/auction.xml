@@ -285,15 +285,15 @@
 		SELECT * FROM (
 	        SELECT
 	            seq,
-	            name AS title,                -- NAME을 title로 가져옴
-	            bid_open_price AS currentBid, -- 현재가 컬럼이 따로 없다면 시작가를 우선 표시
-	            image AS thumbnail,           -- IMAGE를 thumbnail로 가져옴
+	            name AS title,                
+	            bid_open_price, 
+	            image,           
 	            end_date AS endDate,
 	            created_at
 	        FROM auction
-	        WHERE status = 0                  -- STATUS가 NUMBER이므로 숫자 1 사용
-	          AND end_date > SYSDATE          -- 종료되지 않은 경매만
-	        ORDER BY created_at DESC          -- 최신순 정렬
+	        WHERE status = 0                  
+	          AND end_date > SYSDATE          
+	        ORDER BY created_at DESC          
 	    ) WHERE rownum &lt;= #{count}
 	</select>
 </mapper>
