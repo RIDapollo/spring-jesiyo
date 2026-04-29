@@ -80,7 +80,9 @@
                             <%-- 왼쪽: 카테고리 정보 (소분류 이름만 출력) --%>
                             <div class="flex items-center gap-4">
                                 <div class="w-1.5 h-6 bg-brand-500 rounded-full group-hover:scale-y-125 transition-transform"></div>
-                                <span class="text-lg font-bold text-slate-700">${item.itemName}</span>
+                                <a href="/jesiyo/direct-sales?categorySeq=${item.cateSeq}">
+                                	<span class="text-lg font-bold text-slate-700">${item.itemName}</span>
+                                </a>
                             </div>
 
                             <%-- 오른쪽: 삭제 버튼 (쓰레기통 SVG 적용) --%>
