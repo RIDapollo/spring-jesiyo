@@ -216,7 +216,7 @@
 	            d.seq, 
 	            d.product_name AS title,      
 	            d.price, 
-	            d.image_url AS thumbnail,    
+	            d.image_url,    
 	            l.dong AS address,            
 	            d.created_at AS regdate,      
 	            -- 작성 시간 가공 (CREATED_AT 기준)

@@ -31,6 +31,8 @@ public class MainController {
             
             // 2. 진행 중인 인기 경매 리스트 조회 (예: 마감임박순 4개)
             List<AuctionDto> recentAuctions = auctionDao.getRecentAuctions(4);
+
+            
             
             // 3. JSP로 데이터 전달
             model.addAttribute("recentTrades", recentTrades);
