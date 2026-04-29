@@ -63,8 +63,12 @@ public class DirectSaleController {
 	    List<DirectSaleDto> list = directSaleService.search(dto);
 
 	    model.addAttribute("categoryTree", categoryTree);
-	    model.addAttribute("list", list);
 
+	    if (dto.getCategorySeq() != null) {
+	    	CategoryDto categoryDto = categoryService.findBySeq(Long.valueOf(dto.getCategorySeq()).intValue());
+	    	dto.setCategoryName(categoryDto.getName());
+	    }
+	    
 	    // 프론트에서도 쓰게 넘김
 	    model.addAttribute("initFilter", dto);
 

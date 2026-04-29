@@ -15,4 +15,5 @@ public class DirectSaleSearchDto {
     private Double memberLat;
     private Double memberLng;
     private Integer distanceKm; // 기본 3km
+    private String categoryName;
 }
