@@ -151,6 +151,8 @@ public class LiveAuctionController {
 	        result.put("msg", "세션이 만료되었습니다.");
 	        return result;
 	    }
+	    
+	    map.put("requestMemberSeq", mdto.getSeq());
 
 	    try {
 	        result = service.resetLiveAuction(map);

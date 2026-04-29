@@ -375,6 +375,27 @@ public class LiveAuctionService {
 
 	    int auctionSeq = Integer.parseInt(map.get("auctionSeq").toString());
 	    int scheduleSeq = Integer.parseInt(map.get("scheduleSeq").toString());
+	    int requestMemberSeq = Integer.parseInt(map.get("requestMemberSeq").toString());
+	    
+	    LiveAuctionDto auctionDto = dao.getDetail(auctionSeq);
+	    
+	    if (auctionDto == null) {
+	        result.put("status", "fail");
+	        result.put("msg", "존재하지 않는 경매입니다.");
+	        return result;
+	    }
+	    
+	    // 판매자 본인이 아니면(그리고 관리자가 아니라면) 차단합니다.
+	    // (만약 관리자 조건도 넣고 싶다면 || mdto.getId().equals("admin") 같은 조건을 추가하시면 됩니다)
+	    if (auctionDto.getCreateMemberSeq() != requestMemberSeq) {
+	        result.put("status", "fail");
+	        result.put("msg", "권한이 없습니다. 본인이 등록한 라이브 경매만 초기화할 수 있습니다.");
+	        return result;
+	    }
+	    
+	    // [수정] 0. Redis에 남아있는 캐시(최고가, 최근 입찰 내역) 완벽 삭제
+	    redisTemplate.delete(HIGHEST_BID_KEY_PREFIX + auctionSeq);
+	    redisTemplate.delete(LATEST_BIDS_KEY_PREFIX + auctionSeq);
 
 	    // 1. 입찰 내역(live_bid_history) 삭제
 	    dao.deleteLiveBidHistoryForReset(auctionSeq);
