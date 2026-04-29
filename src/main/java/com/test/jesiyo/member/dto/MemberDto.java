@@ -20,5 +20,6 @@ public class MemberDto {
     private int auctionCount;
     private int wishCount;
     private String point;
+    private double avgScore;
     
 }

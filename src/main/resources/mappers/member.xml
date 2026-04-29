@@ -19,6 +19,7 @@
 	        m.email_address AS email,
 	        m.permission,
 	        m.profile_img AS profileImg,
+	       (SELECT ROUND(NVL(AVG(score), 0), 1) FROM trade_review WHERE seller_seq = m.seq) AS avgScore,
 	        (SELECT COUNT(*) FROM direct_sale WHERE seller_seq = m.seq) AS usedCount,
 	        (SELECT COUNT(*) FROM auction WHERE create_member_seq = m.seq) AS auctionCount,
 	        (SELECT COUNT(*) FROM member_interest WHERE member_seq = m.seq) AS wishCount,
