@@ -1,5 +1,7 @@
 package com.test.jesiyo.notification.repository;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +22,10 @@ public class NotificationDao {
 	public NotificationDto findBySeq(Long seq) {
 		return template.selectOne("notification.findBySeq", seq);
 	}
+
+	public List<NotificationDto> findByMemberSeq(Long memberSeq) {
+		return template.selectList("notification.findByMemberSeq", memberSeq);
+	}
+	
+	
 }

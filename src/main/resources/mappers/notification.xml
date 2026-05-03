@@ -30,4 +30,18 @@
 	    WHERE seq = #{seq}
 	</select>
 	
+	<select id="findByMemberSeq" parameterType="long" resultType="com.test.jesiyo.notification.dto.NotificationDto">
+	    SELECT
+	        seq,
+	        message,
+	        is_read AS isRead,
+	        created_at AS createdAt,
+	        ref_type AS refType,
+	        ref_seq AS refSeq,
+	        member_seq AS memberSeq
+	    FROM notification
+	    WHERE member_seq = #{memberSeq}
+	    order by created_at desc
+	</select>
+	
 </mapper>

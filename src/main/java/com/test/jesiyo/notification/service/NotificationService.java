@@ -1,5 +1,7 @@
 package com.test.jesiyo.notification.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.test.jesiyo.notification.dto.NotificationDto;
@@ -25,4 +27,8 @@ public class NotificationService {
         // 2. 실시간 전송
         emitterService.send(saved.getMemberSeq(), saved);
     }
+
+	public List<NotificationDto> getMyNotifications(Long memberSeq) {
+		return dao.findByMemberSeq(memberSeq);
+	}
 }
