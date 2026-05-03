@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- XML Mapper -->
+<mapper namespace="notification">
+
+	<insert id="insertNotification" parameterType="com.test.jesiyo.notification.dto.NotificationDto">
+		<selectKey keyProperty="seq" resultType="long" order="BEFORE">
+	        SELECT notification_seq.nextval FROM dual
+	    </selectKey>
+        INSERT INTO notification (seq, message, is_read, created_at, ref_type, ref_seq, member_seq)
+        	VALUES (
+        		#{seq}, #{message}, 'N', SYSDATE,
+            	#{refType}, #{refSeq}, #{memberSeq}
+           	)
+    </insert>
+	
+	<select id="findBySeq" parameterType="long" resultType="com.test.jesiyo.notification.dto.NotificationDto">
+	    SELECT
+	        seq,
+	        message,
+	        is_read AS isRead,
+	        created_at AS createdAt,
+	        ref_type AS refType,
+	        ref_seq AS refSeq,
+	        member_seq AS memberSeq
+	    FROM notification
+	    WHERE seq = #{seq}
+	</select>
+	
+</mapper>

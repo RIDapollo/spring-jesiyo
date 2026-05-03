@@ -14,6 +14,8 @@
     
     <h2>브라우저 콘솔을 확인하세요!</h2>
     
+    <button id="test-btn">알림 테스트</button>
+    
     </div>
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
   	<script>
@@ -30,6 +32,20 @@
         });
     
         es.onerror = (e) => console.log("에러", e);
+        
+        
+        $("#test-btn").on("click", function() {
+            $.ajax({
+                url: "/jesiyo/api/test/notify",
+                type: "POST",
+                success: function(res) {
+                    console.log("요청 성공:", res);
+                },
+                error: function(err) {
+                    console.log("요청 실패:", err);
+                }
+            });
+        });
     </script>   
   </body>
 </html>

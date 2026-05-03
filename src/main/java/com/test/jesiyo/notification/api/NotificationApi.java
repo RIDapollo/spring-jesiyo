@@ -5,12 +5,15 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.test.jesiyo.member.dto.MemberDto;
+import com.test.jesiyo.notification.dto.NotificationDto;
 import com.test.jesiyo.notification.service.NotificationEmitterService;
+import com.test.jesiyo.notification.service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class NotificationApi {
 
 	private final NotificationEmitterService emitterService;
+	private final NotificationService notificationService;
 	
 	// SSE 연결용 API
 	@GetMapping("/notifications/subscribe")
@@ -46,5 +50,27 @@ public class NotificationApi {
         }
 
         return emitter;
+    }
+	
+	@PostMapping("/test/notify")
+    public String testNotify(HttpSession session) {
+
+        // 로그인 사용자 가져오기
+        MemberDto loginMember = (MemberDto) session.getAttribute("user");
+
+        if (loginMember == null) {
+            throw new RuntimeException("로그인 필요");
+        }
+
+        NotificationDto dto = NotificationDto.builder()
+                .memberSeq(Long.valueOf(loginMember.getSeq()))
+                .message("테스트 알림입니다")
+                .refType("OTHER")
+                .refSeq(0L)
+                .build();
+
+        notificationService.createNotification(dto);
+
+        return "ok";
     }
 }
