@@ -61,7 +61,8 @@ public class NotificationApi {
             		.data(payload));
             
         } catch (IOException e) {
-            emitter.completeWithError(e);
+//            emitter.completeWithError(e);
+        	 emitter.complete();
         }
         
 
@@ -93,9 +94,9 @@ public class NotificationApi {
 	@PostMapping("/notifications/{seq}/read")
 	public ResponseEntity<String> readNotification(@PathVariable("seq") Long seq) {
 		
-		int result = notificationService.readNotification(seq);
+		boolean success = notificationService.readNotification(seq);
 		
-		if (result != 1) {
+		if (!success) {
 			return ResponseEntity.badRequest().body("처리 실패");
 		}
 		

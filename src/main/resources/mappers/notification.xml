@@ -58,4 +58,11 @@
     	and is_read = 'N'
 	</select>
 	
+	<select id="findMemberSeqBySeq" parameterType="long" resultType="long">
+		select member_seq
+		from notification
+		where
+			seq = #{seq}
+	</select>
+	
 </mapper>

@@ -34,6 +34,10 @@ public class NotificationDao {
 	public int selectUnreadByMemberSeq(Long memberSeq) {
 		return template.selectOne("notification.selectUnreadByMemberSeq", memberSeq);
 	}
+
+	public Long findMemberSeqBySeq(Long seq) {
+		return template.selectOne("notification.findMemberSeqBySeq", seq);
+	}
 	
 	
 }

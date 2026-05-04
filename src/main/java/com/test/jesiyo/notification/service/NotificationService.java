@@ -41,8 +41,25 @@ public class NotificationService {
 		return dao.findByMemberSeq(memberSeq);
 	}
 
-	public int readNotification(Long seq) {
-		return dao.updateReadStatusBySeq(seq);
+	public boolean readNotification(Long seq) {
+		
+		// 1. 알림 읽음 처리
+		int result = dao.updateReadStatusBySeq(seq);
+		
+		if (result != 1) return false;
+		
+		 // 2. 해당 알림의 사용자 찾기
+	    Long memberSeq = dao.findMemberSeqBySeq(seq);
+	    // 3. 안 읽은 개수 조회
+	    int count = dao.selectUnreadByMemberSeq(memberSeq);
+
+	    // 4. payload 구성
+	    Map<String, Object> payload = new HashMap<>();
+	    payload.put("unreadCount", count);
+	    // 5. SSE 전송
+	    emitterService.send(memberSeq, payload);
+		
+		return true;
 	}
 
 	public int getUnreadCount(Long memberSeq) {
