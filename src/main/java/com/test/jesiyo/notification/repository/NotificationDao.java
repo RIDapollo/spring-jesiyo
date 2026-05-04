@@ -30,6 +30,10 @@ public class NotificationDao {
 	public int updateReadStatusBySeq(Long seq) {
 		return template.update("notification.updateReadStatusBySeq", seq);
 	}
+
+	public int selectUnreadByMemberSeq(Long memberSeq) {
+		return template.selectOne("notification.selectUnreadByMemberSeq", memberSeq);
+	}
 	
 	
 }

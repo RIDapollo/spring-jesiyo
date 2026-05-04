@@ -50,4 +50,12 @@
 		where seq = #{seq}
 	</update>
 	
+	<select id="selectUnreadByMemberSeq" parameterType="long" resultType="int">
+	    select count(*)
+	    from notification
+	    where
+	    	member_seq = #{memberSeq}
+    	and is_read = 'N'
+	</select>
+	
 </mapper>
