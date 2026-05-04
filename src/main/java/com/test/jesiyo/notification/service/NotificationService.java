@@ -44,4 +44,8 @@ public class NotificationService {
 	public int readNotification(Long seq) {
 		return dao.updateReadStatusBySeq(seq);
 	}
+
+	public int getUnreadCount(Long memberSeq) {
+		return dao.selectUnreadByMemberSeq(memberSeq);
+	}
 }

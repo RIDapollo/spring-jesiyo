@@ -123,10 +123,31 @@
 		            <%-- 우리가 만든 CustomUser 안의 memberDto에서 이름을 가져옵니다 --%>
 		            <sec:authentication property="principal.memberDto.name" />님
 		        </span>
-		        <a href="#" class="auth-link">알림</a>
+<!-- 		        <a href="#" class="auth-link">알림</a> -->
+                <div class="relative cursor-pointer" onclick="location.href='/jesiyo/notifications'">
+                  🔔
+                  <span id="notification-badge"
+                    class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                  </span>
+                </div>
+            
 		        <a href="${pageContext.request.contextPath}/member/mypage" class="auth-link">마이페이지</a>
 		        <a href="${pageContext.request.contextPath}/member/logout" class="logout-btn">로그아웃</a>
 		    </sec:authorize>
 		</div>
     </div>
 </header>
+<sec:authorize access="isAuthenticated()">
+  <script>
+      const eventSource = new EventSource("/jesiyo/api/notifications/subscribe");
+      eventSource.addEventListener("notification", function (event) {
+          const data = JSON.parse(event.data);
+          const count = data.unreadCount;
+          if (count > 0) {
+              $("#notification-badge").text(count).show();
+          } else {
+              $("#notification-badge").hide();
+          }
+      });
+  </script>
+</sec:authorize>

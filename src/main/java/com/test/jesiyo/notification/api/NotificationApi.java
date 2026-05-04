@@ -1,6 +1,8 @@
 package com.test.jesiyo.notification.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -42,14 +44,26 @@ public class NotificationApi {
         Long memberSeq = Long.valueOf(loginMember.getSeq());
         SseEmitter emitter = emitterService.subscribe(memberSeq);
         
-        // 최초 연결 이벤트 보내서 SSE 연결 바로 끊기는 것 방지
         try {
+        	// 최초 연결 이벤트 보내서 SSE 연결 바로 끊기는 것 방지
             emitter.send(SseEmitter.event()
                     .name("connect")
                     .data("connected"));
+            
+            // 초기 unread count 보내기
+            int count = notificationService.getUnreadCount(memberSeq);
+            
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("unreadCount", count);
+            
+            emitter.send(SseEmitter.event()
+            		.name("notification")
+            		.data(payload));
+            
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
+        
 
         return emitter;
     }
