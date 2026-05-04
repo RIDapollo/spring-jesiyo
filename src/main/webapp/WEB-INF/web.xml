@@ -27,6 +27,9 @@
 			<param-name>forceEncoding</param-name>
 			<param-value>true</param-value>
 		</init-param>
+		
+		<!-- SSE 적용 위한 비동기설정 추가 -->
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
@@ -37,6 +40,9 @@
 	<filter>
 	    <filter-name>hiddenHttpMethodFilter</filter-name>
 	    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+	    
+	    <!-- SSE 적용 위한 비동기설정 추가 -->
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
     	<filter-name>hiddenHttpMethodFilter</filter-name>
@@ -47,6 +53,9 @@
 	<filter>
 	    <filter-name>springSecurityFilterChain</filter-name>
 	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	    
+	    <!-- SSE 적용 위한 비동기설정 추가 -->
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 	    <filter-name>springSecurityFilterChain</filter-name>
@@ -69,6 +78,9 @@
 			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		
+		<!-- SSE 적용 위한 비동기설정 추가 -->
+		<async-supported>true</async-supported>
 	</servlet>
 
 	<servlet-mapping>
