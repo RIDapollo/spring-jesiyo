@@ -44,4 +44,10 @@
 	    order by created_at desc
 	</select>
 	
+	<update id="updateReadStatusBySeq" parameterType="long">
+		update notification
+		set is_read = 'Y'
+		where seq = #{seq}
+	</update>
+	
 </mapper>

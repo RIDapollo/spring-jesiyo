@@ -31,4 +31,8 @@ public class NotificationService {
 	public List<NotificationDto> getMyNotifications(Long memberSeq) {
 		return dao.findByMemberSeq(memberSeq);
 	}
+
+	public int readNotification(Long seq) {
+		return dao.updateReadStatusBySeq(seq);
+	}
 }

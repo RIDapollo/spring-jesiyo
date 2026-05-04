@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,4 +75,16 @@ public class NotificationApi {
 
         return "ok";
     }
+	
+	@PostMapping("/notifications/{seq}/read")
+	public ResponseEntity<String> readNotification(@PathVariable("seq") Long seq) {
+		
+		int result = notificationService.readNotification(seq);
+		
+		if (result != 1) {
+			return ResponseEntity.badRequest().body("처리 실패");
+		}
+		
+		return ResponseEntity.ok("읽음 처리 완료");
+	}
 }

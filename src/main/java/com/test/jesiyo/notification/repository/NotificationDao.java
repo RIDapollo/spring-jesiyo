@@ -26,6 +26,10 @@ public class NotificationDao {
 	public List<NotificationDto> findByMemberSeq(Long memberSeq) {
 		return template.selectList("notification.findByMemberSeq", memberSeq);
 	}
+
+	public int updateReadStatusBySeq(Long seq) {
+		return template.update("notification.updateReadStatusBySeq", seq);
+	}
 	
 	
 }
